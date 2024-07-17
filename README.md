@@ -1,18 +1,28 @@
-# Getting Started with Create React App
+# Welcome to my Workfolio
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project showcases my skills and projects. It was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+## Getting Started
 
-In the project directory, you can run:
+To get started with this project, follow these steps:
 
-### `npm start`
+1. Clone the repository
+   ### `git clone https://github.com/kareemsasa3/workfolio.git`
 
-Runs the app in the development mode.\
+2. Install dependencies
+   ### `npm install`
+
+3. Run the development server
+   ### `npm start`
+
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
 The page will reload when you make changes.\
 You may also see any lint errors in the console.
+
+
+# Available Scripts
+In the project directory, you can run any of the following scripts:
 
 ### `npm test`
 
