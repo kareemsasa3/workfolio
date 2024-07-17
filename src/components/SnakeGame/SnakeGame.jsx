@@ -1,7 +1,6 @@
 // src/components/SnakeGame.js
 import React, { useState, useEffect, useRef } from 'react';
 import './SnakeGame.css';
-import TypeWriterText from '../TypeWriterText';
 
 const SnakeGame = () => {
   const [snake, setSnake] = useState([{ x: 10, y: 10 }]);
@@ -61,7 +60,7 @@ const SnakeGame = () => {
   
     const interval = setInterval(moveSnake, speed);
     return () => clearInterval(interval);
-  }, [direction, speed, food]);
+  }, [direction, speed, food, score]);
 
   useEffect(() => {
     const checkCollision = () => {
@@ -73,6 +72,7 @@ const SnakeGame = () => {
           setDirection({ x: 0, y: 0 });
           setFood({ x: 15, y: 15 });
           setScore(0);
+          setSpeed(0);
         }
       }
     };

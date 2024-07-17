@@ -10,7 +10,6 @@ import Education from './pages/Education';
 import Certifications from './pages/Certifications';
 import Resume from './pages/Resume';
 import BionicBackground from './components/BionicBackground';
-import SnakeGame from './components/SnakeGame';
 
 const App = () => {
   const [showWelcome, setShowWelcome] = useState(true);
