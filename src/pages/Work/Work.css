@@ -1,0 +1,15 @@
+.work-title {
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: #AF2A2A;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 1;
+    font-size: 2rem;
+    margin-top: 65rem;
+    margin-left: 5rem;
+    user-select: none;
+}

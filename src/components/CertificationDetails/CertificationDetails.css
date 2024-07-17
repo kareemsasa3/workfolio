@@ -1,0 +1,21 @@
+.certification-details-container {
+    position: absolute;
+    left: 0;
+    width: 60rem;
+    border-radius: 5px;
+    text-align: left;
+}
+
+.certification-text {
+    color: white;
+}
+
+.certification-text .large-font {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.certification-text .small-font {
+    font-size: 1rem;
+}
+

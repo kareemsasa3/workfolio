@@ -1,0 +1,16 @@
+.certifications-content {
+    margin-top: 13rem;
+    margin-left: 4rem;
+    position: absolute;
+    left: 0;
+}
+  
+.certifications-title {
+    left: 0;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    border-radius: 5px;
+    color: #af2a2a;
+    font-size: 2rem;
+}

@@ -1,0 +1,15 @@
+.home-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.description {
+  margin-bottom: 15rem;
+  color: #AF2A2A;
+  text-align: center;
+  width: 45%;
+  font-size: 1.2rem;
+  user-select: none;
+}

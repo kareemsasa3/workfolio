@@ -1,0 +1,14 @@
+.projects-directory {
+    position: absolute;
+    top: 0;
+    right: 0;    
+    margin-top: 28rem;
+    text-align: right;
+    margin-right: 4rem;
+    list-style-type: none;
+    user-select: none;
+}
+
+.item {
+    color: white;
+}

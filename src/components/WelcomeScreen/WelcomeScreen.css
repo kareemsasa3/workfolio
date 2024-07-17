@@ -1,0 +1,64 @@
+/* WelcomeScreen.css */
+
+.welcome-screen {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.99); /* Semi-transparent background */
+  color: #af2a2a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Make sure it's above other elements */
+  opacity: 1;
+  transition: opacity 0.5s ease-out;
+}
+
+.welcome-screen.fade-out {
+  opacity: 0;
+  pointer-events: none; /* Allow interactions with underlying elements after fading out */
+  transition: opacity 2s ease-out; /* Adjusted to match the total fade-out time */
+}
+
+.content {
+  position: inherit;
+  text-align: center; /* Center align content horizontally */
+  display: flex; /* Use flexbox to control alignment */
+  flex-direction: row; /* Stack items vertically */
+  align-items: center; /* Center items horizontally */
+}
+
+.title {
+  white-space: nowrap;
+  margin: 0;
+  font-size: 3.5rem;
+  padding-right: 20px; /* Space between title and subtitle */
+}
+
+.portfolio-text {
+  margin: 0;
+  font-size: 2.5rem;
+}
+
+.start-button {
+  font-family: Papyrus, fantasy;
+  position: absolute;
+  bottom: 2rem;
+  right: 2rem;
+  font-size: 2rem;
+  color: #af2a2a;
+  background-color: rgba(0,0,0,0);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.start-button:hover {
+  border: solid 2px #af2a2a;
+  border-radius: 8px;
+}
+
+.fade-out {
+  opacity: 0;
+}

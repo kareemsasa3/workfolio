@@ -1,0 +1,21 @@
+.projects-title {
+    position: absolute;
+    top: 0;
+    right: 0;
+    color: #AF2A2A;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 1;
+    font-size: 2rem;
+    margin-top: 25rem;
+    margin-right: 4rem;
+    user-select: none;
+}
+
+.dropdown-icon {
+    margin-left: 10px;
+    font-size: 1.5rem;
+    z-index: 2;
+}

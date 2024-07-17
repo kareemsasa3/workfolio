@@ -1,0 +1,25 @@
+/* src/components/SnakeGame.css */
+.game-board {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-color: rbga(0, 0, 0, 0);
+    margin: 0 auto;
+  }
+  
+  .snake-segment {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    background-color: #fff;
+  }
+  
+  .food {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: #f00;
+  }
+  

@@ -1,0 +1,43 @@
+.education-content {
+    margin-top: 35rem;
+}
+  
+  .education-title {
+    position: absolute;
+    right: 0;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border-radius: 5px;
+    margin-right: 3rem;
+    color: #af2a2a;
+    font-size: 2rem;
+  }
+  
+  .dropdown-icon {
+    font-size: 1.5rem;
+  }
+  
+  .education-details-container {
+    position: absolute;
+    right: 0;
+    width: 15rem;
+    margin-top: 1rem;
+    margin-right: 3rem;
+    border-radius: 5px;
+  }
+  
+  .education-text {
+    color: white;
+  }
+
+  .education-text .large-font {
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+  
+  .education-text .small-font {
+    font-size: 1rem;
+  }
+  

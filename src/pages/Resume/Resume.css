@@ -1,0 +1,11 @@
+.resume-container {
+    position: absolute;
+    top: 120rem; /* Adjust the bottom position as needed */
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%);
+}
+
+.resume-image {
+    width: 1000px; /* Adjust the width of the resume image */
+    height: auto; /* Maintain aspect ratio */
+}

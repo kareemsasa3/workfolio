@@ -1,0 +1,46 @@
+.info-content .more-title {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin-top: 33rem;
+    margin-left: 6rem;
+    cursor: pointer;
+    font-size: 2rem;
+    color: #af2a2a;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 1;
+    user-select: none;
+}
+
+.dropdown-icon {
+    font-size: 1.5rem;
+    z-index: 2;
+}
+
+.info-content ul {
+    font-size: 1.2rem;
+    color: #af2a2a;
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin-top: 35rem;
+    margin-left: 6rem;
+    list-style-type: none;
+}
+
+.info-content li {
+    margin-top: 40px;
+    font-size: 1.2rem;
+}
+
+.info-content a {
+    color: white;
+    text-decoration: none;
+}
+
+.info-content a:hover {
+    color: #af2a2a;
+    text-decoration: underline;
+}

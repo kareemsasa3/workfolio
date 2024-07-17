@@ -1,0 +1,23 @@
+.main-content .h1-text, .p-text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: #AF2A2A;
+    user-select: none;
+}
+
+.main-content .h1-text {
+    font-size: 2.5rem;
+    font-weight: bolder;
+    padding-top: 75px;
+    padding-left: 100px;
+    transition: opacity 3.5s ease-out;
+  }
+  
+  .main-content .p-text {
+    padding-top: 120px;
+    padding-left: 100px;
+    font-size: 2rem;
+    transition: opacity 5s ease-out;
+  }
+
