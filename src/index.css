@@ -17,6 +17,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--background-color);
   color: var(--text-color);
+  transition: var(--theme-transition);
 }
 
 main {
@@ -195,12 +196,22 @@ template {
   --primary-color: #AF2A2A;
   --primary-color-light: rgba(175, 42, 42, 0.2);
   --primary-color-medium: rgba(175, 42, 42, 0.3);
-  --background-color: #000000;
-  --background-color-transparent: rgba(0, 0, 0, 0.7);
-  --background-color-overlay: rgba(0, 0, 0, 0.99);
   --accent-color: #FFD700;
-  --text-color: #ffffff;
-  --text-color-secondary: #cccccc;
+
+  /* Theme colors - will be overridden by ThemeContext */
+  --background-color: #1a1a1a;
+  --background-color-secondary: #2d2d2d;
+  --background-color-tertiary: #404040;
+  --background-color-transparent: rgba(26, 26, 26, 0.7);
+  --background-color-overlay: rgba(26, 26, 26, 0.95);
+  --text-color: #f8f9fa;
+  --text-color-secondary: #adb5bd;
+  --text-color-muted: #6c757d;
+  --border-color: #495057;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+
+  /* Theme transition - smoother and longer */
+  --theme-transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 
   /* Typography */
   --font-family-primary: Papyrus, fantasy;
@@ -229,6 +240,9 @@ template {
   --z-index-navigation: 1000;
   --z-index-overlay: 1000;
 
+  /* Dock Settings */
+  --dock-icon-size: 50px;
+
   /* Page Layout */
   --page-padding: var(--spacing-lg);
   --page-margin-top: 120px;
@@ -244,6 +258,45 @@ template {
 
 code {
   font-family: var(--font-family-mono);
+}
+
+/* Theme transitions - comprehensive and smooth */
+* {
+  transition:
+    background-color var(--theme-transition),
+    color var(--theme-transition),
+    border-color var(--theme-transition),
+    box-shadow var(--theme-transition),
+    opacity var(--theme-transition);
+}
+
+/* Ensure smooth transitions for specific elements */
+body,
+div,
+section,
+article,
+aside,
+header,
+footer,
+nav,
+main {
+  transition:
+    background-color var(--theme-transition),
+    color var(--theme-transition),
+    border-color var(--theme-transition),
+    box-shadow var(--theme-transition);
+}
+
+/* Smooth transitions for form elements */
+input,
+textarea,
+select,
+button {
+  transition:
+    background-color var(--theme-transition),
+    color var(--theme-transition),
+    border-color var(--theme-transition),
+    box-shadow var(--theme-transition);
 }
 
 /* Focus states for accessibility */

@@ -1,9 +1,14 @@
+/* BionicBackground.css */
+
 .bionic-canvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: var(--z-index-background);
-  background: var(--background-color);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+    /* This ensures the canvas doesn't interfere with mouse interactions */
+    opacity: 0.3;
+    /* Optional: reduce opacity to make it less distracting */
 }

@@ -3,7 +3,7 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Navigate,
+  useNavigate,
 } from "react-router-dom";
 import "./App.css";
 import WelcomeScreen from "./components/WelcomeScreen";
@@ -18,13 +18,21 @@ import Education from "./pages/Education";
 import Certifications from "./pages/Certifications";
 import Resume from "./pages/Resume";
 import Contact from "./pages/Contact";
-import BionicBackground from "./components/BionicBackground";
+import MatrixBackground from "./components/MatrixBackground";
+import { ThemeProvider } from "./contexts/ThemeContext";
 
-const App = () => {
+const AppContent = () => {
   const [showWelcome, setShowWelcome] = useState(true);
+  const navigate = useNavigate();
 
-  const handleAnimationEnd = () => {
+  const handleAnimationEnd = (route: string = "/") => {
+    console.log("App received route:", route);
     setShowWelcome(false);
+    // Use setTimeout to ensure state update completes before navigation
+    setTimeout(() => {
+      console.log("Navigating to:", route);
+      navigate(route);
+    }, 100);
   };
 
   useEffect(() => {
@@ -38,7 +46,7 @@ const App = () => {
   if (showWelcome) {
     return (
       <div className="App">
-        <BionicBackground />
+        <MatrixBackground />
         <WelcomeScreen onAnimationEnd={handleAnimationEnd} />
       </div>
     );
@@ -46,25 +54,32 @@ const App = () => {
 
   return (
     <div className="App">
-      <BionicBackground />
-      <Router>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Home />} />
-            <Route path="projects" element={<Projects />} />
-            <Route path="games" element={<Games />} />
-            <Route path="games/snake" element={<SnakeGame />} />
-            <Route path="work" element={<Work />} />
-            <Route path="education" element={<Education />} />
-            <Route path="certifications" element={<Certifications />} />
-            <Route path="resume" element={<Resume />} />
-            <Route path="contact" element={<Contact />} />
-            <Route path="info" element={<Info />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Route>
-        </Routes>
-      </Router>
+      <MatrixBackground />
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route path="projects" element={<Projects />} />
+          <Route path="games" element={<Games />} />
+          <Route path="games/snake" element={<SnakeGame />} />
+          <Route path="work" element={<Work />} />
+          <Route path="education" element={<Education />} />
+          <Route path="certifications" element={<Certifications />} />
+          <Route path="resume" element={<Resume />} />
+          <Route path="contact" element={<Contact />} />
+          <Route path="info" element={<Info />} />
+        </Route>
+      </Routes>
     </div>
+  );
+};
+
+const App = () => {
+  return (
+    <ThemeProvider>
+      <Router>
+        <AppContent />
+      </Router>
+    </ThemeProvider>
   );
 };
 

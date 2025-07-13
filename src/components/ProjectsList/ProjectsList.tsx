@@ -1,45 +1,20 @@
 import "./ProjectsList.css";
 import ProjectDetails from "../ProjectDetails";
+import { Project } from "../../data/projects";
 
-const ProjectsList = () => {
+interface ProjectsListProps {
+  projects: Project[];
+}
+
+const ProjectsList = ({ projects }: ProjectsListProps) => {
   return (
     <div className="projects-list-content">
       <ul className="projects-directory">
-        <li className="item">
-          <ProjectDetails
-            smallText="July 2024 / Portfolio"
-            largeText="WORKFOLIO"
-            url={"https://github.com/kareemsasa3/workfolio"}
-          />
-        </li>
-        <li className="item">
-          <ProjectDetails
-            smallText="Jan. 2024 / E-Commerce"
-            largeText="CURATED COLLECTIBLES"
-            url={"https://github.com/kareemsasa3/react-ecommerce"}
-          />
-        </li>
-        <li className="item">
-          <ProjectDetails
-            smallText="Jan. 2023 / Freelance"
-            largeText="KING OF DIAMONDS"
-            url={"https://github.com/kareemsasa3/KingOfDiamonds"}
-          />
-        </li>
-        <li className="item">
-          <ProjectDetails
-            smallText="Dec. 2022 / Contributor"
-            largeText="FACE MASK DETECTOR"
-            url={"https://github.com/kareemsasa3/face-mask-detector"}
-          />
-        </li>
-        <li className="item">
-          <ProjectDetails
-            smallText="June 2022 / Freelance"
-            largeText="PATIENT MANAGEMENT"
-            url={"https://github.com/kareemsasa3/patient-management-system"}
-          />
-        </li>
+        {projects.map((project) => (
+          <li className="item" key={project.id}>
+            <ProjectDetails project={project} />
+          </li>
+        ))}
       </ul>
     </div>
   );

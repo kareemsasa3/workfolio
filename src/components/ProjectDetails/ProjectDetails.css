@@ -1,13 +1,17 @@
 .project-container {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
+    height: 100%;
+    justify-content: space-between;
 }
 
 .project-link {
     color: var(--text-color);
     text-decoration: none;
     transition: color var(--transition-normal);
+    display: block;
+    width: 100%;
+    height: 100%;
 }
 
 .project-link:hover {
@@ -21,14 +25,41 @@
 }
 
 .project-text {
-    display: inline-block;
+    display: block;
     margin: 0;
 }
 
 .small-font {
-    font-size: 1rem;
+    font-size: 0.9rem;
+    margin-top: var(--spacing-sm);
+    opacity: 0.7;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
 }
 
 .large-font {
-    font-size: 2.4rem;
+    font-size: 1.8rem;
+    font-weight: bold;
+    line-height: 1.2;
+    margin-bottom: var(--spacing-sm);
+}
+
+.project-category {
+    display: inline-block;
+    background: var(--primary-color-light);
+    color: var(--primary-color);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--border-radius-sm);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: var(--spacing-sm);
+}
+
+.project-date {
+    color: var(--text-color-secondary);
+    font-size: 0.9rem;
+    margin-bottom: var(--spacing-sm);
 }

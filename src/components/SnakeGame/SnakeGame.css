@@ -3,7 +3,7 @@
   position: relative;
   width: 800px;
   height: 600px;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--background-color-tertiary);
   border: 3px solid var(--primary-color);
   border-radius: var(--border-radius-lg);
   margin: 0 auto;
@@ -16,7 +16,7 @@
   background-color: var(--primary-color);
   border-radius: 3px;
   transition: all var(--transition-fast);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 4px var(--shadow-color);
 }
 
 .food {

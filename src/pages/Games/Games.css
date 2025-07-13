@@ -14,7 +14,7 @@
 }
 
 .game-card {
-    background: rgba(0, 0, 0, 0.8);
+    background: var(--background-color-secondary);
     border: 2px solid var(--primary-color);
     border-radius: var(--border-radius-lg);
     padding: var(--page-padding);
@@ -64,9 +64,9 @@
     align-items: center;
     height: 150px;
     margin-bottom: var(--page-padding);
-    background: rgba(0, 0, 0, 0.3);
+    background: var(--background-color-tertiary);
     border-radius: 10px;
-    border: 1px solid rgba(175, 42, 42, 0.3);
+    border: 1px solid var(--primary-color-light);
 }
 
 .snake-preview {

@@ -1,30 +1,24 @@
 import React from "react";
 import "./ProjectDetails.css";
+import { Project } from "../../data/projects";
 
 interface ProjectDetailsProps {
-  smallText: string;
-  largeText: string;
-  url: string;
+  project: Project;
 }
 
-const ProjectDetails: React.FC<ProjectDetailsProps> = ({
-  smallText,
-  largeText,
-  url,
-}) => {
+const ProjectDetails: React.FC<ProjectDetailsProps> = ({ project }) => {
   return (
     <div className="project-container">
-      <div className="project-text large-font">
-        <a
-          className="project-link"
-          href={url}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {largeText}
-        </a>
-      </div>
-      <div className="project-text small-font">{smallText}</div>
+      <a
+        className="project-link"
+        href={project.url}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <div className="project-category">{project.category}</div>
+        <div className="project-text large-font">{project.title}</div>
+        <div className="project-date">{project.date}</div>
+      </a>
     </div>
   );
 };

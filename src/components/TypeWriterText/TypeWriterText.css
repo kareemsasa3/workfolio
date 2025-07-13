@@ -1,12 +1,19 @@
 .typewriter-text {
     display: inline-block;
     position: relative;
+    transition: opacity 0.3s ease;
+}
+
+.typewriter-text.error {
+    opacity: 0.8;
+    color: #ff6b6b;
 }
 
 .cursor {
     animation: blink 1s infinite;
     color: var(--primary-color);
     font-weight: bold;
+    margin-left: 2px;
 }
 
 @keyframes blink {
@@ -16,5 +23,30 @@
 
     51%, 100% {
         opacity: 0;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .cursor {
+        animation: none;
+        opacity: 0.5;
+    }
+
+    .typewriter-text {
+        transition: none;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .cursor {
+        color: var(--accent-color);
+        font-weight: 900;
+    }
+
+    .typewriter-text.error {
+        color: #ff4444;
+        font-weight: bold;
     }
 }

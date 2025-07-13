@@ -1,0 +1,66 @@
+.bionic-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: var(--z-index-background);
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.8) 100%);
+  backdrop-filter: blur(0.5px);
+  pointer-events: none;
+  /* Changed from auto to none to prevent mouse interference */
+  will-change: transform;
+  transform: translateZ(0);
+  /* Removed cursor: none to allow normal mouse cursor */
+}
+
+/* Add subtle animation for the canvas itself */
+.bionic-canvas {
+  animation: subtle-float 20s ease-in-out infinite;
+}
+
+@keyframes subtle-float {
+  0%, 100% {
+    transform: translateZ(0) scale(1);
+  }
+
+  50% {
+    transform: translateZ(0) scale(1.001);
+  }
+}
+
+/* Add spacey glow effect */
+.bionic-canvas::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 20% 80%, rgba(0, 255, 0, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(0, 255, 0, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
+  animation: spaceGlow 15s ease-in-out infinite;
+}
+
+@keyframes spaceGlow {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.6;
+    transform: scale(1.1);
+  }
+}
+
+/* Ensure smooth rendering */
+.bionic-canvas {
+  image-rendering: optimizeSpeed;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: optimize-contrast;
+  image-rendering: pixelated;
+}

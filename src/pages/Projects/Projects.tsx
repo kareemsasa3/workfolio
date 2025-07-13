@@ -1,11 +1,12 @@
 import "./Projects.css";
 import ProjectsList from "../../components/ProjectsList";
+import { projectsData } from "../../data/projects";
 
 const Projects = () => {
   return (
     <div className="page-content">
-      <div className="projects-title">Projects</div>
-      <ProjectsList />
+      <h1 className="projects-title">Projects</h1>
+      <ProjectsList projects={projectsData} />
     </div>
   );
 };

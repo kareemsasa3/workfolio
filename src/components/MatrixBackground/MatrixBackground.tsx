@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useTheme } from "../../contexts/ThemeContext";
-import "./BionicBackground.css";
+import "./MatrixBackground.css";
 
 interface MatrixColumn {
   x: number;
@@ -12,7 +12,7 @@ interface MatrixColumn {
   length: number;
 }
 
-const BionicBackground = () => {
+const MatrixBackground = () => {
   const { theme } = useTheme();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const requestRef = useRef<number | null>(null);
@@ -55,7 +55,7 @@ const BionicBackground = () => {
       columns.push({
         x: i * columnWidth,
         y: Math.random() * canvas.height,
-        speed: Math.random() * 0.8 + 0.3,
+        speed: Math.random() * 0.3 + 0.1,
         characters: [],
         opacity: Math.random() * 0.5 + 0.3,
         length: Math.floor(Math.random() * 20) + 10,
@@ -76,7 +76,7 @@ const BionicBackground = () => {
   const drawMatrix = useCallback(
     (context: CanvasRenderingContext2D, canvas: HTMLCanvasElement) => {
       // Clear with dark gray background
-      context.fillStyle = theme === "light" ? "#2a2a2a" : "#1a1a1a";
+      context.fillStyle = theme === "light" ? "#1f1f1f" : "#0f0f0f";
       context.fillRect(0, 0, canvas.width, canvas.height);
 
       const columns = columnsRef.current;
@@ -190,4 +190,4 @@ const BionicBackground = () => {
   );
 };
 
-export default BionicBackground;
+export default MatrixBackground;

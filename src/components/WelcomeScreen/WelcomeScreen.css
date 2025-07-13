@@ -1,72 +1,422 @@
 /* WelcomeScreen.css */
 
+/* Terminal CSS Variables for theming */
+:root {
+  --terminal-primary: #00ff00;
+  --terminal-background: #1a1a1a;
+  --terminal-header-bg: #2a2a2a;
+  --terminal-error: #ff6b6b;
+  --terminal-success: #4ecdc4;
+  --terminal-warning: #ffd93d;
+  --terminal-text-light: #ffffff;
+  --terminal-text-muted: #666;
+  --terminal-border: #00ff00;
+  --terminal-shadow: rgba(0, 255, 0, 0.3);
+  --terminal-shadow-hover: rgba(0, 255, 0, 0.5);
+  --terminal-glow: rgba(0, 255, 0, 0.5);
+}
+
 .welcome-screen {
   position: fixed;
   width: 100%;
   height: 100%;
-  background: var(--background-color-overlay);
-  color: var(--primary-color);
+  background: rgba(0, 0, 0, 0.9);
+  color: var(--terminal-primary);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: var(--z-index-overlay);
-  opacity: 1;
-  transition: opacity var(--transition-slow);
+  z-index: 1000;
+  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
-.welcome-screen.fade-out {
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 2s ease-out;
+/* Terminal Container */
+.terminal-container {
+  width: 90%;
+  max-width: 800px;
+  height: 70vh;
+  max-height: 600px;
+  background: var(--terminal-background);
+  border-radius: 8px;
+  box-shadow: 0 0 30px var(--terminal-shadow);
+  border: 1px solid var(--terminal-border);
+  overflow: hidden;
+  position: relative;
+  transition: all 0.3s ease;
 }
 
-.content {
-  position: inherit;
-  text-align: center;
+
+
+/* Terminal Header */
+.terminal-header {
+  background: var(--terminal-header-bg);
+  padding: 8px 16px;
   display: flex;
-  flex-direction: row;
   align-items: center;
+  border-bottom: 1px solid var(--terminal-border);
 }
 
-.title {
-  white-space: nowrap;
-  margin: 0;
-  font-size: 3.5rem;
-  padding-right: var(--spacing-lg);
+.terminal-buttons {
+  display: flex;
+  gap: 8px;
+  margin-right: 16px;
 }
 
-.portfolio-text {
-  margin: 0;
-  font-size: 2.5rem;
-}
-
-.start-button {
-  font-family: var(--font-family-primary);
-  position: absolute;
-  bottom: var(--spacing-lg);
-  right: var(--spacing-lg);
-  font-size: 2rem;
-  color: var(--primary-color);
-  background-color: transparent;
-  border: 2px solid transparent;
-  border-radius: var(--border-radius-sm);
+.terminal-button {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
   cursor: pointer;
-  transition: all var(--transition-normal);
-  padding: var(--spacing-sm) var(--spacing-md);
+  transition: all 0.2s ease;
+  position: relative;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  outline: none;
 }
 
-.start-button:hover {
-  border-color: var(--primary-color);
-  border-radius: var(--border-radius-md);
-  background-color: var(--primary-color-light);
+.terminal-button:hover {
+  transform: scale(1.1);
+  filter: brightness(1.2);
 }
 
-.start-button:focus {
-  border-color: var(--primary-color);
-  border-radius: var(--border-radius-md);
-  background-color: var(--primary-color-light);
+.terminal-button.close {
+  background: #ff5f56;
+  position: relative;
 }
 
-.fade-out {
-  opacity: 0;
+.terminal-button.close:hover::before {
+  content: "✕";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #000;
+  font-size: 8px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.terminal-button.minimize {
+  background: #ffbd2e;
+  position: relative;
+}
+
+.terminal-button.minimize:hover::before {
+  content: "−";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #000;
+  font-size: 10px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.terminal-button.maximize {
+  background: #27ca3f;
+  position: relative;
+}
+
+.terminal-button.maximize:hover::before {
+  content: "□";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #000;
+  font-size: 8px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.terminal-title {
+  color: var(--terminal-primary);
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* Terminal Body */
+.terminal-body {
+  padding: 16px;
+  height: calc(100% - 53px);
+  background: var(--terminal-background);
+  color: var(--terminal-primary);
+  font-size: 14px;
+  line-height: 1.4;
+  text-align: left;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--terminal-primary) var(--terminal-header-bg);
+  -webkit-overflow-scrolling: touch;
+}
+
+.terminal-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.terminal-body::-webkit-scrollbar-track {
+  background: var(--terminal-header-bg);
+}
+
+.terminal-body::-webkit-scrollbar-thumb {
+  background: var(--terminal-primary);
+  border-radius: 4px;
+}
+
+/* Welcome Message */
+.welcome-message {
+  margin-bottom: 16px;
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--terminal-primary);
+  text-align: left;
+}
+
+/* Command History */
+.command-history {
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.history-line {
+  margin-bottom: 4px;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  text-align: left;
+  color: var(--terminal-text-light);
+}
+
+/* Data-driven styling for different history entry types */
+.history-line.command {
+  color: var(--terminal-primary);
+  font-weight: bold;
+}
+
+.history-line.error {
+  color: var(--terminal-error);
+}
+
+.history-line.success {
+  color: var(--terminal-success);
+}
+
+.history-line.info {
+  color: var(--terminal-text-light);
+}
+
+/* Directory and file icons in listings - removed :contains selectors as they are not standard CSS */
+
+/* Command Prompt */
+.command-prompt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+  flex-wrap: wrap;
+}
+
+.prompt-symbol {
+  color: var(--terminal-primary);
+  font-weight: bold;
+  font-size: 14px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.command-input {
+  background: transparent;
+  border: none;
+  color: var(--terminal-text-light);
+  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+  font-size: 14px;
+  outline: none;
+  flex: 1;
+  caret-color: var(--terminal-primary);
+  text-align: left;
+  tabindex: -1;
+}
+
+.command-input:focus {
+  outline: none;
+  border: none;
+  box-shadow: none;
+}
+
+/* Override global focus styles for terminal input */
+.command-input:focus,
+.command-input:focus-visible,
+.command-input:focus-within {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Prevent any focus outline on the terminal input */
+.command-input {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Prevent tab navigation to other elements when terminal is active */
+.welcome-screen:focus-within .command-input {
+  outline: none;
+}
+
+/* Ensure terminal input is the only focusable element, but allow terminal buttons */
+.terminal-container *:not(.command-input):not(.terminal-body):not(.terminal-button) {
+  pointer-events: none;
+}
+
+.terminal-container .command-input {
+  pointer-events: auto;
+}
+
+.terminal-container .terminal-body {
+  pointer-events: auto;
+}
+
+.terminal-container .terminal-button {
+  pointer-events: auto;
+}
+
+.command-input::placeholder {
+  color: var(--terminal-text-muted);
+}
+
+.cursor {
+  color: var(--terminal-primary);
+  animation: blink 1s infinite;
+  font-weight: bold;
+}
+
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+
+  51%, 100% {
+    opacity: 0;
+  }
+}
+
+/* Terminal text effects */
+.terminal-body {
+  text-shadow: 0 0 5px var(--terminal-glow);
+}
+
+/* Error messages - removed :contains selectors as they are not standard CSS */
+/* Success messages - removed :contains selectors as they are not standard CSS */
+/* Directory listings - removed :contains selectors as they are not standard CSS */
+
+/* Terminal Sidecar (Stage Manager style) */
+.terminal-sidecar {
+  position: fixed;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1001;
+  cursor: pointer;
+}
+
+.sidecar-icon {
+  width: 60px;
+  height: 60px;
+  background: rgba(26, 26, 26, 0.9);
+  border: 2px solid var(--terminal-border);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  box-shadow: 0 4px 20px var(--terminal-shadow);
+  transition: all 0.4s ease;
+  transform-origin: center;
+}
+
+.sidecar-icon.receiving {
+  animation: receiveTerminal 0.5s ease;
+}
+
+@keyframes receiveTerminal {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 4px 20px var(--terminal-shadow);
+  }
+
+  30% {
+    transform: scale(1.3);
+    box-shadow: 0 12px 40px var(--terminal-shadow-hover);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: 0 4px 20px var(--terminal-shadow);
+  }
+}
+
+.sidecar-icon:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 25px var(--terminal-shadow-hover);
+}
+
+
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .terminal-container {
+    width: 95%;
+    height: 80%;
+  }
+
+  .terminal-body {
+    font-size: 12px;
+    padding: 12px;
+  }
+
+  .welcome-message {
+    font-size: 14px;
+  }
+
+  .command-input {
+    font-size: 12px;
+  }
+
+  .terminal-sidecar {
+    left: 10px;
+  }
+
+  .sidecar-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+
+
+}
+
+/* Glow effect for the terminal */
+.terminal-container {
+  animation: terminalGlow 3s ease-in-out infinite;
+}
+
+@keyframes terminalGlow {
+  0%, 100% {
+    box-shadow: 0 0 30px var(--terminal-shadow);
+  }
+
+  50% {
+    box-shadow: 0 0 50px var(--terminal-glow);
+  }
+}
+
+/* Typewriter effect for terminal text */
+.typewriter-text {
+  color: var(--terminal-primary);
+  text-shadow: 0 0 5px var(--terminal-glow);
+  text-align: left;
 }

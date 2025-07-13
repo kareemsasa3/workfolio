@@ -1,25 +1,19 @@
-import React, { useState, useEffect } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faTimes } from "@fortawesome/free-solid-svg-icons";
-import TypeWriterText from "../TypeWriterText";
-import Logo from "../Logo";
+import { motion, AnimatePresence } from "framer-motion";
+import { useIsMobile } from "../../hooks/useIsMobile";
+import { navItems } from "../../data/navigation";
+import NavItem from "./NavItem";
+import SettingsNavButton from "./SettingsNavButton";
+import SettingsPanel from "../SettingsPanel";
 import "./Navigation.css";
-
-const useIsMobile = () => {
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 769);
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 769);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-  return isMobile;
-};
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [dockSize, setDockSize] = useState(50); // Default dock size
   const isMobile = useIsMobile();
-  const location = useLocation();
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -29,66 +23,97 @@ const Navigation = () => {
     setIsOpen(false);
   };
 
-  const navItems = [
-    { path: "/", label: "Home" },
-    { path: "/projects", label: "Projects" },
-    { path: "/work", label: "Work" },
-    { path: "/education", label: "Education" },
-    { path: "/certifications", label: "Certifications" },
-    { path: "/games", label: "Games" },
-    { path: "/resume", label: "Resume" },
-    { path: "/contact", label: "Contact" },
-  ];
+  const toggleSettings = () => {
+    setIsSettingsOpen(!isSettingsOpen);
+  };
+
+  const closeSettings = () => {
+    setIsSettingsOpen(false);
+  };
+
+  const handleDockSizeChange = (newSize: number) => {
+    setDockSize(newSize);
+    // Update CSS custom property for the dock
+    document.documentElement.style.setProperty(
+      "--dock-icon-size",
+      `${newSize}px`
+    );
+  };
+
+  const containerVariants = {
+    hidden: { opacity: 0, y: -20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+        staggerChildren: 0.1,
+      },
+    },
+  };
 
   return (
     <>
       {/* Mobile Menu Button */}
-      <button
+      <motion.button
         className="nav-toggle"
         onClick={toggleMenu}
         aria-label="Toggle navigation menu"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
       >
         <FontAwesomeIcon icon={isOpen ? faTimes : faBars} />
-      </button>
+      </motion.button>
 
       {/* Navigation Menu */}
-      <nav className={`navigation ${isOpen ? "nav-open" : ""}`}>
-        {/* Header Brand - Desktop Only */}
-        <div className="nav-brand">
-          <Logo small />
-          <div className="nav-brand-text">
-            <div className="nav-name">
-              <TypeWriterText text="Kareem Sasa" delay={0} speed={80} />
-            </div>
-            <div className="nav-title">Designer & Developer</div>
-          </div>
-        </div>
+      <AnimatePresence>
+        {(!isMobile || isOpen) && (
+          <motion.nav
+            className="navigation"
+            initial={isMobile ? { x: "100%" } : { x: 0 }}
+            animate={{ x: 0 }}
+            exit={isMobile ? { x: "100%" } : { x: 0 }}
+            transition={{ type: "tween", duration: 0.3, ease: "easeInOut" }}
+          >
+            <motion.ul
+              className="nav-list"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+            >
+              {navItems.map((item) => (
+                <NavItem key={item.path} {...item} onClick={closeMenu} />
+              ))}
+              <SettingsNavButton
+                isOpen={isSettingsOpen}
+                onClick={toggleSettings}
+              />
+            </motion.ul>
+          </motion.nav>
+        )}
+      </AnimatePresence>
 
-        <ul className="nav-list">
-          {navItems.map((item) => {
-            const isActive = location.pathname === item.path;
-            const activeClass = isActive
-              ? `active ${isMobile ? "mobile-active" : "desktop-active"}`
-              : "";
-            return (
-              <li key={item.path}>
-                <NavLink
-                  to={item.path}
-                  className={({ isActive: navIsActive }) =>
-                    `nav-link ${navIsActive ? activeClass : ""}`
-                  }
-                  onClick={closeMenu}
-                >
-                  {item.label}
-                </NavLink>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
+      {/* Settings Panel */}
+      <SettingsPanel
+        onDockSizeChange={handleDockSizeChange}
+        currentDockSize={dockSize}
+        isOpen={isSettingsOpen}
+        onClose={closeSettings}
+      />
 
       {/* Overlay for mobile */}
-      {isOpen && <div className="nav-overlay" onClick={closeMenu} />}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            className="nav-overlay"
+            onClick={closeMenu}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          />
+        )}
+      </AnimatePresence>
     </>
   );
 };

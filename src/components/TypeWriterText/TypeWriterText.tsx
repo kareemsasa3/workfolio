@@ -1,81 +1,132 @@
 // src/components/TypewriterText/TypewriterText.jsx
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import "./TypeWriterText.css";
 
 interface TypeWriterTextProps {
   text: string;
   delay?: number;
   speed?: number;
+  className?: string;
+  onComplete?: () => void;
 }
 
 const TypeWriterText: React.FC<TypeWriterTextProps> = ({
   text,
   delay = 0,
   speed = 100,
+  className = "",
+  onComplete,
 }) => {
-  const [displayText, setDisplayText] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
-  const intervalRef = useRef<number | null>(null);
-  const timeoutRef = useRef<number | null>(null);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
+  // Handle reduced motion preference
   useEffect(() => {
-    // Clear any existing timers
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
-    }
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setPrefersReducedMotion(mediaQuery.matches);
 
-    setIsTyping(false);
-    setDisplayText("");
-
-    const startTyping = () => {
-      setIsTyping(true);
-      setDisplayText("");
-      let currentIndex = 0;
-
-      intervalRef.current = setInterval(() => {
-        if (currentIndex < text.length) {
-          setDisplayText(text.slice(0, currentIndex + 1));
-          currentIndex++;
-        } else {
-          if (intervalRef.current) {
-            clearInterval(intervalRef.current);
-            intervalRef.current = null;
-          }
-          setIsTyping(false);
-        }
-      }, speed);
+    const handleChange = (e: MediaQueryListEvent) => {
+      setPrefersReducedMotion(e.matches);
     };
 
-    // Start typing after delay
-    if (delay > 0) {
-      timeoutRef.current = setTimeout(startTyping, delay);
-    } else {
-      startTyping();
-    }
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
 
-    // Cleanup function
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-        timeoutRef.current = null;
-      }
-    };
-  }, [text, delay, speed]);
+  // Validate inputs
+  if (!text || typeof text !== "string") {
+    return (
+      <span className={`typewriter-text error ${className}`} aria-live="polite">
+        {text}
+      </span>
+    );
+  }
+
+  if (speed < 10 || speed > 1000) {
+    console.warn("TypeWriterText: Speed should be between 10 and 1000ms");
+  }
+
+  if (delay < 0 || delay > 10000) {
+    console.warn("TypeWriterText: Delay should be between 0 and 10000ms");
+  }
+
+  // We receive the full text string
+  const characters = text.split("");
+
+  // Variants for the container to orchestrate the animation
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: (i = 1) => ({
+      opacity: 1,
+      transition: {
+        staggerChildren: speed / 1000, // Convert speed (ms) to seconds for stagger
+        delayChildren: delay / 1000, // Convert delay (ms) to seconds
+      },
+    }),
+  };
+
+  // Variants for each individual character
+  const characterVariants = {
+    hidden: {
+      opacity: 0,
+      y: 20,
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        damping: 12,
+        stiffness: 200,
+      },
+    },
+  };
+
+  // Variants for the cursor
+  const cursorVariants = {
+    hidden: {
+      opacity: 0,
+      y: 20,
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        damping: 12,
+        stiffness: 200,
+      },
+    },
+  };
+
+  const handleAnimationComplete = () => {
+    onComplete?.();
+  };
+
+  // If user prefers reduced motion, show text immediately
+  if (prefersReducedMotion) {
+    return (
+      <span className={`typewriter-text ${className}`} aria-live="polite">
+        {text}
+      </span>
+    );
+  }
 
   return (
-    <div className="typewriter-text">
-      {displayText}
-      {isTyping && <span className="cursor">|</span>}
-    </div>
+    <motion.span
+      className={`typewriter-text ${className}`}
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      onAnimationComplete={handleAnimationComplete}
+      aria-live="polite"
+    >
+      {characters.map((char, index) => (
+        <motion.span key={`${char}-${index}`} variants={characterVariants}>
+          {char}
+        </motion.span>
+      ))}
+    </motion.span>
   );
 };
 

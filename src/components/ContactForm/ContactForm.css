@@ -6,7 +6,7 @@
     padding: var(--spacing-lg);
     background-color: transparent;
     border-radius: var(--border-radius-md);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px var(--shadow-color);
 }
 
 .contact-form-container h2 {

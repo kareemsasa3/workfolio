@@ -1,0 +1,142 @@
+/* Settings Panel */
+.settings-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 400px;
+    height: 100vh;
+    background: var(--background-color-transparent);
+    backdrop-filter: blur(20px);
+    z-index: calc(var(--z-index-navigation) + 1);
+    border-left: 2px solid var(--primary-color);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Settings Header */
+.settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.settings-header h3 {
+    margin: 0;
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.settings-close {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: var(--spacing-xs);
+    border-radius: var(--border-radius-sm);
+}
+
+/* Settings Content */
+.settings-content {
+    flex: 1;
+    padding: var(--spacing-lg);
+    overflow-y: auto;
+}
+
+.setting-group {
+    margin-bottom: var(--spacing-xl);
+}
+
+.setting-label {
+    display: block;
+    color: var(--primary-color);
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-bottom: var(--spacing-sm);
+}
+
+.setting-control {
+    display: flex;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+}
+
+.dock-size-slider {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.2);
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.dock-size-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.dock-size-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.dock-size-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.dock-size-slider::-moz-range-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.setting-description {
+    color: var(--text-color);
+    opacity: 0.8;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+/* Settings Overlay */
+.settings-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--shadow-color);
+    z-index: var(--z-index-navigation);
+    backdrop-filter: blur(2px);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .settings-panel {
+        width: 100%;
+    }
+
+    .settings-content {
+        padding: var(--spacing-md);
+    }
+
+    .settings-header {
+        padding: var(--spacing-md);
+    }
+}
