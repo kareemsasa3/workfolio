@@ -1,4 +1,4 @@
-.info-content .more-title {
+.info-content .info-title {
     position: absolute;
     top: 0;
     left: 0;
@@ -14,33 +14,49 @@
     user-select: none;
 }
 
-.dropdown-icon {
-    font-size: 1.5rem;
-    z-index: 2;
-}
-
-.info-content ul {
-    font-size: 1.2rem;
-    color: #af2a2a;
+.social-links {
     position: absolute;
     top: 0;
     left: 0;
     margin-top: 35rem;
     margin-left: 6rem;
-    list-style-type: none;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
-.info-content li {
-    margin-top: 40px;
-    font-size: 1.2rem;
-}
-
-.info-content a {
+.social-links a {
     color: white;
     text-decoration: none;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    padding: 10px 15px;
+    border-radius: 5px;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
 }
 
-.info-content a:hover {
+.social-links a:hover {
     color: #af2a2a;
-    text-decoration: underline;
+    background: rgba(175, 42, 42, 0.1);
+    transform: translateX(10px);
+}
+
+@media (max-width: 768px) {
+    .info-content .info-title {
+        margin-top: 25rem;
+        margin-left: 2rem;
+        font-size: 1.5rem;
+    }
+
+    .social-links {
+        margin-top: 27rem;
+        margin-left: 2rem;
+        gap: 15px;
+    }
+
+    .social-links a {
+        font-size: 1rem;
+        padding: 8px 12px;
+    }
 }
