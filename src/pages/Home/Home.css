@@ -6,10 +6,10 @@
 }
 
 .description {
-  margin-bottom: 15rem;
-  color: #AF2A2A;
+  color: var(--primary-color);
   text-align: center;
-  width: 45%;
+  max-width: 600px;
   font-size: 1.2rem;
   user-select: none;
+  line-height: 1.6;
 }

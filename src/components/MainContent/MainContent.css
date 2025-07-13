@@ -1,57 +1,6 @@
-.main-content .h1-text, .p-text {
-  position: absolute;
-  top: 0;
-  left: 0;
-  color: #AF2A2A;
-  user-select: none;
-}
-
-.main-content .h1-text {
-  font-size: 2.5rem;
-  font-weight: bolder;
-  padding-top: 75px;
-  padding-left: 100px;
-  transition: opacity 3.5s ease-out;
-}
-
-.main-content .p-text {
-  padding-top: 120px;
-  padding-left: 100px;
-  font-size: 2rem;
-  transition: opacity 5s ease-out;
-}
-
-.page-content {
-  margin-top: 120px;
-  padding: 20px;
-  min-height: calc(100vh - 120px);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-}
-
-/* Specific styling for game pages that need less header space */
-.page-content.game-page {
-  margin-top: 60px;
-  min-height: calc(100vh - 60px);
-}
-
-@media (max-width: 768px) {
-  .main-content .h1-text {
-    font-size: 2rem;
-    padding-top: 60px;
-    padding-left: 20px;
-  }
-
-  .main-content .p-text {
-    font-size: 1.5rem;
-    padding-top: 100px;
-    padding-left: 20px;
-  }
-
+/* Desktop adjustments for header navigation */
+@media (min-width: 769px) {
   .page-content {
-    margin-top: 150px;
-    padding: 10px;
+    margin-top: 100px;
   }
 }

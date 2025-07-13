@@ -1,21 +1,13 @@
+/* Projects page uses the standardized .page-content layout from index.css */
+
 .projects-title {
-    position: absolute;
-    top: 0;
-    right: 0;
-    color: #AF2A2A;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    z-index: 1;
+    color: var(--primary-color);
     font-size: 2rem;
-    margin-top: 25rem;
-    margin-right: 4rem;
-    user-select: none;
+    margin-bottom: var(--spacing-lg);
+    text-align: center;
 }
 
 .dropdown-icon {
-    margin-left: 10px;
+    margin-left: var(--spacing-sm);
     font-size: 1.5rem;
-    z-index: 2;
 }

@@ -1,11 +1,281 @@
+/* CSS Reset for better cross-browser consistency */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  line-height: 1.15;
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   margin: 0;
-  font-family: Papyrus, fantasy;
+  font-family: var(--font-family-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+main {
+  display: block;
+}
+
+h1 {
+  font-size: 2em;
+  margin: 0.67em 0;
+}
+
+hr {
+  box-sizing: content-box;
+  height: 0;
+  overflow: visible;
+}
+
+pre {
+  font-family: var(--font-family-mono);
+  font-size: 1em;
+}
+
+a {
+  background-color: transparent;
+}
+
+abbr[title] {
+  border-bottom: none;
+  text-decoration: underline dotted;
+}
+
+b,
+strong {
+  font-weight: bolder;
+}
+
+code,
+kbd,
+samp {
+  font-family: var(--font-family-mono);
+  font-size: 1em;
+}
+
+small {
+  font-size: 80%;
+}
+
+sub,
+sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+sub {
+  bottom: -0.25em;
+}
+
+sup {
+  top: -0.5em;
+}
+
+img {
+  border-style: none;
+}
+
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: inherit;
+  font-size: 100%;
+  line-height: 1.15;
+  margin: 0;
+}
+
+button,
+input {
+  overflow: visible;
+}
+
+button,
+select {
+  text-transform: none;
+}
+
+button,
+[type="button"],
+[type="reset"],
+[type="submit"] {
+  -webkit-appearance: button;
+}
+
+button::-moz-focus-inner,
+[type="button"]::-moz-focus-inner,
+[type="reset"]::-moz-focus-inner,
+[type="submit"]::-moz-focus-inner {
+  border-style: none;
+  padding: 0;
+}
+
+button:-moz-focusring,
+[type="button"]:-moz-focusring,
+[type="reset"]:-moz-focusring,
+[type="submit"]:-moz-focusring {
+  outline: 1px dotted ButtonText;
+}
+
+fieldset {
+  padding: 0.35em 0.75em 0.625em;
+}
+
+legend {
+  box-sizing: border-box;
+  color: inherit;
+  display: table;
+  max-width: 100%;
+  padding: 0;
+  white-space: normal;
+}
+
+progress {
+  vertical-align: baseline;
+}
+
+textarea {
+  overflow: auto;
+}
+
+[type="checkbox"],
+[type="radio"] {
+  box-sizing: border-box;
+  padding: 0;
+}
+
+[type="number"]::-webkit-inner-spin-button,
+[type="number"]::-webkit-outer-spin-button {
+  height: auto;
+}
+
+[type="search"] {
+  -webkit-appearance: textfield;
+  outline-offset: -2px;
+}
+
+[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+::-webkit-file-upload-button {
+  -webkit-appearance: button;
+  font: inherit;
+}
+
+details {
+  display: block;
+}
+
+summary {
+  display: list-item;
+}
+
+template {
+  display: none;
+}
+
+[hidden] {
+  display: none;
+}
+
+/* Custom Properties */
+:root {
+  /* Color Palette */
+  --primary-color: #AF2A2A;
+  --primary-color-light: rgba(175, 42, 42, 0.2);
+  --primary-color-medium: rgba(175, 42, 42, 0.3);
+  --background-color: #000000;
+  --background-color-transparent: rgba(0, 0, 0, 0.7);
+  --background-color-overlay: rgba(0, 0, 0, 0.99);
+  --accent-color: #FFD700;
+  --text-color: #ffffff;
+  --text-color-secondary: #cccccc;
+
+  /* Typography */
+  --font-family-primary: Papyrus, fantasy;
+  --font-family-mono: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+
+  /* Spacing */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 1.5rem;
+  --spacing-lg: 2rem;
+  --spacing-xl: 3rem;
+
+  /* Border Radius */
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 15px;
+
+  /* Transitions */
+  --transition-fast: 0.1s ease-in-out;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease-out;
+
+  /* Z-index layers */
+  --z-index-background: -1;
+  --z-index-content: 1;
+  --z-index-navigation: 1000;
+  --z-index-overlay: 1000;
+
+  /* Page Layout */
+  --page-padding: var(--spacing-lg);
+  --page-margin-top: 120px;
+  --page-margin-top-mobile: 150px;
+  --header-padding-top: 75px;
+  --header-padding-left: 100px;
+  --subheader-padding-top: 120px;
+  --subheader-padding-left: 100px;
+  --mobile-header-padding-top: 60px;
+  --mobile-subheader-padding-top: 100px;
+  --mobile-padding-left: var(--spacing-lg);
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: var(--font-family-mono);
+}
+
+/* Focus states for accessibility */
+*:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Remove focus outline for mouse users */
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Standardized page layout */
+.page-content {
+  margin-top: var(--page-margin-top);
+  padding: var(--page-padding);
+  min-height: calc(100vh - var(--page-margin-top));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.page-content.game-page {
+  margin-top: 60px;
+  min-height: calc(100vh - 60px);
+}
+
+@media (max-width: 768px) {
+  .page-content {
+    margin-top: var(--page-margin-top-mobile);
+    padding: var(--spacing-sm);
+  }
 }

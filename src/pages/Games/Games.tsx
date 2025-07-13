@@ -4,7 +4,7 @@ import "./Games.css";
 
 const Games = () => {
   return (
-    <div className="games-content">
+    <div className="page-content">
       <div className="games-title">Mini Games</div>
       <div className="games-grid">
         <Link to="/games/snake" className="game-card">

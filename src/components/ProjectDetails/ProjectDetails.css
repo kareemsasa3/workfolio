@@ -5,13 +5,19 @@
 }
 
 .project-link {
-    color: white;
+    color: var(--text-color);
     text-decoration: none;
+    transition: color var(--transition-normal);
 }
 
 .project-link:hover {
-    color: #af2a2a;
+    color: var(--primary-color);
     cursor: pointer;
+}
+
+.project-link:focus {
+    color: var(--primary-color);
+    outline: none;
 }
 
 .project-text {

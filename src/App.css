@@ -1,5 +1,5 @@
 .App {
   text-align: center;
-  margin: 10px;
+  margin: var(--spacing-sm);
   user-select: none;
 }

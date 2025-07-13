@@ -1,21 +1,22 @@
 .certification-details-container {
-    position: absolute;
-    left: 0;
-    width: 60rem;
-    border-radius: 5px;
-    text-align: left;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    border-radius: var(--border-radius-sm);
+    text-align: center;
 }
 
 .certification-text {
-    color: white;
+    color: var(--text-color);
 }
 
 .certification-text .large-font {
     font-size: 1.2rem;
     font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: var(--spacing-sm);
 }
 
 .certification-text .small-font {
     font-size: 1rem;
 }
-

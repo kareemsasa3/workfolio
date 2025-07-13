@@ -3,8 +3,10 @@ import resume from "../../assets/resume.png";
 
 const Resume = () => {
   return (
-    <div className="resume-container">
-      <img src={resume} alt="resume" className="resume-image" />
+    <div className="page-content">
+      <div className="resume-container">
+        <img src={resume} alt="resume" className="resume-image" />
+      </div>
     </div>
   );
 };

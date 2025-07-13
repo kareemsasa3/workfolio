@@ -5,7 +5,7 @@
 
 .cursor {
     animation: blink 1s infinite;
-    color: #AF2A2A;
+    color: var(--primary-color);
     font-weight: bold;
 }
 

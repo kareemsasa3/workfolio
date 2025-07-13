@@ -4,8 +4,8 @@
   width: 800px;
   height: 600px;
   background-color: rgba(0, 0, 0, 0.5);
-  border: 3px solid #AF2A2A;
-  border-radius: 15px;
+  border: 3px solid var(--primary-color);
+  border-radius: var(--border-radius-lg);
   margin: 0 auto;
 }
 
@@ -13,9 +13,9 @@
   position: absolute;
   width: 20px;
   height: 20px;
-  background-color: #AF2A2A;
+  background-color: var(--primary-color);
   border-radius: 3px;
-  transition: all 0.1s ease;
+  transition: all var(--transition-fast);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
@@ -23,7 +23,7 @@
   position: absolute;
   width: 20px;
   height: 20px;
-  background-color: #FFD700;
+  background-color: var(--accent-color);
   border-radius: 50%;
   animation: pulse 1s infinite;
   box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
@@ -44,7 +44,7 @@
   bottom: -40px;
   left: 50%;
   transform: translateX(-50%);
-  color: white;
+  color: var(--text-color);
   font-size: 1rem;
   text-align: center;
   margin: 0;
@@ -56,19 +56,19 @@
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 20px;
+  gap: var(--spacing-lg);
   align-items: center;
 }
 
 .game-score {
-  color: #AF2A2A;
+  color: var(--primary-color);
   font-size: 1.5rem;
   font-weight: bold;
   margin: 0;
 }
 
 .game-high-score {
-  color: #FFD700;
+  color: var(--accent-color);
   font-size: 1.5rem;
   font-weight: bold;
   margin: 0;
@@ -87,7 +87,7 @@
 
   .game-scores {
     top: -50px;
-    gap: 15px;
+    gap: var(--spacing-md);
   }
 
   .game-score {

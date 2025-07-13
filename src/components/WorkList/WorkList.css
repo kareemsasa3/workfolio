@@ -1,14 +1,11 @@
 .work-directory {
-    position: absolute;
-    top: 0;
-    left: 0;    
-    margin-top: 68rem;
-    text-align: left;
-    margin-left: 2.5rem;
     list-style-type: none;
     user-select: none;
+    padding: 0;
+    margin: 0;
 }
 
 .exp {
-    color: white;
+    color: var(--text-color);
+    margin-bottom: var(--spacing-sm);
 }

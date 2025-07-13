@@ -4,35 +4,35 @@
   position: fixed;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.99); /* Semi-transparent background */
-  color: #af2a2a;
+  background: var(--background-color-overlay);
+  color: var(--primary-color);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000; /* Make sure it's above other elements */
+  z-index: var(--z-index-overlay);
   opacity: 1;
-  transition: opacity 0.5s ease-out;
+  transition: opacity var(--transition-slow);
 }
 
 .welcome-screen.fade-out {
   opacity: 0;
-  pointer-events: none; /* Allow interactions with underlying elements after fading out */
-  transition: opacity 2s ease-out; /* Adjusted to match the total fade-out time */
+  pointer-events: none;
+  transition: opacity 2s ease-out;
 }
 
 .content {
   position: inherit;
-  text-align: center; /* Center align content horizontally */
-  display: flex; /* Use flexbox to control alignment */
-  flex-direction: row; /* Stack items vertically */
-  align-items: center; /* Center items horizontally */
+  text-align: center;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .title {
   white-space: nowrap;
   margin: 0;
   font-size: 3.5rem;
-  padding-right: 20px; /* Space between title and subtitle */
+  padding-right: var(--spacing-lg);
 }
 
 .portfolio-text {
@@ -41,22 +41,30 @@
 }
 
 .start-button {
-  font-family: Papyrus, fantasy;
+  font-family: var(--font-family-primary);
   position: absolute;
-  bottom: 2rem;
-  right: 2rem;
+  bottom: var(--spacing-lg);
+  right: var(--spacing-lg);
   font-size: 2rem;
-  color: #af2a2a;
-  background-color: rgba(0,0,0,0);
-  border: none;
-  border-radius: 5px;
+  color: var(--primary-color);
+  background-color: transparent;
+  border: 2px solid transparent;
+  border-radius: var(--border-radius-sm);
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all var(--transition-normal);
+  padding: var(--spacing-sm) var(--spacing-md);
 }
 
 .start-button:hover {
-  border: solid 2px #af2a2a;
-  border-radius: 8px;
+  border-color: var(--primary-color);
+  border-radius: var(--border-radius-md);
+  background-color: var(--primary-color-light);
+}
+
+.start-button:focus {
+  border-color: var(--primary-color);
+  border-radius: var(--border-radius-md);
+  background-color: var(--primary-color-light);
 }
 
 .fade-out {

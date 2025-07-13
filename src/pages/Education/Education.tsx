@@ -3,7 +3,7 @@ import EducationDetails from "../../components/EducationDetails";
 
 const Education = () => {
   return (
-    <div className="education-content">
+    <div className="page-content">
       <div className="education-title">Education</div>
       <EducationDetails
         largeText="Bachelor of Science in Computer Science"

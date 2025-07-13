@@ -5,13 +5,19 @@
 }
 
 .company-link {
-    color: white;
+    color: var(--text-color);
     text-decoration: none;
+    transition: color var(--transition-normal);
 }
 
 .company-link:hover {
-    color: #af2a2a;
+    color: var(--primary-color);
     cursor: pointer;
+}
+
+.company-link:focus {
+    color: var(--primary-color);
+    outline: none;
 }
 
 .work-text {
@@ -24,5 +30,5 @@
 
 .large-font {
     font-size: 2.4rem;
-    margin-top: 3rem;
+    margin-top: var(--spacing-xl);
 }

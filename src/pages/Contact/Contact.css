@@ -1,8 +1,1 @@
-.page-content {
-    width: 50%;
-    position: absolute;
-    top: 0;
-    right: 0;
-    padding-top: 230px;
-    padding-right: 300px;
-}
+/* Contact page uses the standardized .page-content layout from index.css */

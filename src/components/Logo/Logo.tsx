@@ -1,10 +1,14 @@
 import logo from "../../assets/logo.svg";
 import "./Logo.css";
 
-const Logo = () => {
+const Logo = ({ small = false }: { small?: boolean }) => {
   return (
     <div>
-      <img src={logo} className="logo" alt="logo" />
+      <img
+        src={logo}
+        className={small ? "logo logo-small" : "logo"}
+        alt="logo"
+      />
     </div>
   );
 };
