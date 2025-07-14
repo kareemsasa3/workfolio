@@ -1,0 +1,205 @@
+/* Man Page UI Styles */
+.man-page-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+}
+
+.man-page-container {
+    width: 90%;
+    max-width: 900px;
+    height: 90vh;
+    background: #1a1a1a;
+    border: 1px solid #00ff00;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.man-page-header {
+    background: #2a2a2a;
+    padding: 12px 16px;
+    border-bottom: 1px solid #00ff00;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.man-page-title {
+    color: #00ff00;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.man-page-controls {
+    display: flex;
+    gap: 16px;
+    font-size: 12px;
+    color: #888;
+}
+
+.man-page-control {
+    white-space: nowrap;
+}
+
+.man-page-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    color: #ffffff;
+    line-height: 1.6;
+}
+
+.man-page-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.man-page-content::-webkit-scrollbar-track {
+    background: #2a2a2a;
+}
+
+.man-page-content::-webkit-scrollbar-thumb {
+    background: #00ff00;
+    border-radius: 4px;
+}
+
+.man-section {
+    margin-bottom: 24px;
+}
+
+.man-section-title {
+    color: #00ff00;
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    border-bottom: 1px solid #333;
+    padding-bottom: 4px;
+}
+
+.man-section-content {
+    font-size: 14px;
+    color: #ffffff;
+}
+
+.man-description-line {
+    margin-bottom: 8px;
+    text-align: justify;
+}
+
+.man-option {
+    display: flex;
+    margin-bottom: 8px;
+    align-items: flex-start;
+}
+
+.man-option-flag {
+    color: #00ff00;
+    font-weight: bold;
+    min-width: 120px;
+    flex-shrink: 0;
+    margin-right: 16px;
+}
+
+.man-option-description {
+    flex: 1;
+    color: #ffffff;
+}
+
+.man-example {
+    margin-bottom: 16px;
+    padding: 12px;
+    background: #2a2a2a;
+    border-left: 3px solid #00ff00;
+    border-radius: 4px;
+}
+
+.man-example-command {
+    margin-bottom: 8px;
+}
+
+.man-example-command code {
+    color: #00ff00;
+    font-weight: bold;
+    background: #1a1a1a;
+    padding: 4px 8px;
+    border-radius: 3px;
+    font-family: inherit;
+}
+
+.man-example-description {
+    color: #ccc;
+    font-style: italic;
+}
+
+.man-see-also {
+    color: #00ff00;
+    font-weight: bold;
+}
+
+.man-page-footer {
+    background: #2a2a2a;
+    padding: 12px 16px;
+    border-top: 1px solid #00ff00;
+    flex-shrink: 0;
+}
+
+.man-page-info {
+    text-align: center;
+    color: #888;
+    font-size: 12px;
+}
+
+.man-page-info kbd {
+    background: #1a1a1a;
+    border: 1px solid #555;
+    border-radius: 3px;
+    padding: 2px 6px;
+    font-size: 11px;
+    color: #00ff00;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .man-page-container {
+        width: 95%;
+        height: 95vh;
+    }
+
+    .man-page-header {
+        padding: 8px 12px;
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start;
+    }
+
+    .man-page-controls {
+        font-size: 11px;
+        gap: 12px;
+    }
+
+    .man-page-content {
+        padding: 16px;
+        font-size: 13px;
+    }
+
+    .man-option {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .man-option-flag {
+        min-width: auto;
+        margin-right: 0;
+    }
+}

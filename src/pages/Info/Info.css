@@ -1,9 +1,17 @@
+.info-content {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 2rem 6rem;
+}
+
 .info-content .info-title {
-    position: absolute;
-    top: 0;
-    left: 0;
-    margin-top: 33rem;
-    margin-left: 6rem;
+    position: relative;
+    margin-bottom: 3rem;
     cursor: pointer;
     font-size: 2rem;
     color: #af2a2a;
@@ -15,11 +23,6 @@
 }
 
 .social-links {
-    position: absolute;
-    top: 0;
-    left: 0;
-    margin-top: 35rem;
-    margin-left: 6rem;
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -43,15 +46,18 @@
 }
 
 @media (max-width: 768px) {
+    .info-content {
+        padding: 2rem;
+        align-items: center;
+        text-align: center;
+    }
+
     .info-content .info-title {
-        margin-top: 25rem;
-        margin-left: 2rem;
+        margin-bottom: 2rem;
         font-size: 1.5rem;
     }
 
     .social-links {
-        margin-top: 27rem;
-        margin-left: 2rem;
         gap: 15px;
     }
 

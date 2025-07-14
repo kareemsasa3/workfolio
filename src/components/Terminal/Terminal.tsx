@@ -1,9 +1,13 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import ReactDOM from "react-dom";
 import "./Terminal.css";
 import TypeWriterText from "../TypeWriterText";
 import { useTerminal } from "../../hooks/useTerminal";
-import { FileSystemItem } from "../../types/terminal";
+import { fileSystem } from "../../data/fileSystem";
+import ManPageUI from "./ManPageUI";
+import TopUI from "./TopUI";
+import { manPages } from "../../data/manPages";
 
 interface TerminalProps {
   isIntro: boolean;
@@ -26,62 +30,19 @@ const Terminal: React.FC<TerminalProps> = ({ isIntro }) => {
     const { width: terminalWidth, height: terminalHeight } =
       getTerminalDimensions();
 
-    // For route mode (standalone terminal page), always use viewport positioning
-    if (!isIntro) {
-      return {
-        x: (window.innerWidth - terminalWidth) / 2,
-        y: (window.innerHeight - terminalHeight) / 2,
-      };
-    }
-
-    // For intro mode, use main content area if available
-    const mainContentEl = document.getElementById("main-content-area");
-    if (mainContentEl) {
-      const contentRect = mainContentEl.getBoundingClientRect();
-      return {
-        x: contentRect.left + (contentRect.width - terminalWidth) / 2,
-        y: contentRect.top + (contentRect.height - terminalHeight) / 2,
-      };
-    }
-
-    // Fallback to viewport
+    // Always use viewport positioning since we're using a portal
     return {
       x: (window.innerWidth - terminalWidth) / 2,
       y: (window.innerHeight - terminalHeight) / 2,
     };
-  }, [getTerminalDimensions, isIntro]); // Added isIntro dependency
+  }, [getTerminalDimensions]);
 
   const keepPositionInBounds = useCallback(
     (pos: { x: number; y: number }) => {
       const { width: terminalWidth, height: terminalHeight } =
         getTerminalDimensions();
 
-      // For route mode (standalone terminal page), always use viewport boundaries
-      if (!isIntro) {
-        const maxX = window.innerWidth - terminalWidth;
-        const maxY = window.innerHeight - terminalHeight;
-        return {
-          x: Math.max(0, Math.min(pos.x, maxX)),
-          y: Math.max(0, Math.min(pos.y, maxY)),
-        };
-      }
-
-      // For intro mode, use main content area if available
-      const mainContentEl = document.getElementById("main-content-area");
-      if (mainContentEl) {
-        const rect = mainContentEl.getBoundingClientRect();
-        const minX = rect.left;
-        const minY = rect.top;
-        const maxX = rect.right - terminalWidth;
-        const maxY = rect.bottom - terminalHeight;
-
-        return {
-          x: Math.max(minX, Math.min(pos.x, maxX)),
-          y: Math.max(minY, Math.min(pos.y, maxY)),
-        };
-      }
-
-      // Fallback to viewport
+      // Always use viewport boundaries since we're using a portal
       const maxX = window.innerWidth - terminalWidth;
       const maxY = window.innerHeight - terminalHeight;
       return {
@@ -89,7 +50,7 @@ const Terminal: React.FC<TerminalProps> = ({ isIntro }) => {
         y: Math.max(0, Math.min(pos.y, maxY)),
       };
     },
-    [getTerminalDimensions, isIntro] // Added isIntro dependency
+    [getTerminalDimensions]
   );
 
   // State initialization
@@ -117,283 +78,6 @@ const Terminal: React.FC<TerminalProps> = ({ isIntro }) => {
     getInitialPosition
   );
 
-  const fileSystem: FileSystemItem[] = [
-    {
-      name: "about",
-      type: "directory",
-      permissions: "drwxr-xr-x",
-      size: "4096",
-      date: "Dec 15 10:30",
-      children: [
-        {
-          name: "personal-info",
-          type: "file",
-          permissions: "-rw-r--r--",
-          size: "2.1K",
-          date: "Dec 15 10:30",
-          route: "info/personal",
-        },
-        {
-          name: "skills",
-          type: "file",
-          permissions: "-rw-r--r--",
-          size: "1.8K",
-          date: "Dec 15 10:30",
-          route: "info/skills",
-        },
-        {
-          name: "interests",
-          type: "file",
-          permissions: "-rw-r--r--",
-          size: "1.5K",
-          date: "Dec 15 10:30",
-          route: "info/interests",
-        },
-      ],
-    },
-    {
-      name: "projects",
-      type: "directory",
-      permissions: "drwxr-xr-x",
-      size: "4096",
-      date: "Dec 15 10:30",
-      children: [
-        {
-          name: "workfolio",
-          type: "directory",
-          permissions: "drwxr-xr-x",
-          size: "4096",
-          date: "Dec 15 10:30",
-          route: "projects/workfolio",
-          githubUrl: "https://github.com/kareemsasa3/workfolio",
-        },
-        {
-          name: "arachne",
-          type: "directory",
-          permissions: "drwxr-xr-x",
-          size: "4096",
-          date: "Dec 15 10:30",
-          route: "projects/arachne",
-          githubUrl: "https://github.com/kareemsasa3/arachne",
-        },
-      ],
-    },
-    {
-      name: "experience",
-      type: "directory",
-      permissions: "drwxr-xr-x",
-      size: "4096",
-      date: "Dec 15 10:30",
-      children: [
-        {
-          name: "resolute consulting group",
-          type: "file",
-          permissions: "-rw-r--r--",
-          size: "3.2K",
-          date: "Dec 15 10:30",
-          route: "work/resolute",
-        },
-        {
-          name: "capgemini",
-          type: "file",
-          permissions: "-rw-r--r--",
-          size: "2.8K",
-          date: "Dec 15 10:30",
-          route: "work/capgemini",
-        },
-        {
-          name: "freelance",
-          type: "file",
-          permissions: "-rw-r--r--",
-          size: "2.5K",
-          date: "Dec 15 10:30",
-          route: "work/freelance",
-        },
-        {
-          name: "outlier ai",
-          type: "file",
-          permissions: "-rw-r--r--",
-          size: "1.9K",
-          date: "Dec 15 10:30",
-          route: "work/outlier",
-        },
-        {
-          name: "varsity tutors",
-          type: "file",
-          permissions: "-rw-r--r--",
-          size: "1.9K",
-          date: "Dec 15 10:30",
-          route: "work/varsity",
-        },
-      ],
-    },
-    {
-      name: "education",
-      type: "directory",
-      permissions: "drwxr-xr-x",
-      size: "4096",
-      date: "Dec 15 10:30",
-      children: [
-        {
-          name: "bachelor-degree",
-          type: "file",
-          permissions: "-rw-r--r--",
-          size: "2.3K",
-          date: "Dec 15 10:30",
-          route: "education/bachelor",
-        },
-        {
-          name: "courses",
-          type: "directory",
-          permissions: "drwxr-xr-x",
-          size: "4096",
-          date: "Dec 15 10:30",
-          children: [
-            {
-              name: "ossu-computer-science",
-              type: "file",
-              permissions: "-rw-r--r--",
-              size: "3.5K",
-              date: "Dec 15 10:30",
-              githubUrl: "https://github.com/kareemsasa3/computer-science",
-            },
-          ],
-        },
-        {
-          name: "workshops",
-          type: "file",
-          permissions: "-rw-r--r--",
-          size: "1.4K",
-          date: "Dec 15 10:30",
-          route: "education/workshops",
-        },
-      ],
-    },
-    {
-      name: "certifications",
-      type: "directory",
-      permissions: "drwxr-xr-x",
-      size: "4096",
-      date: "Dec 15 10:30",
-      children: [
-        {
-          name: "aws-certified",
-          type: "file",
-          permissions: "-rw-r--r--",
-          size: "1.2K",
-          date: "Dec 15 10:30",
-          route: "certifications/aws",
-        },
-        {
-          name: "google-cloud",
-          type: "file",
-          permissions: "-rw-r--r--",
-          size: "1.1K",
-          date: "Dec 15 10:30",
-          route: "certifications/google",
-        },
-        {
-          name: "microsoft-azure",
-          type: "file",
-          permissions: "-rw-r--r--",
-          size: "1.3K",
-          date: "Dec 15 10:30",
-          route: "certifications/azure",
-        },
-        {
-          name: "react-certification",
-          type: "file",
-          permissions: "-rw-r--r--",
-          size: "0.9K",
-          date: "Dec 15 10:30",
-          route: "certifications/react",
-        },
-      ],
-    },
-    {
-      name: "contact",
-      type: "directory",
-      permissions: "drwxr-xr-x",
-      size: "4096",
-      date: "Dec 15 10:30",
-      children: [
-        {
-          name: "email",
-          type: "file",
-          permissions: "-rw-r--r--",
-          size: "0.5K",
-          date: "Dec 15 10:30",
-          route: "contact/email",
-        },
-        {
-          name: "linkedin",
-          type: "file",
-          permissions: "-rw-r--r--",
-          size: "0.4K",
-          date: "Dec 15 10:30",
-          route: "contact/linkedin",
-        },
-        {
-          name: "github",
-          type: "file",
-          permissions: "-rw-r--r--",
-          size: "0.4K",
-          date: "Dec 15 10:30",
-          route: "contact/github",
-        },
-        {
-          name: "phone",
-          type: "file",
-          permissions: "-rw-r--r--",
-          size: "0.3K",
-          date: "Dec 15 10:30",
-          route: "contact/phone",
-        },
-      ],
-    },
-    {
-      name: "resume",
-      type: "file",
-      permissions: "-rw-r--r--",
-      size: "245K",
-      date: "Dec 15 10:30",
-      route: "resume",
-    },
-    {
-      name: "games",
-      type: "directory",
-      permissions: "drwxr-xr-x",
-      size: "4096",
-      date: "Dec 15 10:30",
-      children: [
-        {
-          name: "snake-game",
-          type: "file",
-          permissions: "-rw-r--r--",
-          size: "15K",
-          date: "Dec 15 10:30",
-          route: "games/snake",
-        },
-        {
-          name: "tetris",
-          type: "file",
-          permissions: "-rw-r--r--",
-          size: "22K",
-          date: "Dec 15 10:30",
-          route: "games/tetris",
-        },
-        {
-          name: "puzzle-game",
-          type: "file",
-          permissions: "-rw-r--r--",
-          size: "18K",
-          date: "Dec 15 10:30",
-          route: "games/puzzle",
-        },
-      ],
-    },
-  ];
-
   // The navigation handler is now just the navigate function
   const handleRouteNavigation = (route: string) => {
     navigate(route);
@@ -417,6 +101,31 @@ const Terminal: React.FC<TerminalProps> = ({ isIntro }) => {
     minimizeTerminal,
     restoreTerminal,
     maximizeTerminal,
+    navigateHistoryUp,
+    navigateHistoryDown,
+    startReverseSearch,
+    updateReverseSearch,
+    navigateReverseSearchResults,
+    exitReverseSearch,
+    isReverseSearch,
+    reverseSearchTerm,
+    reverseSearchResults,
+    reverseSearchIndex,
+    hideManPage,
+    setManPageScroll,
+    isManPage,
+    currentManPage,
+    manPageScrollPosition,
+    hideTopCommand,
+    setTopSort,
+    setTopSelectedPid,
+    killTopProcess,
+    isTopCommand,
+    topProcesses,
+    topSortBy,
+    topSortOrder,
+    topRefreshRate,
+    topSelectedPid,
   } = useTerminal(
     fileSystem,
     handleRouteNavigation,
@@ -487,9 +196,32 @@ const Terminal: React.FC<TerminalProps> = ({ isIntro }) => {
   }, [commandHistory, terminalRef]);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && currentCommand.trim()) {
-      executeCommand(currentCommand.trim());
-      clearCommand();
+    if (e.key === "Enter") {
+      if (isReverseSearch) {
+        // In reverse search mode, execute the matched command and exit search
+        if (reverseSearchResults.length > 0) {
+          const selectedCommand = reverseSearchResults[reverseSearchIndex];
+          setCurrentCommand(selectedCommand);
+          exitReverseSearch();
+          executeCommand(selectedCommand);
+          clearCommand();
+        }
+      } else if (currentCommand.trim()) {
+        executeCommand(currentCommand.trim());
+        clearCommand();
+      }
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+
+    if (isReverseSearch) {
+      // In reverse search mode, the input value is the search term
+      updateReverseSearch(value);
+    } else {
+      // Normal mode, update the current command
+      setCurrentCommand(value);
     }
   };
 
@@ -499,6 +231,26 @@ const Terminal: React.FC<TerminalProps> = ({ isIntro }) => {
       const result = handleTabComplete(currentCommand, autocompleteIndex);
       setCurrentCommand(result.currentCommand);
       setAutocompleteIndex(result.autocompleteIndex);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (isReverseSearch) {
+        navigateReverseSearchResults("up");
+      } else {
+        navigateHistoryUp();
+      }
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (isReverseSearch) {
+        navigateReverseSearchResults("down");
+      } else {
+        navigateHistoryDown();
+      }
+    } else if (e.ctrlKey && e.key === "r") {
+      e.preventDefault();
+      startReverseSearch();
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      exitReverseSearch();
     }
   };
 
@@ -661,13 +413,38 @@ const Terminal: React.FC<TerminalProps> = ({ isIntro }) => {
     };
   };
 
-  return (
+  const terminalEl = (
     <div className={`terminal-screen ${isIntro ? "intro-mode" : "route-mode"}`}>
       {/* The sidecar for minimized state */}
       {isStateLoaded && isMinimized && (
         <div className="terminal-sidecar" onClick={handleRestore}>
           <div className="sidecar-icon">💻</div>
         </div>
+      )}
+
+      {/* Man Page Overlay */}
+      {isManPage && currentManPage && manPages[currentManPage] && (
+        <ManPageUI
+          manPage={manPages[currentManPage]}
+          onExit={hideManPage}
+          onScroll={setManPageScroll}
+          scrollPosition={manPageScrollPosition}
+        />
+      )}
+
+      {/* Top Command Overlay */}
+      {isTopCommand && (
+        <TopUI
+          processes={topProcesses}
+          onExit={hideTopCommand}
+          onSort={setTopSort}
+          onKillProcess={killTopProcess}
+          onSelectProcess={setTopSelectedPid}
+          selectedPid={topSelectedPid}
+          sortBy={topSortBy}
+          sortOrder={topSortOrder}
+          refreshRate={topRefreshRate}
+        />
       )}
 
       <div
@@ -735,6 +512,15 @@ const Terminal: React.FC<TerminalProps> = ({ isIntro }) => {
                     speed={30}
                     onComplete={() => {}}
                   />
+                ) : line.highlightedText ? (
+                  <span
+                    dangerouslySetInnerHTML={{
+                      __html: line.highlightedText.replace(
+                        /\x1b\[1;31m(.*?)\x1b\[0m/g,
+                        '<span class="grep-highlight">$1</span>'
+                      ),
+                    }}
+                  />
                 ) : (
                   line.text
                 )}
@@ -744,27 +530,64 @@ const Terminal: React.FC<TerminalProps> = ({ isIntro }) => {
 
           {showPrompt && (
             <div className="command-prompt">
-              <span className="prompt-symbol">
-                portfolio@kareem-sasa:
-                {currentDirectory === "/" ? "~" : currentDirectory}$
-              </span>
-              <input
-                ref={inputRef}
-                type="text"
-                value={currentCommand}
-                onChange={(e) => setCurrentCommand(e.target.value)}
-                onKeyPress={handleKeyPress}
-                onKeyDown={handleKeyDown}
-                className="command-input"
-                placeholder="Type 'help' for available commands"
-                autoFocus
-              />
-              <span className="cursor">|</span>
+              {isReverseSearch ? (
+                <div className="reverse-search-prompt">
+                  <span className="reverse-search-indicator">
+                    (reverse-i-search)`{reverseSearchTerm}':
+                  </span>
+                  <span className="reverse-search-command">
+                    {reverseSearchResults.length > 0
+                      ? reverseSearchResults[reverseSearchIndex]
+                      : ""}
+                  </span>
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    value={reverseSearchTerm}
+                    onChange={handleInputChange}
+                    onKeyPress={handleKeyPress}
+                    onKeyDown={handleKeyDown}
+                    className="command-input reverse-search-input"
+                    placeholder="Type to search command history"
+                    autoFocus
+                  />
+                  {reverseSearchResults.length > 0 && (
+                    <span className="reverse-search-info">
+                      {reverseSearchIndex + 1}/{reverseSearchResults.length}
+                    </span>
+                  )}
+                </div>
+              ) : (
+                <>
+                  <span className="prompt-symbol">
+                    portfolio@kareem-sasa:
+                    {currentDirectory === "/" ? "~" : currentDirectory}$
+                  </span>
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    value={currentCommand}
+                    onChange={handleInputChange}
+                    onKeyPress={handleKeyPress}
+                    onKeyDown={handleKeyDown}
+                    className="command-input"
+                    placeholder="Type 'help' for available commands"
+                    autoFocus
+                  />
+                  <span className="cursor">|</span>
+                </>
+              )}
             </div>
           )}
         </div>
       </div>
     </div>
+  );
+
+  // Render the terminal into the portal root, completely outside the main app flow
+  return ReactDOM.createPortal(
+    terminalEl,
+    document.getElementById("portal-root")!
   );
 };
 

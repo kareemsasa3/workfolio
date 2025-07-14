@@ -320,11 +320,11 @@ button {
 
 /* Standardized page layout */
 .page-content {
-  margin-top: var(--page-margin-top);
+  margin-top: 0;
   margin-bottom: 100px;
   /* Space for Mac dock */
   padding: var(--page-padding);
-  min-height: calc(100vh - var(--page-margin-top) - 100px);
+  min-height: calc(100vh - 100px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -338,10 +338,10 @@ button {
 
 @media (max-width: 768px) {
   .page-content {
-    margin-top: var(--page-margin-top-mobile);
+    margin-top: 0;
     margin-bottom: 0;
     /* No dock on mobile */
     padding: var(--spacing-sm);
-    min-height: calc(100vh - var(--page-margin-top-mobile));
+    min-height: calc(100vh);
   }
 }

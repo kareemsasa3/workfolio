@@ -1,22 +1,24 @@
+/* Terminal Matrix Theme for Project Details */
 .project-card {
-    background: var(--card-background);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
+    background: var(--terminal-background, #1a1a1a);
+    border: 1px solid var(--terminal-primary, #00ff00);
+    border-radius: 8px;
     margin-bottom: 1.5rem;
     overflow: hidden;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 .project-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    border-color: var(--primary-color);
+    box-shadow: 0 0 25px rgba(0, 255, 0, 0.4);
+    border-color: var(--terminal-primary, #00ff00);
 }
 
 .project-card.expanded {
-    border-color: var(--primary-color);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    border-color: var(--terminal-primary, #00ff00);
+    box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
 }
 
 .project-header {
@@ -25,12 +27,13 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    background: linear-gradient(135deg, var(--card-background) 0%, rgba(175, 42, 42, 0.05) 100%);
+    background: var(--terminal-background, #1a1a1a);
     transition: background 0.3s ease;
+    border-bottom: 1px solid rgba(0, 255, 0, 0.3);
 }
 
 .project-header:hover {
-    background: linear-gradient(135deg, var(--card-background) 0%, rgba(175, 42, 42, 0.1) 100%);
+    background: rgba(0, 255, 0, 0.05);
 }
 
 .project-main-info {
@@ -41,26 +44,30 @@
 .project-category {
     font-size: 0.75rem;
     font-weight: 600;
-    color: var(--primary-color);
+    color: var(--terminal-primary, #00ff00);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin-bottom: 0.5rem;
     opacity: 0.8;
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 .project-title {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--text-color);
+    color: var(--terminal-primary, #00ff00);
     margin: 0 0 0.5rem 0;
     line-height: 1.2;
     transition: color 0.3s ease;
+    text-shadow: 0 0 10px var(--terminal-primary, #00ff00);
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 .project-date {
     font-size: 0.875rem;
-    color: var(--text-secondary);
+    color: var(--terminal-text-light, #ffffff);
     font-weight: 500;
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 .project-status {
@@ -74,21 +81,22 @@
 .status-badge,
 .complexity-badge {
     padding: 0.25rem 0.75rem;
-    border-radius: 20px;
+    border-radius: 4px;
     font-size: 0.75rem;
     font-weight: 600;
-    color: white;
+    color: var(--terminal-background, #1a1a1a);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     white-space: nowrap;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 .expand-btn {
-    background: var(--primary-color);
-    color: white;
+    background: var(--terminal-primary, #00ff00);
+    color: var(--terminal-background, #1a1a1a);
     border: none;
-    border-radius: 50%;
+    border-radius: 4px;
     width: 32px;
     height: 32px;
     font-size: 1.2rem;
@@ -98,20 +106,22 @@
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(175, 42, 42, 0.3);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 .expand-btn:hover {
-    background: var(--primary-color-dark);
+    background: var(--terminal-primary, #00ff00);
     transform: scale(1.1);
-    box-shadow: 0 4px 12px rgba(175, 42, 42, 0.4);
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.6);
 }
 
 .project-details {
     padding: 0 1.5rem 1.5rem 1.5rem;
-    border-top: 1px solid var(--border-color);
-    background: rgba(0, 0, 0, 0.02);
+    border-top: 1px solid rgba(0, 255, 0, 0.3);
+    background: rgba(0, 0, 0, 0.1);
     animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 @keyframes slideDown {
@@ -129,12 +139,13 @@
 .project-description {
     font-size: 1rem;
     line-height: 1.6;
-    color: var(--text-color);
+    color: var(--terminal-text-light, #ffffff);
     margin: 1rem 0;
     padding: 1rem;
-    background: var(--background-color);
+    background: var(--terminal-background, #1a1a1a);
     border-radius: 8px;
-    border-left: 4px solid var(--primary-color);
+    border-left: 4px solid var(--terminal-primary, #00ff00);
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 .project-tech-stack,
@@ -148,11 +159,13 @@
 .project-highlights h4 {
     font-size: 1.1rem;
     font-weight: 600;
-    color: var(--text-color);
+    color: var(--terminal-primary, #00ff00);
     margin: 0 0 1rem 0;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    text-shadow: 0 0 10px var(--terminal-primary, #00ff00);
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 .project-tech-stack h4::before {
@@ -174,21 +187,22 @@
 }
 
 .tech-tag {
-    background: var(--primary-color-light);
-    color: var(--primary-color);
+    background: rgba(0, 255, 0, 0.1);
+    color: var(--terminal-success, #4ecdc4);
     padding: 0.375rem 0.75rem;
-    border-radius: 20px;
+    border-radius: 4px;
     font-size: 0.875rem;
     font-weight: 500;
-    border: 1px solid var(--primary-color-medium);
+    border: 1px solid var(--terminal-success, #4ecdc4);
     transition: all 0.3s ease;
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 .tech-tag:hover {
-    background: var(--primary-color);
-    color: white;
+    background: var(--terminal-success, #4ecdc4);
+    color: var(--terminal-background, #1a1a1a);
     transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(175, 42, 42, 0.3);
+    box-shadow: 0 0 15px rgba(78, 205, 196, 0.4);
 }
 
 .features-list {
@@ -199,11 +213,12 @@
 
 .feature-item {
     padding: 0.5rem 0;
-    color: var(--text-color);
+    color: var(--terminal-text-light, #ffffff);
     font-size: 0.95rem;
     line-height: 1.5;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid rgba(0, 255, 0, 0.3);
     transition: all 0.3s ease;
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 .feature-item:last-child {
@@ -211,8 +226,9 @@
 }
 
 .feature-item:hover {
-    color: var(--primary-color);
+    color: var(--terminal-primary, #00ff00);
     padding-left: 0.5rem;
+    text-shadow: 0 0 5px var(--terminal-primary, #00ff00);
 }
 
 .highlights-grid {
@@ -222,19 +238,22 @@
 }
 
 .highlight-tag {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background: rgba(0, 255, 0, 0.1);
+    color: var(--terminal-primary, #00ff00);
     padding: 0.5rem 1rem;
-    border-radius: 20px;
+    border-radius: 4px;
     font-size: 0.875rem;
     font-weight: 500;
-    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    border: 1px solid var(--terminal-primary, #00ff00);
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
     transition: all 0.3s ease;
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 .highlight-tag:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.4);
+    background: rgba(0, 255, 0, 0.2);
 }
 
 .project-links {
@@ -243,7 +262,7 @@
     gap: 1rem;
     margin-top: 2rem;
     padding-top: 1.5rem;
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid rgba(0, 255, 0, 0.3);
 }
 
 .project-link {
@@ -251,53 +270,60 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.75rem 1.5rem;
-    border-radius: 8px;
+    background: var(--terminal-background, #1a1a1a);
+    color: var(--terminal-primary, #00ff00);
     text-decoration: none;
+    border-radius: 4px;
     font-weight: 600;
     font-size: 0.9rem;
     transition: all 0.3s ease;
-    border: 2px solid transparent;
+    border: 1px solid var(--terminal-primary, #00ff00);
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+}
+
+.project-link:hover {
+    background: rgba(0, 255, 0, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.4);
+    text-shadow: 0 0 5px var(--terminal-primary, #00ff00);
 }
 
 .github-link {
-    background: #24292e;
-    color: white;
+    border-color: var(--terminal-success, #4ecdc4);
+    color: var(--terminal-success, #4ecdc4);
 }
 
 .github-link:hover {
-    background: #000;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(36, 41, 46, 0.4);
+    background: rgba(78, 205, 196, 0.1);
+    box-shadow: 0 0 20px rgba(78, 205, 196, 0.4);
 }
 
 .live-link {
-    background: #28a745;
-    color: white;
+    border-color: var(--terminal-error, #ff6b6b);
+    color: var(--terminal-error, #ff6b6b);
 }
 
 .live-link:hover {
-    background: #1e7e34;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(40, 167, 69, 0.4);
+    background: rgba(255, 107, 107, 0.1);
+    box-shadow: 0 0 20px rgba(255, 107, 107, 0.4);
 }
 
 .primary-link {
-    background: var(--primary-color);
-    color: white;
+    border-color: var(--terminal-primary, #00ff00);
+    color: var(--terminal-primary, #00ff00);
 }
 
 .primary-link:hover {
-    background: var(--primary-color-dark);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(175, 42, 42, 0.4);
+    background: rgba(0, 255, 0, 0.1);
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.4);
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
     .project-header {
         flex-direction: column;
-        align-items: flex-start;
         gap: 1rem;
+        align-items: flex-start;
     }
 
     .project-status {
@@ -313,7 +339,7 @@
     }
 
     .tech-tags {
-        gap: 0.375rem;
+        gap: 0.25rem;
     }
 
     .tech-tag {
@@ -337,6 +363,7 @@
 
     .project-link {
         justify-content: center;
+        padding: 0.625rem 1rem;
     }
 }
 

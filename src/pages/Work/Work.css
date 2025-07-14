@@ -1,8 +1,147 @@
 /* Work page uses the standardized .page-content layout from index.css */
 
 .work-title {
-    color: var(--primary-color);
-    font-size: 2rem;
-    margin-bottom: var(--spacing-lg);
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-color);
     text-align: center;
+    margin: 0 0 3rem 0;
+    position: relative;
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+}
+
+.work-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: var(--primary-color);
+    border-radius: 2px;
+}
+
+/* Timeline Layout */
+.work-timeline-container {
+    display: grid;
+    grid-template-columns: 50px 1fr;
+    gap: 0 2rem;
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.timeline-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* The "node" or "commit" circle on the timeline */
+.timeline-node {
+    width: 16px;
+    height: 16px;
+    background-color: var(--primary-color);
+    border: 3px solid var(--background-color);
+    border-radius: 50%;
+    z-index: 1;
+    box-shadow: 0 0 10px var(--primary-color);
+    margin-top: 2rem;
+    position: relative;
+}
+
+/* Style nodes based on experience type */
+.timeline-node.consulting {
+    background-color: #4ecdc4;
+    box-shadow: 0 0 10px #4ecdc4;
+}
+
+.timeline-node.full-time {
+    background-color: var(--primary-color);
+    box-shadow: 0 0 10px var(--primary-color);
+}
+
+.timeline-node.freelance {
+    background-color: #ff6b6b;
+    box-shadow: 0 0 10px #ff6b6b;
+    border-radius: 4px;
+    transform: rotate(45deg);
+}
+
+.timeline-node.ai-ml {
+    background-color: #a855f7;
+    box-shadow: 0 0 10px #a855f7;
+    border-radius: 50%;
+}
+
+.timeline-node.tutoring {
+    background-color: #10b981;
+    box-shadow: 0 0 10px #10b981;
+    border-radius: 50%;
+}
+
+/* The vertical line connecting the nodes */
+.timeline-line {
+    width: 2px;
+    height: 100%;
+    background: linear-gradient(to bottom, var(--primary-color), transparent);
+    margin-top: 1rem;
+    position: relative;
+}
+
+.timeline-line::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 6px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    box-shadow: 0 0 5px var(--primary-color);
+}
+
+/* The content card */
+.timeline-content {
+    padding: 1rem 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .work-title {
+        font-size: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .work-timeline-container {
+        grid-template-columns: 30px 1fr;
+        gap: 0 1.5rem;
+    }
+
+    .timeline-node {
+        width: 12px;
+        height: 12px;
+        margin-top: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .work-title {
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .work-timeline-container {
+        grid-template-columns: 25px 1fr;
+        gap: 0 1rem;
+    }
+
+    .timeline-node {
+        width: 10px;
+        height: 10px;
+        margin-top: 1.2rem;
+    }
 }

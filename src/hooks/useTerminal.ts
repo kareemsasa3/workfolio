@@ -1,4 +1,4 @@
-import { useRef, useCallback, useReducer, useEffect } from "react";
+import { useRef, useCallback, useReducer, useEffect, useState } from "react";
 import {
   FileSystemItem,
   HistoryEntry,
@@ -6,7 +6,12 @@ import {
   Command,
   TabCompleteResult,
   TerminalAction,
+  CommandResult,
+  TypewriterEffect,
 } from "../types/terminal";
+import { getFileContentByPath } from "../data/fileContents";
+import { manPages } from "../data/manPages";
+import { generateProcessList, updateProcessList } from "../data/processData";
 
 // Terminal reducer function
 const terminalReducer = (
@@ -43,6 +48,105 @@ const terminalReducer = (
 
     case "SET_ACTIVE_TYPEWRITER":
       return { ...state, activeTypewriter: action.payload };
+
+    case "SET_HISTORY_INDEX":
+      return { ...state, historyIndex: action.payload };
+
+    case "RESET_HISTORY_INDEX":
+      return { ...state, historyIndex: -1 };
+
+    case "START_REVERSE_SEARCH":
+      return {
+        ...state,
+        isReverseSearch: true,
+        reverseSearchTerm: "",
+        reverseSearchIndex: 0,
+        reverseSearchResults: [],
+      };
+
+    case "UPDATE_REVERSE_SEARCH":
+      return {
+        ...state,
+        reverseSearchTerm: action.payload.term,
+        reverseSearchResults: action.payload.results,
+        reverseSearchIndex: 0, // Reset to first match when search term changes
+      };
+
+    case "SET_REVERSE_SEARCH_INDEX":
+      return {
+        ...state,
+        reverseSearchIndex: action.payload,
+      };
+
+    case "EXIT_REVERSE_SEARCH":
+      return {
+        ...state,
+        isReverseSearch: false,
+        reverseSearchTerm: "",
+        reverseSearchIndex: 0,
+        reverseSearchResults: [],
+      };
+
+    case "SHOW_MAN_PAGE":
+      return {
+        ...state,
+        isManPage: true,
+        currentManPage: action.payload,
+        manPageScrollPosition: 0,
+      };
+
+    case "HIDE_MAN_PAGE":
+      return {
+        ...state,
+        isManPage: false,
+        currentManPage: "",
+        manPageScrollPosition: 0,
+      };
+
+    case "SET_MAN_PAGE_SCROLL":
+      return {
+        ...state,
+        manPageScrollPosition: action.payload,
+      };
+
+    case "SHOW_TOP_COMMAND":
+      return {
+        ...state,
+        isTopCommand: true,
+        topSelectedPid: null,
+      };
+
+    case "HIDE_TOP_COMMAND":
+      return {
+        ...state,
+        isTopCommand: false,
+        topSelectedPid: null,
+      };
+
+    case "UPDATE_TOP_PROCESSES":
+      return {
+        ...state,
+        topProcesses: action.payload,
+      };
+
+    case "SET_TOP_SORT":
+      return {
+        ...state,
+        topSortBy: action.payload.field,
+        topSortOrder: action.payload.order,
+      };
+
+    case "SET_TOP_REFRESH_RATE":
+      return {
+        ...state,
+        topRefreshRate: action.payload,
+      };
+
+    case "SET_TOP_SELECTED_PID":
+      return {
+        ...state,
+        topSelectedPid: action.payload,
+      };
 
     case "ADD_HISTORY_ENTRY":
       return {
@@ -89,12 +193,61 @@ const terminalReducer = (
         showPreview: false,
       };
 
+    case "UPDATE_HISTORY_ENTRY":
+      return {
+        ...state,
+        commandHistory: state.commandHistory.map((entry) =>
+          entry.id === action.payload.id ? action.payload.entry : entry
+        ),
+      };
+
+    case "ADD_SCRAPE_JOB":
+      return {
+        ...state,
+        activeScrapeJobs: {
+          ...state.activeScrapeJobs,
+          [action.payload.jobId]: action.payload,
+        },
+      };
+
+    case "UPDATE_SCRAPE_JOB":
+      return {
+        ...state,
+        activeScrapeJobs: {
+          ...state.activeScrapeJobs,
+          [action.payload.jobId]: {
+            ...state.activeScrapeJobs[action.payload.jobId],
+            ...action.payload.updates,
+          },
+        },
+      };
+
+    case "REMOVE_SCRAPE_JOB":
+      const { [action.payload]: removed, ...remainingJobs } =
+        state.activeScrapeJobs;
+      return {
+        ...state,
+        activeScrapeJobs: remainingJobs,
+      };
+
+    case "CREATE_VIRTUAL_FILE":
+      // This will be handled by the file system context
+      return state;
+
+    case "SET_NEXT_HISTORY_ID":
+      return {
+        ...state,
+        nextHistoryId: action.payload,
+      };
+
     default:
       return state;
   }
 };
 
-// File content mapping for specific files
+/*
+// Note: This fileContents object is no longer used as we now use the fileContents.ts module
+// Keeping for reference but marking as unused
 const fileContents: Record<string, string[]> = {
   "personal-info": [
     "=== Personal Information ===",
@@ -618,16 +771,21 @@ const fileContents: Record<string, string[]> = {
     "Click to open the repository and explore the AWS infrastructure code.",
   ],
 };
+*/
 
 // Helper function to create properly typed history entries
 const createHistoryEntry = (
   text: string,
   type?: "error" | "success" | "info" | "command",
-  useTypewriter?: boolean
+  useTypewriter?: boolean,
+  id?: number,
+  highlightedText?: string
 ): HistoryEntry => ({
+  id: id || 0, // Will be set by the caller
   text,
   type,
   useTypewriter,
+  highlightedText,
 });
 
 // Shared helper function to get items in current directory
@@ -942,7 +1100,41 @@ class HelpCommand implements Command {
     );
     newHistory.push(
       createHistoryEntry(
+        "  grep <pattern> <file> Search for text pattern in file",
+        "info"
+      )
+    );
+    newHistory.push(
+      createHistoryEntry(
+        "  wc [-lwc] [file] Count lines, words, and characters",
+        "info"
+      )
+    );
+    newHistory.push(
+      createHistoryEntry("  history    Show command history", "info")
+    );
+    newHistory.push(
+      createHistoryEntry(
+        "  man <cmd>  Show detailed manual for command",
+        "info"
+      )
+    );
+    newHistory.push(
+      createHistoryEntry(
+        "  curl <urls> Submit web scraping job to Arachne service",
+        "info"
+      )
+    );
+    newHistory.push(
+      createHistoryEntry(
         "  exit [route] Close terminal and go to specified page (default: home)",
+        "info"
+      )
+    );
+    newHistory.push(createHistoryEntry("", "info"));
+    newHistory.push(
+      createHistoryEntry(
+        "Piping: Use | to chain commands (e.g., grep 'pattern' file | wc -l)",
         "info"
       )
     );
@@ -951,6 +1143,18 @@ class HelpCommand implements Command {
     );
     newHistory.push(createHistoryEntry("  clear      Clear terminal", "info"));
     newHistory.push(createHistoryEntry("", "info"));
+    newHistory.push(
+      createHistoryEntry(
+        "Navigation: Use ↑/↓ arrow keys to browse command history",
+        "info"
+      )
+    );
+    newHistory.push(
+      createHistoryEntry(
+        "Search: Press Ctrl+R for reverse-i-search in command history",
+        "info"
+      )
+    );
     newHistory.push(
       createHistoryEntry(
         "Tip: Press Tab to autocomplete commands and directory names",
@@ -1001,7 +1205,7 @@ class ExitCommand implements Command {
     args: string[],
     history: HistoryEntry[],
     _fileSystem: FileSystemItem[],
-    dispatch: React.Dispatch<TerminalAction>,
+    _dispatch: React.Dispatch<TerminalAction>,
     _currentDirectory: string,
     onNavigate?: (route: string) => void
   ): HistoryEntry[] {
@@ -1029,6 +1233,55 @@ class ExitCommand implements Command {
   }
 }
 
+class TopCommand implements Command {
+  name = "top";
+
+  execute(
+    args: string[],
+    history: HistoryEntry[],
+    _fileSystem: FileSystemItem[],
+    dispatch: React.Dispatch<TerminalAction>,
+    _currentDirectory: string,
+    _onNavigate?: (route: string) => void
+  ): HistoryEntry[] {
+    const newHistory = [...history];
+
+    // Parse arguments
+    const refreshRate = args.find((arg) => arg.startsWith("-d"))?.split("=")[1];
+    const parsedRefreshRate = refreshRate ? parseInt(refreshRate) * 1000 : 1000;
+
+    newHistory.push(createHistoryEntry("Starting system monitor...", "info"));
+    newHistory.push(
+      createHistoryEntry("Press 'q' to quit, 'k' to kill process", "info")
+    );
+
+    // Show the top command interface
+    dispatch({ type: "SHOW_TOP_COMMAND" });
+    dispatch({ type: "SET_TOP_REFRESH_RATE", payload: parsedRefreshRate });
+
+    return newHistory;
+  }
+
+  getSuggestions(input: string): string[] {
+    const suggestions: string[] = [];
+    if (input.toLowerCase().startsWith("top ")) {
+      const afterTop = input.substring(4).trim();
+      if (afterTop.startsWith("-d=")) {
+        suggestions.push("top -d=1");
+        suggestions.push("top -d=2");
+        suggestions.push("top -d=3");
+      } else if (afterTop === "-d") {
+        suggestions.push("top -d=1");
+        suggestions.push("top -d=2");
+        suggestions.push("top -d=3");
+      }
+    }
+    return suggestions.filter((s) =>
+      s.toLowerCase().startsWith(input.toLowerCase())
+    );
+  }
+}
+
 class CatCommand implements Command {
   name = "cat";
 
@@ -1036,11 +1289,12 @@ class CatCommand implements Command {
     args: string[],
     history: HistoryEntry[],
     fileSystem: FileSystemItem[],
-    dispatch: React.Dispatch<TerminalAction>,
+    _dispatch: React.Dispatch<TerminalAction>,
     currentDirectory: string,
     onNavigate?: (route: string) => void,
-    state?: TerminalState
-  ): HistoryEntry[] {
+    _state?: TerminalState,
+    _stdin?: string[]
+  ): CommandResult {
     const newHistory = [...history];
     // Handle quoted filenames by joining args and removing quotes
     const filename = args.join(" ").replace(/^["']|["']$/g, "");
@@ -1052,17 +1306,47 @@ class CatCommand implements Command {
       return newHistory;
     }
 
-    const currentItems = getCurrentDirectoryItems(fileSystem, currentDirectory);
-    const file = currentItems.find((item) => item.name === filename);
-
-    if (!file) {
-      newHistory.push(
-        createHistoryEntry(`Error: File '${filename}' not found`, "error")
-      );
-      return newHistory;
+    // Resolve the file path using the same logic as other commands
+    let resolvedPath = filename;
+    if (!filename.startsWith("/")) {
+      resolvedPath =
+        currentDirectory === "/" ? filename : `${currentDirectory}/${filename}`;
+    } else {
+      resolvedPath = filename.substring(1);
     }
 
-    if (file.type !== "file") {
+    // Find the file in the file system
+    const pathParts = resolvedPath.split("/").filter((part) => part);
+    let currentItems = fileSystem;
+    let file = null;
+
+    for (let i = 0; i < pathParts.length; i++) {
+      const part = pathParts[i];
+      const item = currentItems.find((item) => item.name === part);
+
+      if (!item) {
+        newHistory.push(
+          createHistoryEntry(`Error: File '${filename}' not found`, "error")
+        );
+        return newHistory;
+      }
+
+      if (i === pathParts.length - 1) {
+        // This is the target file
+        file = item;
+      } else if (item.type === "directory" && item.children) {
+        // Navigate deeper into the directory structure
+        currentItems = item.children;
+      } else {
+        // Hit a file when we expected a directory
+        newHistory.push(
+          createHistoryEntry(`Error: '${filename}' not found`, "error")
+        );
+        return newHistory;
+      }
+    }
+
+    if (!file || file.type !== "file") {
       newHistory.push(
         createHistoryEntry(`Error: '${filename}' is not a file`, "error")
       );
@@ -1084,54 +1368,39 @@ class CatCommand implements Command {
       setTimeout(() => {
         window.open(file.githubUrl, "_blank");
       }, 1500);
+      return newHistory;
     } else {
       // Check if we have content for this specific file
-      const content = fileContents[filename];
-      if (content) {
-        // Mark typewriter as active
-        dispatch({ type: "SET_ACTIVE_TYPEWRITER", payload: true });
+      // Resolve the full path for content lookup
+      let resolvedPath = filename;
+      if (!filename.startsWith("/")) {
+        resolvedPath =
+          currentDirectory === "/"
+            ? filename
+            : `${currentDirectory}/${filename}`;
+      } else {
+        resolvedPath = filename.substring(1);
+      }
 
-        // Start with the first line
-        newHistory.push(createHistoryEntry(content[0], "info", true));
+      const fileContent = getFileContentByPath(resolvedPath);
+      if (fileContent) {
+        // Check if we're in a pipe context by looking at the command history
+        // If the last command entry contains a pipe, we're in a pipe
+        const isInPipe = newHistory.some((entry) => entry.text.includes("|"));
 
-        // Schedule the remaining lines to appear after the previous line completes
-        let currentIndex = 1;
-        const scheduleNextLine = () => {
-          // Check if typewriter was cancelled
-          if (state && !state.activeTypewriter) {
-            return;
-          }
-
-          if (currentIndex < content.length) {
-            // Calculate delay based on the length of the previous line
-            const previousLine = content[currentIndex - 1];
-            const typewriterDelay = previousLine.length * 30; // 30ms per character
-            const lineDelay = 100; // Additional delay between lines
-            const totalDelay = typewriterDelay + lineDelay;
-
-            setTimeout(() => {
-              // Check again if typewriter was cancelled during the delay
-              if (state && state.activeTypewriter) {
-                dispatch({
-                  type: "ADD_HISTORY_ENTRY",
-                  payload: createHistoryEntry(
-                    content[currentIndex],
-                    "info",
-                    true
-                  ),
-                });
-                currentIndex++;
-                scheduleNextLine();
-              }
-            }, totalDelay);
-          } else {
-            // Typewriter animation completed
-            dispatch({ type: "SET_ACTIVE_TYPEWRITER", payload: false });
-          }
-        };
-
-        // Start scheduling the next lines
-        scheduleNextLine();
+        if (isInPipe) {
+          // Being used in a pipe - return content as stdout
+          return {
+            history: newHistory,
+            stdout: fileContent.content,
+          };
+        } else {
+          // Normal display - return typewriter effect
+          return {
+            _effect: "TYPEWRITER",
+            lines: fileContent.content,
+          };
+        }
       } else if (file.route) {
         // This is a file that should open a page (only if no specific content is defined)
         newHistory.push(createHistoryEntry(`Opening ${filename}...`, "info"));
@@ -1148,6 +1417,7 @@ class CatCommand implements Command {
             onNavigate(route);
           }, 1500);
         }
+        return newHistory;
       } else {
         // Show file contents (simulated) for files without specific content
         const defaultContent = [
@@ -1159,54 +1429,13 @@ class CatCommand implements Command {
           "(File content would be displayed here)",
         ];
 
-        // Mark typewriter as active
-        dispatch({ type: "SET_ACTIVE_TYPEWRITER", payload: true });
-
-        // Start with the first line
-        newHistory.push(createHistoryEntry(defaultContent[0], "info", true));
-
-        // Schedule the remaining lines to appear after the previous line completes
-        let currentIndex = 1;
-        const scheduleNextLine = () => {
-          // Check if typewriter was cancelled
-          if (state && !state.activeTypewriter) {
-            return;
-          }
-
-          if (currentIndex < defaultContent.length) {
-            // Calculate delay based on the length of the previous line
-            const previousLine = defaultContent[currentIndex - 1];
-            const typewriterDelay = previousLine.length * 30; // 30ms per character
-            const lineDelay = 100; // Additional delay between lines
-            const totalDelay = typewriterDelay + lineDelay;
-
-            setTimeout(() => {
-              // Check again if typewriter was cancelled during the delay
-              if (state && state.activeTypewriter) {
-                dispatch({
-                  type: "ADD_HISTORY_ENTRY",
-                  payload: createHistoryEntry(
-                    defaultContent[currentIndex],
-                    "info",
-                    true
-                  ),
-                });
-                currentIndex++;
-                scheduleNextLine();
-              }
-            }, totalDelay);
-          } else {
-            // Typewriter animation completed
-            dispatch({ type: "SET_ACTIVE_TYPEWRITER", payload: false });
-          }
+        // Return typewriter effect for default content
+        return {
+          _effect: "TYPEWRITER",
+          lines: defaultContent,
         };
-
-        // Start scheduling the next lines
-        scheduleNextLine();
       }
     }
-
-    return newHistory;
   }
 
   getSuggestions(
@@ -1246,6 +1475,366 @@ class CatCommand implements Command {
   }
 }
 
+class GrepCommand implements Command {
+  name = "grep";
+
+  execute(
+    args: string[],
+    history: HistoryEntry[],
+    _fileSystem: FileSystemItem[],
+    _dispatch: React.Dispatch<TerminalAction>,
+    currentDirectory: string,
+    _onNavigate?: (route: string) => void,
+    _state?: TerminalState,
+    stdin?: string[]
+  ): CommandResult {
+    const newHistory = [...history];
+
+    // Parse arguments - handle quoted search terms
+    let searchTerm = args[0];
+    let filePath = args[1];
+
+    // Remove quotes from search term if present
+    if (
+      searchTerm &&
+      (searchTerm.startsWith('"') || searchTerm.startsWith("'"))
+    ) {
+      searchTerm = searchTerm.slice(1, -1);
+    }
+
+    // Handle case where search term and file path might be combined
+    if (!filePath && args.length > 1) {
+      // If no separate filePath, the second part might be the file path
+      filePath = args.slice(1).join(" ");
+    }
+
+    if (!searchTerm) {
+      newHistory.push(
+        createHistoryEntry("Usage: grep <pattern> <file>", "error")
+      );
+      return { history: newHistory };
+    }
+
+    // Determine input source: stdin or file
+    let inputLines: string[] = [];
+
+    if (stdin && stdin.length > 0) {
+      // Use stdin if provided (for piping)
+      inputLines = stdin;
+    } else if (filePath) {
+      // Use file if specified
+      let resolvedPath = filePath;
+      if (!filePath.startsWith("/")) {
+        // Relative path - resolve from current directory
+        resolvedPath =
+          currentDirectory === "/"
+            ? filePath
+            : `${currentDirectory}/${filePath}`;
+      } else {
+        // Remove leading slash for absolute paths to match file content paths
+        resolvedPath = filePath.substring(1);
+      }
+
+      const fileContent = getFileContentByPath(resolvedPath);
+      if (!fileContent) {
+        newHistory.push(
+          createHistoryEntry(
+            `grep: ${filePath}: No such file or directory`,
+            "error"
+          )
+        );
+        return { history: newHistory };
+      }
+      inputLines = fileContent.content;
+    } else {
+      newHistory.push(
+        createHistoryEntry("Usage: grep <pattern> <file>", "error")
+      );
+      return { history: newHistory };
+    }
+
+    // Create regex for case-insensitive search
+    const searchRegex = new RegExp(searchTerm, "gi");
+    const matchingLines: HistoryEntry[] = [];
+    const stdoutLines: string[] = [];
+
+    // Search through each line
+    inputLines.forEach((line, lineIndex) => {
+      if (searchRegex.test(line)) {
+        // Create highlighted version of the line
+        const highlightedLine = line.replace(
+          new RegExp(searchTerm, "gi"),
+          (match) => `\x1b[1;31m${match}\x1b[0m` // ANSI color codes for highlighting
+        );
+
+        const outputLine = `${lineIndex + 1}:${highlightedLine}`;
+        matchingLines.push(
+          createHistoryEntry(outputLine, "info", false, 0, highlightedLine)
+        );
+        stdoutLines.push(outputLine);
+      }
+    });
+
+    if (matchingLines.length === 0) {
+      // grep returns nothing on no match (no error, just no output)
+      return { history: newHistory, stdout: [] };
+    }
+
+    // Add all matching lines to history
+    newHistory.push(...matchingLines);
+    return { history: newHistory, stdout: stdoutLines };
+  }
+
+  getSuggestions(
+    input: string,
+    fileSystem: FileSystemItem[],
+    currentDirectory: string
+  ): string[] {
+    if (input.toLowerCase().startsWith("grep ")) {
+      const afterGrep = input.substring(5).trim();
+      const parts = afterGrep.split(" ");
+
+      if (parts.length === 1 && parts[0]) {
+        // User has typed search term, suggest files
+        const currentItems = getCurrentDirectoryItems(
+          fileSystem,
+          currentDirectory
+        );
+        return currentItems
+          .filter((item) => item.type === "file")
+          .map((item) => `grep ${parts[0]} ${item.name}`);
+      }
+    }
+    return [];
+  }
+}
+
+class WcCommand implements Command {
+  name = "wc";
+
+  execute(
+    args: string[],
+    history: HistoryEntry[],
+    _fileSystem: FileSystemItem[],
+    _dispatch: React.Dispatch<TerminalAction>,
+    currentDirectory: string,
+    _onNavigate?: (route: string) => void,
+    _state?: TerminalState,
+    stdin?: string[]
+  ): CommandResult {
+    const newHistory = [...history];
+
+    // Parse flags
+    const countLines = args.includes("-l");
+    const countWords = args.includes("-w");
+    const countChars = args.includes("-c");
+    const countBytes = args.includes("-m");
+
+    // If no specific flags, count all (lines, words, chars)
+    const shouldCountLines =
+      countLines || (!countLines && !countWords && !countChars && !countBytes);
+    const shouldCountWords =
+      countWords || (!countLines && !countWords && !countChars && !countBytes);
+    const shouldCountChars =
+      countChars || (!countLines && !countWords && !countChars && !countBytes);
+
+    // Get input lines from stdin or file
+    let inputLines: string[] = [];
+    let _sourceName = "";
+
+    if (stdin && stdin.length > 0) {
+      // Use stdin if provided (for piping)
+      inputLines = stdin;
+      _sourceName = "";
+    } else {
+      // Look for file argument
+      const fileArg = args.find((arg) => !arg.startsWith("-"));
+      if (fileArg) {
+        let resolvedPath = fileArg;
+        if (!fileArg.startsWith("/")) {
+          resolvedPath =
+            currentDirectory === "/"
+              ? fileArg
+              : `${currentDirectory}/${fileArg}`;
+        } else {
+          resolvedPath = fileArg.substring(1);
+        }
+
+        const fileContent = getFileContentByPath(resolvedPath);
+        if (!fileContent) {
+          newHistory.push(
+            createHistoryEntry(
+              `wc: ${fileArg}: No such file or directory`,
+              "error"
+            )
+          );
+          return { history: newHistory };
+        }
+        inputLines = fileContent.content;
+        _sourceName = fileArg;
+      } else {
+        newHistory.push(
+          createHistoryEntry("Usage: wc [-lwc] [file...]", "error")
+        );
+        return { history: newHistory };
+      }
+    }
+
+    // Calculate counts
+    const lineCount = inputLines.length;
+    const wordCount = inputLines.reduce((total, line) => {
+      return (
+        total +
+        line
+          .trim()
+          .split(/\s+/)
+          .filter((word) => word.length > 0).length
+      );
+    }, 0);
+    const charCount = inputLines.reduce(
+      (total, line) => total + line.length,
+      0
+    );
+
+    // Format output
+    let output = "";
+    if (shouldCountLines) output += `${lineCount}`;
+    if (shouldCountWords) output += `${output ? " " : ""}${wordCount}`;
+    if (shouldCountChars) output += `${output ? " " : ""}${charCount}`;
+    if (_sourceName) output += ` ${_sourceName}`;
+
+    newHistory.push(createHistoryEntry(output, "info"));
+    return { history: newHistory, stdout: [output] };
+  }
+
+  getSuggestions(
+    input: string,
+    fileSystem: FileSystemItem[],
+    currentDirectory: string
+  ): string[] {
+    if (input.toLowerCase().startsWith("wc ")) {
+      const afterWc = input.substring(3).trim();
+      const parts = afterWc.split(" ");
+
+      // If no flags, suggest flags
+      if (parts.length === 0 || !parts[0].startsWith("-")) {
+        return ["wc -l", "wc -w", "wc -c", "wc -l -w -c"];
+      }
+
+      // If flags are present, suggest files
+      const currentItems = getCurrentDirectoryItems(
+        fileSystem,
+        currentDirectory
+      );
+      return currentItems
+        .filter((item) => item.type === "file")
+        .map((item) => `wc ${afterWc} ${item.name}`);
+    }
+    return [];
+  }
+}
+
+class HistoryCommand implements Command {
+  name = "history";
+
+  execute(
+    _args: string[],
+    history: HistoryEntry[],
+    _fileSystem: FileSystemItem[],
+    _dispatch: React.Dispatch<TerminalAction>,
+    _currentDirectory: string
+  ): HistoryEntry[] {
+    const newHistory = [...history];
+
+    // Filter to only show actual commands (entries that start with "$ ")
+    const commands = history
+      .filter((entry) => entry.text.startsWith("$ "))
+      .map((entry) => entry.text.substring(2)); // Remove "$ " prefix
+
+    if (commands.length === 0) {
+      newHistory.push(createHistoryEntry("No command history found.", "info"));
+      return newHistory;
+    }
+
+    // Display numbered list of commands
+    newHistory.push(createHistoryEntry("Command History:", "info"));
+    commands.forEach((command, index) => {
+      newHistory.push(
+        createHistoryEntry(
+          `${(index + 1).toString().padStart(3)}  ${command}`,
+          "info"
+        )
+      );
+    });
+
+    return newHistory;
+  }
+
+  getSuggestions(input: string): string[] {
+    const suggestions = [];
+    if (input.toLowerCase().startsWith("history")) {
+      suggestions.push("history");
+    }
+    return suggestions.filter((s) =>
+      s.toLowerCase().startsWith(input.toLowerCase())
+    );
+  }
+}
+
+class ManCommand implements Command {
+  name = "man";
+
+  execute(
+    args: string[],
+    history: HistoryEntry[],
+    _fileSystem: FileSystemItem[],
+    dispatch: React.Dispatch<TerminalAction>,
+    _currentDirectory: string
+  ): HistoryEntry[] {
+    const newHistory = [...history];
+    const commandName = args[0];
+
+    if (!commandName) {
+      newHistory.push(
+        createHistoryEntry("Error: Please specify a command name", "error")
+      );
+      newHistory.push(createHistoryEntry("Usage: man <command>", "info"));
+      return newHistory;
+    }
+
+    // Check if the man page exists
+    const manPage = manPages[commandName];
+    if (!manPage) {
+      newHistory.push(
+        createHistoryEntry(`Error: No manual entry for ${commandName}`, "error")
+      );
+      newHistory.push(createHistoryEntry("Available manual pages:", "info"));
+      const availablePages = Object.keys(manPages).join(", ");
+      newHistory.push(createHistoryEntry(availablePages, "info"));
+      return newHistory;
+    }
+
+    // Show the man page
+    dispatch({ type: "SHOW_MAN_PAGE", payload: commandName });
+    return newHistory;
+  }
+
+  getSuggestions(input: string): string[] {
+    const suggestions: string[] = [];
+    if (input.toLowerCase().startsWith("man ")) {
+      const afterMan = input.substring(4).trim();
+      Object.keys(manPages).forEach((command) => {
+        if (command.toLowerCase().startsWith(afterMan.toLowerCase())) {
+          suggestions.push(`man ${command}`);
+        }
+      });
+    }
+    return suggestions.filter((s) =>
+      s.toLowerCase().startsWith(input.toLowerCase())
+    );
+  }
+}
+
 const availableCommands = [
   "ls",
   "ls -l",
@@ -1256,14 +1845,134 @@ const availableCommands = [
   "clear",
   "pwd",
   "cat",
+  "grep",
+  "wc",
+  "wc -l",
+  "wc -w",
+  "wc -c",
+  "history",
+  "man",
+  "top",
+  "top -d=1",
+  "top -d=2",
+  "top -d=3",
   "exit",
+  "curl",
 ];
+
+class CurlCommand implements Command {
+  name = "curl";
+
+  async execute(
+    args: string[],
+    history: HistoryEntry[],
+    _fileSystem: FileSystemItem[],
+    dispatch: React.Dispatch<TerminalAction>,
+    _currentDirectory: string,
+    _onNavigate?: (route: string) => void,
+    state?: TerminalState
+  ): Promise<HistoryEntry[]> {
+    const newHistory = [...history];
+
+    // Parse URLs from arguments
+    const urls: string[] = [];
+    for (const arg of args) {
+      if (arg.startsWith("http://") || arg.startsWith("https://")) {
+        urls.push(arg);
+      }
+    }
+
+    if (urls.length === 0) {
+      newHistory.push(
+        createHistoryEntry(
+          "curl: No valid URLs provided. Usage: curl <url1> [url2] [url3] ...",
+          "error"
+        )
+      );
+      return newHistory;
+    }
+
+    try {
+      // Import the API functions
+      const { submitScrapeJob } = await import("../services/arachneApi");
+
+      // Submit the scraping job
+      const response = await submitScrapeJob(urls);
+
+      // Create initial success message
+      const historyId = state?.nextHistoryId || 1;
+      const successEntry = createHistoryEntry(
+        `🌐 Submitting job for ${urls.length} URL${
+          urls.length > 1 ? "s" : ""
+        }... Success! Job ID: ${response.job_id}`,
+        "success",
+        false,
+        historyId
+      );
+
+      // Add the job to active jobs
+      if (state) {
+        dispatch({
+          type: "ADD_SCRAPE_JOB",
+          payload: {
+            jobId: response.job_id,
+            status: "submitted",
+            historyEntryId: historyId,
+            urls,
+            startTime: Date.now(),
+          },
+        });
+
+        // Increment the history ID
+        dispatch({
+          type: "SET_NEXT_HISTORY_ID",
+          payload: historyId + 1,
+        });
+      }
+
+      newHistory.push(successEntry);
+      return newHistory;
+    } catch (error) {
+      newHistory.push(
+        createHistoryEntry(
+          `curl: Failed to submit scraping job: ${
+            error instanceof Error ? error.message : "Unknown error"
+          }`,
+          "error"
+        )
+      );
+      return newHistory;
+    }
+  }
+
+  getSuggestions(input: string): string[] {
+    if (input.toLowerCase().startsWith("curl ")) {
+      const afterCurl = input.substring(5).trim();
+      if (!afterCurl) {
+        return [
+          "curl https://example.com",
+          "curl https://google.com https://github.com",
+          "curl https://news.ycombinator.com",
+        ];
+      }
+    }
+    return [];
+  }
+}
 
 export const useTerminal = (
   fileSystem: FileSystemItem[],
   onNavigate: (route: string) => void,
-  isVisible: boolean = true
+  _isVisible: boolean = true
 ) => {
+  // State for managing typewriter effects
+  const [typewriter, setTypewriter] = useState<TypewriterEffect | null>(null);
+
+  // State for managing top command process updates
+  const [processUpdateInterval, setProcessUpdateInterval] = useState<
+    number | null
+  >(null);
+
   // Load initial state from localStorage
   const getInitialState = (): TerminalState => {
     try {
@@ -1282,6 +1991,22 @@ export const useTerminal = (
           isMaximized: parsed.isMaximized || false,
           showPreview: false, // Always start hidden
           activeTypewriter: false, // Always start inactive
+          historyIndex: parsed.historyIndex || -1, // Load history index
+          isReverseSearch: false, // Always start not in reverse search
+          reverseSearchTerm: "",
+          reverseSearchIndex: 0,
+          reverseSearchResults: [],
+          isManPage: false, // Always start not viewing man page
+          currentManPage: "",
+          manPageScrollPosition: 0,
+          isTopCommand: false,
+          topSelectedPid: null,
+          topProcesses: [],
+          topSortBy: "pid",
+          topSortOrder: "asc",
+          topRefreshRate: 1000,
+          activeScrapeJobs: parsed.activeScrapeJobs || {},
+          nextHistoryId: parsed.nextHistoryId || 1,
         };
       }
     } catch (error) {
@@ -1300,6 +2025,22 @@ export const useTerminal = (
       isMaximized: false,
       showPreview: false,
       activeTypewriter: false,
+      historyIndex: -1, // Start at -1 (no history navigation active)
+      isReverseSearch: false,
+      reverseSearchTerm: "",
+      reverseSearchIndex: 0,
+      reverseSearchResults: [],
+      isManPage: false,
+      currentManPage: "",
+      manPageScrollPosition: 0,
+      isTopCommand: false,
+      topSelectedPid: null,
+      topProcesses: [],
+      topSortBy: "pid",
+      topSortOrder: "asc",
+      topRefreshRate: 1000,
+      activeScrapeJobs: {},
+      nextHistoryId: 1,
     };
   };
 
@@ -1320,6 +2061,15 @@ export const useTerminal = (
         currentDirectory: newState.currentDirectory,
         isMinimized: newState.isMinimized,
         isMaximized: newState.isMaximized,
+        historyIndex: newState.historyIndex,
+        isTopCommand: newState.isTopCommand,
+        topSelectedPid: newState.topSelectedPid,
+        topProcesses: newState.topProcesses,
+        topSortBy: newState.topSortBy,
+        topSortOrder: newState.topSortOrder,
+        topRefreshRate: newState.topRefreshRate,
+        activeScrapeJobs: newState.activeScrapeJobs,
+        nextHistoryId: newState.nextHistoryId,
       };
       localStorage.setItem("terminal-state", JSON.stringify(stateToSave));
     } catch (error) {
@@ -1339,6 +2089,40 @@ export const useTerminal = (
   useEffect(() => {
     saveStateToStorage(state);
   }, [state, saveStateToStorage]);
+
+  // Handle typewriter effects
+  useEffect(() => {
+    if (!typewriter) return;
+
+    dispatchWithSave({ type: "SET_ACTIVE_TYPEWRITER", payload: true });
+
+    let isCancelled = false;
+    let lineIndex = 0;
+
+    const typeLine = () => {
+      if (isCancelled || lineIndex >= typewriter.lines.length) {
+        dispatchWithSave({ type: "SET_ACTIVE_TYPEWRITER", payload: false });
+        setTypewriter(null); // Clear the effect
+        return;
+      }
+
+      const line = typewriter.lines[lineIndex];
+      dispatchWithSave({
+        type: "ADD_HISTORY_ENTRY",
+        payload: createHistoryEntry(line, "info", true),
+      });
+
+      const delay = line.length * 30 + 100;
+      lineIndex++;
+      setTimeout(typeLine, delay);
+    };
+
+    typeLine();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [typewriter, dispatchWithSave]);
 
   // Helper function to find item by path
   const findItemByPath = useCallback(
@@ -1378,14 +2162,34 @@ export const useTerminal = (
     clear: new ClearCommand(),
     pwd: new PwdCommand(),
     cat: new CatCommand(),
+    grep: new GrepCommand(),
+    wc: new WcCommand(),
+    history: new HistoryCommand(),
+    man: new ManCommand(),
+    top: new TopCommand(),
     exit: new ExitCommand(),
+    curl: new CurlCommand(),
   };
 
   const executeCommand = useCallback(
     (command: string) => {
-      const newHistoryEntry = createHistoryEntry(`$ ${command}`, "command");
+      const historyId = state.nextHistoryId;
+      const newHistoryEntry = createHistoryEntry(
+        `$ ${command}`,
+        "command",
+        false,
+        historyId
+      );
       dispatchWithSave({ type: "ADD_HISTORY_ENTRY", payload: newHistoryEntry });
+      dispatchWithSave({ type: "SET_NEXT_HISTORY_ID", payload: historyId + 1 });
 
+      // Check if command contains pipes
+      if (command.includes("|")) {
+        executePipeChain(command, [...state.commandHistory, newHistoryEntry]);
+        return;
+      }
+
+      // Single command execution (existing logic)
       const [commandName, ...args] = command.split(" ");
 
       // Expand combined flags (e.g., -al becomes -a -l)
@@ -1402,19 +2206,33 @@ export const useTerminal = (
       });
 
       if (commandRegistry[commandName]) {
-        const updatedHistory = commandRegistry[commandName].execute(
+        const result = commandRegistry[commandName].execute(
           expandedArgs,
           [...state.commandHistory, newHistoryEntry], // Pass the updated history
           fileSystem,
           dispatchWithSave, // Pass dispatchWithSave instead of dispatch
           state.currentDirectory,
           onNavigate, // Pass the navigation function
-          state // Pass the current state
+          state, // Pass the current state
+          undefined // No stdin for single commands
         );
-        dispatchWithSave({
-          type: "SET_COMMAND_HISTORY",
-          payload: updatedHistory,
-        });
+
+        // Handle both sync and async results
+        if (result instanceof Promise) {
+          result.then(handleCommandResult).catch((error) => {
+            dispatchWithSave({
+              type: "ADD_HISTORY_ENTRY",
+              payload: createHistoryEntry(
+                `Command execution failed: ${
+                  error instanceof Error ? error.message : "Unknown error"
+                }`,
+                "error"
+              ),
+            });
+          });
+        } else {
+          handleCommandResult(result);
+        }
       } else {
         dispatchWithSave({
           type: "ADD_HISTORY_ENTRY",
@@ -1431,6 +2249,127 @@ export const useTerminal = (
       fileSystem,
       commandRegistry,
       dispatchWithSave,
+      setTypewriter,
+    ]
+  );
+
+  // Helper function to handle different command result types
+  const handleCommandResult = useCallback(
+    (result: CommandResult) => {
+      if (Array.isArray(result)) {
+        // It's a normal history update
+        dispatchWithSave({
+          type: "SET_COMMAND_HISTORY",
+          payload: result,
+        });
+      } else if ("_effect" in result && result._effect === "TYPEWRITER") {
+        // It's a typewriter effect! Let a dedicated useEffect handle it.
+        setTypewriter(result);
+      } else if ("history" in result) {
+        // It's a pipe result
+        dispatchWithSave({
+          type: "SET_COMMAND_HISTORY",
+          payload: result.history,
+        });
+      }
+    },
+    [dispatchWithSave, setTypewriter]
+  );
+
+  // New function to execute pipe chains
+  const executePipeChain = useCallback(
+    (command: string, currentHistory: HistoryEntry[]) => {
+      const commands = command.split("|").map((cmd) => cmd.trim());
+      let stdin: string[] | undefined = undefined;
+      let finalHistory = [...currentHistory];
+
+      for (let i = 0; i < commands.length; i++) {
+        const cmd = commands[i];
+        const isLastCommand = i === commands.length - 1;
+
+        const [commandName, ...args] = cmd.split(" ");
+
+        // Expand combined flags
+        const expandedArgs: string[] = [];
+        args.forEach((arg) => {
+          if (arg.startsWith("-") && arg.length > 2) {
+            for (let j = 1; j < arg.length; j++) {
+              expandedArgs.push(`-${arg[j]}`);
+            }
+          } else {
+            expandedArgs.push(arg);
+          }
+        });
+
+        if (!commandRegistry[commandName]) {
+          dispatchWithSave({
+            type: "ADD_HISTORY_ENTRY",
+            payload: createHistoryEntry(
+              `Command not found: ${commandName}. Type 'help' for available commands.`,
+              "error"
+            ),
+          });
+          return;
+        }
+
+        const result = commandRegistry[commandName].execute(
+          expandedArgs,
+          finalHistory,
+          fileSystem,
+          dispatchWithSave,
+          state.currentDirectory,
+          onNavigate,
+          state,
+          stdin
+        );
+
+        // Handle the result and prepare stdin for next command
+        console.log(
+          `Pipe debug - Command ${i + 1}: ${commandName}, stdin:`,
+          stdin
+        );
+
+        if (Array.isArray(result)) {
+          // Traditional command result - no stdout for piping
+          finalHistory = result;
+          if (!isLastCommand) {
+            // If not the last command, we need stdout for the next command
+            // For now, we'll use the last history entry as stdout
+            stdin = [result[result.length - 1]?.text || ""];
+          }
+        } else if ("_effect" in result && result._effect === "TYPEWRITER") {
+          // Typewriter effect - not suitable for piping
+          setTypewriter(result);
+          return;
+        } else if ("history" in result) {
+          // Pipe result with stdout
+          finalHistory = result.history;
+          stdin = result.stdout;
+          console.log(
+            `Pipe debug - stdout from ${commandName}:`,
+            result.stdout
+          );
+        }
+
+        console.log(`Pipe debug - stdin for next command:`, stdin);
+
+        // Update history after each command in the chain
+        if (isLastCommand) {
+          dispatchWithSave({
+            type: "SET_COMMAND_HISTORY",
+            payload: finalHistory,
+          });
+        }
+      }
+    },
+    [
+      commandRegistry,
+      fileSystem,
+      dispatchWithSave,
+      state.currentDirectory,
+      onNavigate,
+      state,
+      setTypewriter,
     ]
   );
 
@@ -1513,6 +2452,41 @@ export const useTerminal = (
         });
       }
 
+      // Check for grep command with file names
+      if (input.toLowerCase().startsWith("grep ")) {
+        const afterGrep = input.substring(5).trim();
+        const parts = afterGrep.split(" ");
+
+        if (parts.length === 1 && parts[0]) {
+          // User has typed search term, suggest files
+          currentItems.forEach((item) => {
+            if (item.type === "file") {
+              suggestions.push(`grep ${parts[0]} ${item.name}`);
+            }
+          });
+        }
+      }
+
+      // Check for wc command with file names
+      if (input.toLowerCase().startsWith("wc ")) {
+        const afterWc = input.substring(3).trim();
+        const parts = afterWc.split(" ");
+
+        // If no flags, suggest flags
+        if (parts.length === 0 || !parts[0].startsWith("-")) {
+          suggestions.push("wc -l", "wc -w", "wc -c", "wc -l -w -c");
+        }
+
+        // If flags are present, suggest files
+        if (parts.length > 0 && parts[0].startsWith("-")) {
+          currentItems.forEach((item) => {
+            if (item.type === "file") {
+              suggestions.push(`wc ${afterWc} ${item.name}`);
+            }
+          });
+        }
+      }
+
       return suggestions;
     },
     [state.currentDirectory, fileSystem] // Update dependency array
@@ -1571,9 +2545,13 @@ export const useTerminal = (
 
   const setCurrentCommand = useCallback(
     (command: string) => {
+      // If the user is typing a new command (not navigating history), reset history index
+      if (state.historyIndex !== -1 && command !== state.currentCommand) {
+        dispatchWithSave({ type: "RESET_HISTORY_INDEX" });
+      }
       dispatchWithSave({ type: "SET_CURRENT_COMMAND", payload: command });
     },
-    [dispatchWithSave]
+    [dispatchWithSave, state.historyIndex, state.currentCommand]
   );
 
   const setShowPrompt = useCallback(
@@ -1616,6 +2594,317 @@ export const useTerminal = (
     dispatchWithSave({ type: "HIDE_PREVIEW" });
   }, [dispatchWithSave]);
 
+  // History navigation functions
+  const navigateHistoryUp = useCallback(() => {
+    // Get all commands from history (entries that start with "$ ")
+    const commands = state.commandHistory
+      .filter((entry) => entry.text.startsWith("$ "))
+      .map((entry) => entry.text.substring(2)); // Remove "$ " prefix
+
+    if (commands.length === 0) return;
+
+    // If we're at the end (historyIndex === -1), start from the last command
+    if (state.historyIndex === -1) {
+      const newIndex = commands.length - 1;
+      dispatchWithSave({ type: "SET_HISTORY_INDEX", payload: newIndex });
+      dispatchWithSave({
+        type: "SET_CURRENT_COMMAND",
+        payload: commands[newIndex],
+      });
+      return;
+    }
+
+    // Navigate up (older commands)
+    if (state.historyIndex > 0) {
+      const newIndex = state.historyIndex - 1;
+      dispatchWithSave({ type: "SET_HISTORY_INDEX", payload: newIndex });
+      dispatchWithSave({
+        type: "SET_CURRENT_COMMAND",
+        payload: commands[newIndex],
+      });
+    }
+  }, [state.commandHistory, state.historyIndex, dispatchWithSave]);
+
+  const navigateHistoryDown = useCallback(() => {
+    // Get all commands from history
+    const commands = state.commandHistory
+      .filter((entry) => entry.text.startsWith("$ "))
+      .map((entry) => entry.text.substring(2));
+
+    if (commands.length === 0) return;
+
+    // Navigate down (newer commands)
+    if (state.historyIndex < commands.length - 1) {
+      const newIndex = state.historyIndex + 1;
+      dispatchWithSave({ type: "SET_HISTORY_INDEX", payload: newIndex });
+      dispatchWithSave({
+        type: "SET_CURRENT_COMMAND",
+        payload: commands[newIndex],
+      });
+    } else if (state.historyIndex === commands.length - 1) {
+      // We're at the most recent command, clear the input
+      dispatchWithSave({ type: "RESET_HISTORY_INDEX" });
+      dispatchWithSave({ type: "SET_CURRENT_COMMAND", payload: "" });
+    }
+  }, [state.commandHistory, state.historyIndex, dispatchWithSave]);
+
+  const resetHistoryNavigation = useCallback(() => {
+    dispatchWithSave({ type: "RESET_HISTORY_INDEX" });
+  }, [dispatchWithSave]);
+
+  // Reverse search functions
+  const startReverseSearch = useCallback(() => {
+    dispatchWithSave({ type: "START_REVERSE_SEARCH" });
+  }, [dispatchWithSave]);
+
+  const updateReverseSearch = useCallback(
+    (term: string) => {
+      // Get all commands from history
+      const commands = state.commandHistory
+        .filter((entry) => entry.text.startsWith("$ "))
+        .map((entry) => entry.text.substring(2));
+
+      // Filter commands that contain the search term (case-insensitive)
+      const results = commands.filter((command) =>
+        command.toLowerCase().includes(term.toLowerCase())
+      );
+
+      dispatchWithSave({
+        type: "UPDATE_REVERSE_SEARCH",
+        payload: { term, results },
+      });
+
+      // If we have results, set the current command to the first match
+      if (results.length > 0) {
+        dispatchWithSave({ type: "SET_CURRENT_COMMAND", payload: results[0] });
+      }
+    },
+    [state.commandHistory, dispatchWithSave]
+  );
+
+  const navigateReverseSearchResults = useCallback(
+    (direction: "up" | "down") => {
+      if (state.reverseSearchResults.length === 0) return;
+
+      let newIndex = state.reverseSearchIndex;
+      if (direction === "up") {
+        // Navigate to previous match (older command)
+        newIndex =
+          newIndex > 0 ? newIndex - 1 : state.reverseSearchResults.length - 1;
+      } else {
+        // Navigate to next match (newer command)
+        newIndex =
+          newIndex < state.reverseSearchResults.length - 1 ? newIndex + 1 : 0;
+      }
+
+      dispatchWithSave({ type: "SET_REVERSE_SEARCH_INDEX", payload: newIndex });
+      dispatchWithSave({
+        type: "SET_CURRENT_COMMAND",
+        payload: state.reverseSearchResults[newIndex],
+      });
+    },
+    [state.reverseSearchResults, state.reverseSearchIndex, dispatchWithSave]
+  );
+
+  const exitReverseSearch = useCallback(() => {
+    dispatchWithSave({ type: "EXIT_REVERSE_SEARCH" });
+  }, [dispatchWithSave]);
+
+  // Man page functions
+  const showManPage = useCallback(
+    (commandName: string) => {
+      dispatchWithSave({ type: "SHOW_MAN_PAGE", payload: commandName });
+    },
+    [dispatchWithSave]
+  );
+
+  const hideManPage = useCallback(() => {
+    dispatchWithSave({ type: "HIDE_MAN_PAGE" });
+  }, [dispatchWithSave]);
+
+  const setManPageScroll = useCallback(
+    (position: number) => {
+      dispatchWithSave({ type: "SET_MAN_PAGE_SCROLL", payload: position });
+    },
+    [dispatchWithSave]
+  );
+
+  const showTopCommand = useCallback(() => {
+    dispatchWithSave({ type: "SHOW_TOP_COMMAND" });
+
+    // Initialize process list if empty
+    if (state.topProcesses.length === 0) {
+      const initialProcesses = generateProcessList();
+      dispatchWithSave({
+        type: "UPDATE_TOP_PROCESSES",
+        payload: initialProcesses,
+      });
+    }
+
+    // Start process update interval
+    const interval = setInterval(() => {
+      const updatedProcesses = updateProcessList(state.topProcesses);
+      dispatchWithSave({
+        type: "UPDATE_TOP_PROCESSES",
+        payload: updatedProcesses,
+      });
+    }, state.topRefreshRate);
+
+    setProcessUpdateInterval(interval);
+  }, [dispatchWithSave, state.topProcesses, state.topRefreshRate]);
+
+  const hideTopCommand = useCallback(() => {
+    dispatchWithSave({ type: "HIDE_TOP_COMMAND" });
+
+    // Clear process update interval
+    if (processUpdateInterval) {
+      clearInterval(processUpdateInterval);
+      setProcessUpdateInterval(null);
+    }
+  }, [dispatchWithSave, processUpdateInterval]);
+
+  const updateTopProcesses = useCallback(
+    (processes: any[]) => {
+      dispatchWithSave({ type: "UPDATE_TOP_PROCESSES", payload: processes });
+    },
+    [dispatchWithSave]
+  );
+
+  const setTopSort = useCallback(
+    (field: "cpu" | "memory" | "pid" | "name", order: "asc" | "desc") => {
+      dispatchWithSave({ type: "SET_TOP_SORT", payload: { field, order } });
+    },
+    [dispatchWithSave]
+  );
+
+  const setTopRefreshRate = useCallback(
+    (rate: number) => {
+      dispatchWithSave({ type: "SET_TOP_REFRESH_RATE", payload: rate });
+    },
+    [dispatchWithSave]
+  );
+
+  const setTopSelectedPid = useCallback(
+    (pid: number | null) => {
+      dispatchWithSave({ type: "SET_TOP_SELECTED_PID", payload: pid });
+    },
+    [dispatchWithSave]
+  );
+
+  const killTopProcess = useCallback(
+    (pid: number) => {
+      // Remove the process from the list
+      const updatedProcesses = state.topProcesses.filter((p) => p.pid !== pid);
+      dispatchWithSave({
+        type: "UPDATE_TOP_PROCESSES",
+        payload: updatedProcesses,
+      });
+
+      // Clear selection if the killed process was selected
+      if (state.topSelectedPid === pid) {
+        dispatchWithSave({ type: "SET_TOP_SELECTED_PID", payload: null });
+      }
+    },
+    [dispatchWithSave, state.topProcesses, state.topSelectedPid]
+  );
+
+  // Polling system for active scrape jobs
+  useEffect(() => {
+    const activeJobs = Object.values(state.activeScrapeJobs);
+    if (activeJobs.length === 0) return;
+
+    const pollInterval = setInterval(async () => {
+      const { getScrapeStatus } = await import("../services/arachneApi");
+
+      for (const job of activeJobs) {
+        if (job.status === "completed" || job.status === "failed") {
+          continue; // Skip completed/failed jobs
+        }
+
+        try {
+          const status = await getScrapeStatus(job.jobId);
+
+          // Update job status
+          dispatchWithSave({
+            type: "UPDATE_SCRAPE_JOB",
+            payload: {
+              jobId: job.jobId,
+              updates: {
+                status: status.status,
+                progress: status.progress,
+                results: status.results,
+                error: status.error,
+              },
+            },
+          });
+
+          // Update the history entry with progress
+          const progressText =
+            status.status === "running"
+              ? `🔄 Scraping in progress... ${
+                  status.progress ? `${status.progress}%` : ""
+                }`
+              : status.status === "completed"
+              ? `✅ Scrape completed! Results saved to: scraping_results/job_${job.jobId}.json`
+              : status.status === "failed"
+              ? `❌ Scrape failed: ${status.error || "Unknown error"}`
+              : `⏳ Job submitted...`;
+
+          dispatchWithSave({
+            type: "UPDATE_HISTORY_ENTRY",
+            payload: {
+              id: job.historyEntryId,
+              entry: createHistoryEntry(
+                progressText,
+                "info",
+                false,
+                job.historyEntryId
+              ),
+            },
+          });
+
+          // Handle completion
+          if (status.status === "completed" && status.results) {
+            // Note: Virtual file creation would need to be handled by the file system context
+            // For now, we'll just update the job status
+            dispatchWithSave({
+              type: "UPDATE_SCRAPE_JOB",
+              payload: {
+                jobId: job.jobId,
+                updates: {
+                  results: status.results,
+                },
+              },
+            });
+
+            // Remove the job from active jobs after a delay
+            setTimeout(() => {
+              dispatchWithSave({
+                type: "REMOVE_SCRAPE_JOB",
+                payload: job.jobId,
+              });
+            }, 5000); // Keep for 5 seconds after completion
+          }
+
+          // Handle failure
+          if (status.status === "failed") {
+            // Remove the job from active jobs after a delay
+            setTimeout(() => {
+              dispatchWithSave({
+                type: "REMOVE_SCRAPE_JOB",
+                payload: job.jobId,
+              });
+            }, 10000); // Keep for 10 seconds after failure
+          }
+        } catch (error) {
+          console.error(`Failed to poll job ${job.jobId}:`, error);
+        }
+      }
+    }, 2000); // Poll every 2 seconds
+
+    return () => clearInterval(pollInterval);
+  }, [state.activeScrapeJobs, dispatchWithSave]);
+
   return {
     // State
     commandHistory: state.commandHistory,
@@ -1627,6 +2916,20 @@ export const useTerminal = (
     isMaximized: state.isMaximized,
     showPreview: state.showPreview,
     activeTypewriter: state.activeTypewriter,
+    isReverseSearch: state.isReverseSearch,
+    reverseSearchTerm: state.reverseSearchTerm,
+    reverseSearchResults: state.reverseSearchResults,
+    reverseSearchIndex: state.reverseSearchIndex,
+    isManPage: state.isManPage,
+    currentManPage: state.currentManPage,
+    manPageScrollPosition: state.manPageScrollPosition,
+    isTopCommand: state.isTopCommand,
+    topSelectedPid: state.topSelectedPid,
+    topProcesses: state.topProcesses,
+    topSortBy: state.topSortBy,
+    topSortOrder: state.topSortOrder,
+    topRefreshRate: state.topRefreshRate,
+    activeScrapeJobs: state.activeScrapeJobs,
 
     // Refs
     terminalRef,
@@ -1644,6 +2947,23 @@ export const useTerminal = (
     maximizeTerminal,
     showPreviewFunc,
     hidePreview,
+    navigateHistoryUp,
+    navigateHistoryDown,
+    resetHistoryNavigation,
+    startReverseSearch,
+    updateReverseSearch,
+    navigateReverseSearchResults,
+    exitReverseSearch,
+    showManPage,
+    hideManPage,
+    setManPageScroll,
+    showTopCommand,
+    hideTopCommand,
+    updateTopProcesses,
+    setTopSort,
+    setTopRefreshRate,
+    setTopSelectedPid,
+    killTopProcess,
 
     // Helpers
     findItemByPath,

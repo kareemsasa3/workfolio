@@ -1,34 +1,231 @@
-.work-container {
+.work-details-container {
+    background: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 2rem;
+    transition: all 0.3s ease;
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+    margin-bottom: 2rem;
+}
+
+.work-details-container:hover {
+    transform: translateY(-2px);
+    border-color: var(--primary-color);
+    background: rgba(0, 255, 0, 0.02);
+    box-shadow: 0 4px 20px rgba(0, 255, 0, 0.1);
+}
+
+.work-header {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    align-items: start;
+}
+
+.work-dates {
+    color: var(--primary-color);
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    background: var(--primary-color-light);
+    border: 1px solid var(--primary-color-medium);
+    border-radius: 8px;
+    text-align: center;
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+}
+
+.work-company-info {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    gap: 0.5rem;
 }
 
-.company-link {
+.work-company {
+    font-size: 1.8rem;
+    font-weight: 700;
     color: var(--text-color);
-    text-decoration: none;
-    transition: color var(--transition-normal);
+    margin: 0;
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
-.company-link:hover {
+.work-role {
+    font-size: 1.2rem;
     color: var(--primary-color);
-    cursor: pointer;
+    font-weight: 600;
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
-.company-link:focus {
+.work-location {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+}
+
+.work-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.work-description,
+.work-achievements-section,
+.work-projects-section {
+    margin-bottom: 1rem;
+}
+
+.section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin: 0 0 1rem 0;
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+}
+
+.work-achievements,
+.work-projects {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.achievement-item,
+.project-item {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+    position: relative;
+    padding-left: 1.5rem;
+}
+
+.achievement-item::before {
+    content: "▸";
     color: var(--primary-color);
-    outline: none;
+    position: absolute;
+    left: 0;
+    font-weight: bold;
 }
 
-.work-text {
-    display: inline-block;
+.project-item::before {
+    content: "⚡";
+    color: var(--primary-color);
+    position: absolute;
+    left: 0;
+    font-weight: bold;
 }
 
-.small-font {
+.work-tech-stack,
+.work-highlights {
+    border-top: 1px solid var(--border-color);
+    padding-top: 1.5rem;
+}
+
+.tech-stack-title,
+.highlights-title {
     font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin: 0 0 1rem 0;
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
-.large-font {
-    font-size: 2.4rem;
-    margin-top: var(--spacing-xl);
+.tech-tags,
+.highlights-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.tech-tag {
+    background: var(--primary-color-light);
+    color: var(--primary-color);
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    border: 1px solid var(--primary-color-medium);
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+    transition: all 0.2s ease;
+}
+
+.tech-tag:hover {
+    background: var(--primary-color);
+    color: var(--background-color);
+    transform: translateY(-1px);
+}
+
+.highlight-tag {
+    background: var(--card-background);
+    color: var(--text-color);
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    border: 1px solid var(--border-color);
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+    transition: all 0.2s ease;
+}
+
+.highlight-tag:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .work-header {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .work-dates {
+        justify-self: start;
+        width: fit-content;
+    }
+
+    .work-company {
+        font-size: 1.5rem;
+    }
+
+    .work-role {
+        font-size: 1.1rem;
+    }
+
+    .work-details-container {
+        padding: 1.5rem;
+    }
+
+    .section-title {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .work-details-container {
+        padding: 1rem;
+    }
+
+    .work-company {
+        font-size: 1.3rem;
+    }
+
+    .tech-tags,
+    .highlights-tags {
+        gap: 0.25rem;
+    }
+
+    .tech-tag,
+    .highlight-tag {
+        font-size: 0.75rem;
+        padding: 0.2rem 0.6rem;
+    }
+
+    .section-title {
+        font-size: 0.95rem;
+    }
 }

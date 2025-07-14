@@ -26,13 +26,13 @@
 }
 
 .terminal-screen.route-mode {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100% !important;
-  height: 100vh !important;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
   background: transparent;
-  z-index: 1000 !important;
+  z-index: 1000;
   min-height: 100vh;
   overflow: hidden;
 }
@@ -48,12 +48,12 @@
 
 /* Ensure terminal breaks out of any container constraints */
 .app-content.terminal-page .terminal-screen {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100% !important;
-  height: 100vh !important;
-  z-index: 1000 !important;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 1000;
 }
 
 .terminal-screen.route-mode .terminal-container {
@@ -80,14 +80,14 @@
 }
 
 .terminal-container.maximized {
-  width: 100% !important;
-  height: 100vh !important;
-  max-width: 100% !important;
-  max-height: 100vh !important;
+  width: 100%;
+  height: 100vh;
+  max-width: 100%;
+  max-height: 100vh;
   border-radius: 0;
   border: none;
-  left: 0 !important;
-  top: 0 !important;
+  left: 0;
+  top: 0;
 }
 
 /* Terminal Header */
@@ -214,6 +214,15 @@
   color: var(--terminal-text-light);
 }
 
+/* Grep Highlight */
+.grep-highlight {
+  background-color: #ff6b6b;
+  color: #000;
+  font-weight: bold;
+  padding: 1px 2px;
+  border-radius: 2px;
+}
+
 /* Command Prompt */
 .command-prompt {
   display: flex;
@@ -289,6 +298,43 @@
   }
 }
 
+/* Reverse Search Styles */
+.reverse-search-prompt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--terminal-primary);
+}
+
+.reverse-search-indicator {
+  color: var(--terminal-primary);
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.reverse-search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--terminal-primary);
+  font-family: inherit;
+  font-size: inherit;
+  outline: none;
+}
+
+.reverse-search-command {
+  color: var(--terminal-text-light);
+  margin-left: 8px;
+  flex: 1;
+}
+
+.reverse-search-info {
+  color: var(--terminal-text-muted);
+  font-size: 12px;
+  white-space: nowrap;
+  margin-left: 8px;
+}
+
 /* Terminal Sidecar */
 .terminal-sidecar {
   position: fixed;
@@ -298,14 +344,14 @@
   z-index: 1001;
   cursor: pointer;
   /* Override global transitions */
-  transition: none !important;
+  transition: none;
   /* Ensure immediate positioning */
   will-change: auto;
   /* Override any inherited transitions */
-  background-color: transparent !important;
-  color: inherit !important;
-  border-color: transparent !important;
-  box-shadow: none !important;
+  background-color: transparent;
+  color: inherit;
+  border-color: transparent;
+  box-shadow: none;
 }
 
 .sidecar-icon {
@@ -319,8 +365,6 @@
   justify-content: center;
   font-size: 24px;
   transition: transform 0.2s ease;
-  /* Override global transitions for positioning */
-  transition: transform 0.2s ease !important;
 }
 
 .sidecar-icon:hover {
@@ -335,8 +379,8 @@
   }
 
   .terminal-container.maximized {
-    width: 100% !important;
-    height: 100vh !important;
+    width: 100%;
+    height: 100vh;
   }
 
   .terminal-body {

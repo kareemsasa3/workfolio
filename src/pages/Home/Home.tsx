@@ -2,7 +2,7 @@ import "./Home.css";
 import TypeWriterText from "../../components/TypeWriterText";
 import SkillItem from "../../components/SkillItem";
 import { useNavigation } from "../../hooks/useNavigation";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 // Define constants outside the component for better performance
 const skills = [
@@ -62,6 +62,50 @@ const Home = () => {
     return localStorage.getItem("home-intro-shown") === "true";
   });
 
+  // Loading states for navigation buttons
+  const [isNavigatingToProjects, setIsNavigatingToProjects] = useState(false);
+  const [isNavigatingToContact, setIsNavigatingToContact] = useState(false);
+  const [isOpeningResume, setIsOpeningResume] = useState(false);
+
+  // Dynamic category generation
+  const skillCategories = useMemo(() => {
+    const categories = new Set(skills.map((skill) => skill.category));
+    // Define preferred order for consistent display
+    const preferredOrder = [
+      "Backend",
+      "Frontend",
+      "DevOps",
+      "Database",
+      "Testing",
+      "Security",
+      "Cloud",
+    ];
+    return preferredOrder.filter((cat) => categories.has(cat));
+  }, []);
+
+  // Navigation handlers with loading states
+  const handleNavigateToProjects = () => {
+    setIsNavigatingToProjects(true);
+    setTimeout(() => {
+      navigateToProjects();
+    }, 300);
+  };
+
+  const handleNavigateToContact = () => {
+    setIsNavigatingToContact(true);
+    setTimeout(() => {
+      navigateToContact();
+    }, 300);
+  };
+
+  const handleOpenResume = () => {
+    setIsOpeningResume(true);
+    setTimeout(() => {
+      openResume();
+      setIsOpeningResume(false);
+    }, 300);
+  };
+
   return (
     <div className="page-content home-page">
       <div className="home-container">
@@ -114,17 +158,19 @@ const Home = () => {
             >
               <button
                 className="btn btn-primary"
-                onClick={navigateToProjects}
+                onClick={handleNavigateToProjects}
+                disabled={isNavigatingToProjects}
                 aria-label="View my projects and work portfolio"
               >
-                View My Work
+                {isNavigatingToProjects ? "Loading..." : "View My Work"}
               </button>
               <button
                 className="btn btn-secondary"
-                onClick={openResume}
+                onClick={handleOpenResume}
+                disabled={isOpeningResume}
                 aria-label="Download my resume in a new tab"
               >
-                Download Resume
+                {isOpeningResume ? "Opening..." : "Download Resume"}
               </button>
             </div>
           </div>
@@ -140,8 +186,8 @@ const Home = () => {
             Featured Projects
           </h2>
           <div className="featured-projects-grid">
-            {featuredProjects.map((project, index) => (
-              <div key={index} className="featured-project-card">
+            {featuredProjects.map((project) => (
+              <div key={project.title} className="featured-project-card">
                 <div className="project-header">
                   <h3 className="project-title">{project.title}</h3>
                   <div className="project-badges">
@@ -171,10 +217,11 @@ const Home = () => {
           <div className="featured-projects-cta">
             <button
               className="btn btn-outline"
-              onClick={navigateToProjects}
+              onClick={handleNavigateToProjects}
+              disabled={isNavigatingToProjects}
               aria-label="View all projects"
             >
-              View All Projects →
+              {isNavigatingToProjects ? "Loading..." : "View All Projects →"}
             </button>
           </div>
         </section>
@@ -189,15 +236,7 @@ const Home = () => {
             Technologies I Work With
           </h2>
           <div className="skills-categories">
-            {[
-              "Backend",
-              "Frontend",
-              "DevOps",
-              "Database",
-              "Testing",
-              "Security",
-              "Cloud",
-            ].map((category) => (
+            {skillCategories.map((category) => (
               <div key={category} className="skill-category">
                 <h3 className="category-title">{category}</h3>
                 <ul className="skills-grid" aria-label={`${category} skills`}>
@@ -294,10 +333,11 @@ const Home = () => {
             </p>
             <button
               className="btn btn-primary btn-large"
-              onClick={navigateToContact}
+              onClick={handleNavigateToContact}
+              disabled={isNavigatingToContact}
               aria-label="Contact me to start a project"
             >
-              Get In Touch
+              {isNavigatingToContact ? "Loading..." : "Get In Touch"}
             </button>
           </div>
         </section>

@@ -1,0 +1,358 @@
+/* Top UI Styles */
+.top-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+}
+
+.top-container {
+    width: 95%;
+    max-width: 1200px;
+    height: 95vh;
+    background: #1a1a1a;
+    border: 1px solid #00ff00;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.top-header {
+    background: #2a2a2a;
+    padding: 12px 16px;
+    border-bottom: 1px solid #00ff00;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.top-title {
+    color: #00ff00;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.top-controls {
+    display: flex;
+    gap: 16px;
+    font-size: 12px;
+    color: #888;
+}
+
+.top-control {
+    white-space: nowrap;
+}
+
+.top-system-info {
+    background: #2a2a2a;
+    padding: 8px 16px;
+    border-bottom: 1px solid #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: #ccc;
+    flex-shrink: 0;
+}
+
+.top-uptime, .top-load, .top-time {
+    color: #00ff00;
+}
+
+.top-summary {
+    background: #2a2a2a;
+    padding: 8px 16px;
+    border-bottom: 1px solid #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: #ccc;
+    flex-shrink: 0;
+}
+
+.top-cpu-summary, .top-memory-summary {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.top-label {
+    color: #00ff00;
+    font-weight: bold;
+}
+
+.top-cpu-user {
+    color: #4ecdc4;
+}
+
+.top-cpu-system {
+    color: #ff6b6b;
+}
+
+.top-cpu-idle {
+    color: #95e1d3;
+}
+
+.top-cpu-iowait {
+    color: #f39c12;
+}
+
+.top-memory-total {
+    color: #4ecdc4;
+}
+
+.top-memory-used {
+    color: #ff6b6b;
+}
+
+.top-memory-free {
+    color: #95e1d3;
+}
+
+.top-memory-cached {
+    color: #f39c12;
+}
+
+.top-table-header {
+    background: #2a2a2a;
+    padding: 8px 16px;
+    border-bottom: 1px solid #00ff00;
+    display: grid;
+    grid-template-columns: 60px 2fr 80px 80px 100px 100px 60px 100px;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #00ff00;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.top-table-header>div:hover {
+    color: #4ecdc4;
+}
+
+.top-table-body {
+    flex: 1;
+    overflow-y: auto;
+    background: #1a1a1a;
+}
+
+.top-table-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.top-table-body::-webkit-scrollbar-track {
+    background: #2a2a2a;
+}
+
+.top-table-body::-webkit-scrollbar-thumb {
+    background: #00ff00;
+    border-radius: 4px;
+}
+
+.top-process-row {
+    padding: 4px 16px;
+    display: grid;
+    grid-template-columns: 60px 2fr 80px 80px 100px 100px 60px 100px;
+    gap: 8px;
+    font-size: 12px;
+    color: #ffffff;
+    border-bottom: 1px solid #333;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.top-process-row:hover {
+    background: #2a2a2a;
+}
+
+.top-process-row.selected {
+    background: #00ff00;
+    color: #1a1a1a;
+}
+
+.top-process-row.selected .top-col-cpu,
+.top-process-row.selected .top-col-memory {
+    color: #1a1a1a;
+}
+
+.top-col-pid {
+    color: #888;
+    text-align: right;
+}
+
+.top-col-name {
+    color: #00ff00;
+    font-weight: bold;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.top-col-cpu {
+    color: #ff6b6b;
+    text-align: right;
+    font-weight: bold;
+}
+
+.top-col-memory {
+    color: #4ecdc4;
+    text-align: right;
+    font-weight: bold;
+}
+
+.top-col-vsz, .top-col-rss {
+    color: #888;
+    text-align: right;
+}
+
+.top-col-state {
+    color: #f39c12;
+    text-align: center;
+    font-weight: bold;
+}
+
+.top-col-time {
+    color: #888;
+    text-align: center;
+}
+
+.top-footer {
+    background: #2a2a2a;
+    padding: 12px 16px;
+    border-top: 1px solid #00ff00;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.top-info {
+    text-align: center;
+    color: #888;
+    font-size: 12px;
+}
+
+.top-info kbd {
+    background: #1a1a1a;
+    border: 1px solid #555;
+    border-radius: 3px;
+    padding: 2px 6px;
+    font-size: 11px;
+    color: #00ff00;
+}
+
+.top-refresh {
+    color: #00ff00;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .top-container {
+        width: 98%;
+        height: 98vh;
+    }
+
+    .top-header {
+        padding: 8px 12px;
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start;
+    }
+
+    .top-controls {
+        font-size: 11px;
+        gap: 12px;
+    }
+
+    .top-system-info {
+        padding: 6px 12px;
+        flex-direction: column;
+        gap: 4px;
+        align-items: flex-start;
+    }
+
+    .top-summary {
+        padding: 6px 12px;
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start;
+    }
+
+    .top-cpu-summary, .top-memory-summary {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .top-table-header {
+        padding: 6px 12px;
+        grid-template-columns: 50px 1fr 60px 60px 80px 80px 50px 80px;
+        gap: 4px;
+        font-size: 11px;
+    }
+
+    .top-process-row {
+        padding: 3px 12px;
+        grid-template-columns: 50px 1fr 60px 60px 80px 80px 50px 80px;
+        gap: 4px;
+        font-size: 11px;
+    }
+
+    .top-footer {
+        padding: 8px 12px;
+        flex-direction: column;
+        gap: 8px;
+    }
+}
+
+/* Animation for process updates */
+@keyframes processUpdate {
+    0% {
+        background: rgba(0, 255, 0, 0.1);
+    }
+
+    100% {
+        background: transparent;
+    }
+}
+
+.top-process-row.updating {
+    animation: processUpdate 0.5s ease-out;
+}
+
+/* Matrix-style glow effect */
+.top-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 20% 80%, rgba(0, 255, 0, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(0, 255, 0, 0.03) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: -1;
+    animation: matrixGlow 10s ease-in-out infinite;
+}
+
+@keyframes matrixGlow {
+    0%, 100% {
+        opacity: 0.3;
+    }
+
+    50% {
+        opacity: 0.6;
+    }
+}

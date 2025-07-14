@@ -1,3 +1,33 @@
+// Configuration constants for better type safety and maintainability
+export const COMPLEXITY_LEVELS = [
+  "Beginner",
+  "Intermediate",
+  "Advanced",
+  "Expert",
+] as const;
+export const STATUSES = ["Live", "Development", "Completed"] as const;
+export const CATEGORIES = [
+  "Backend Systems",
+  "Full-Stack Web App",
+  "Automation & AI",
+  "Portfolio",
+  "E-Commerce",
+  "Freelance",
+  "Healthcare",
+  "AI/ML",
+] as const;
+
+// Complexity order for sorting
+export const complexityOrder: Record<
+  (typeof COMPLEXITY_LEVELS)[number],
+  number
+> = {
+  Expert: 4,
+  Advanced: 3,
+  Intermediate: 2,
+  Beginner: 1,
+};
+
 export interface Project {
   id: string;
   category: string;
@@ -6,8 +36,8 @@ export interface Project {
   description: string;
   techStack: string[];
   features: string[];
-  complexity: "Beginner" | "Intermediate" | "Advanced" | "Expert";
-  status: "Live" | "Development" | "Completed";
+  complexity: (typeof COMPLEXITY_LEVELS)[number];
+  status: (typeof STATUSES)[number];
   url: string;
   githubUrl?: string;
   liveUrl?: string;

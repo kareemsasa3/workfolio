@@ -1,8 +1,10 @@
+/* Terminal Matrix Theme for Projects List */
 .projects-list-content {
     width: 100%;
     max-width: 1200px;
     padding: 0 var(--spacing-md);
     margin: 0 auto;
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 .projects-directory {
@@ -16,21 +18,49 @@
 }
 
 .item {
-    background: var(--background-color-transparent);
-    border: 1px solid var(--primary-color-light);
-    border-radius: var(--border-radius-lg);
+    background: var(--terminal-background, #1a1a1a);
+    border: 1px solid var(--terminal-primary, #00ff00);
+    border-radius: 8px;
     padding: var(--spacing-lg);
     transition: all var(--transition-normal);
     cursor: pointer;
     backdrop-filter: blur(10px);
     min-height: 200px;
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+    color: var(--terminal-text-light, #ffffff);
 }
 
 .item:hover {
     transform: translateY(-4px);
-    border-color: var(--primary-color);
-    box-shadow: 0 8px 25px rgba(175, 42, 42, 0.3);
-    background: var(--background-color-overlay);
+    border-color: var(--terminal-primary, #00ff00);
+    box-shadow: 0 0 25px rgba(0, 255, 0, 0.4);
+    background: rgba(0, 255, 0, 0.05);
+}
+
+.item h3 {
+    color: var(--terminal-primary, #00ff00);
+    text-shadow: 0 0 10px var(--terminal-primary, #00ff00);
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+    margin-bottom: 0.5rem;
+}
+
+.item p {
+    color: var(--terminal-text-light, #ffffff);
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+    line-height: 1.4;
+}
+
+.item .tech-stack {
+    color: var(--terminal-success, #4ecdc4);
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+    font-size: 0.9rem;
+}
+
+.item .project-meta {
+    color: var(--terminal-text-muted, #666);
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+    font-size: 0.8rem;
 }
 
 @media (max-width: 768px) {

@@ -1,23 +1,17 @@
 import "./WorkList.css";
 import WorkDetails from "../WorkDetails";
+import { workExperienceData } from "../../data/workExperience";
 
 const WorkList = () => {
   return (
     <div className="work-list-content">
-      <ul className="work-directory">
-        <li className="exp">
-          <WorkDetails
-            smallText="Jul. 2021 - Oct. 2022"
-            largeText="CAPGEMINI / SOFTWARE DEVELOPER"
-          />
-        </li>
-        <li className="exp">
-          <WorkDetails
-            smallText="Oct. 2023 - Present"
-            largeText="VARSITY TUTORS / PROGRAMMING TUTOR"
-          />
-        </li>
-      </ul>
+      <div className="work-experience-list">
+        {workExperienceData.map((experience) => (
+          <div key={experience.id} className="work-experience-item">
+            <WorkDetails {...experience} />
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

@@ -20,6 +20,7 @@
   justify-content: center;
   padding: 2rem 0;
   margin-bottom: 4rem;
+  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 .hero-content {
@@ -33,6 +34,7 @@
   color: var(--text-color);
   margin: 0 0 1rem 0;
   line-height: 1.2;
+  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 .hero-subtitle {
@@ -40,6 +42,7 @@
   color: var(--primary-color);
   margin: 0 0 2rem 0;
   font-weight: 600;
+  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 .hero-description {
@@ -50,6 +53,7 @@
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
+  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 .hero-buttons {
@@ -81,13 +85,14 @@
   border-radius: 12px;
   padding: 1.5rem;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
+  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 .featured-project-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
   border-color: var(--primary-color);
+  background: rgba(0, 255, 0, 0.05);
 }
 
 .project-header {
@@ -102,6 +107,7 @@
   font-weight: 700;
   color: var(--text-color);
   margin: 0;
+  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 .project-badges {
@@ -159,6 +165,7 @@
   color: var(--text-secondary);
   line-height: 1.6;
   margin: 0 0 1rem 0;
+  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 .project-tech {
@@ -175,6 +182,7 @@
   font-size: 0.8rem;
   font-weight: 500;
   border: 1px solid var(--primary-color-medium);
+  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 .featured-projects-cta {
@@ -190,6 +198,7 @@
   text-align: center;
   margin: 0 0 2rem 0;
   position: relative;
+  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 .section-title::after {
@@ -222,12 +231,13 @@
   border-radius: 12px;
   padding: 1.5rem;
   transition: all 0.3s ease;
+  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 .skill-category:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   border-color: var(--primary-color);
+  background: rgba(0, 255, 0, 0.05);
 }
 
 .category-title {
@@ -238,6 +248,7 @@
   text-align: center;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 .skills-grid {
@@ -275,19 +286,21 @@
   padding: 2rem;
   text-align: center;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
+  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 .about-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
   border-color: var(--primary-color);
+  background: rgba(0, 255, 0, 0.05);
 }
 
 .card-icon {
   font-size: 3rem;
   margin-bottom: 1rem;
-  display: block;
+  display: inline-block;
+  text-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
 }
 
 .about-card h3 {
@@ -295,12 +308,14 @@
   font-weight: 600;
   color: var(--text-color);
   margin: 0 0 1rem 0;
+  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 .about-card p {
   color: var(--text-secondary);
   line-height: 1.6;
   margin: 0;
+  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 /* CTA Section */
@@ -323,6 +338,7 @@
   font-weight: 700;
   color: var(--text-color);
   margin: 0 0 1rem 0;
+  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 .cta-content p {
@@ -330,6 +346,7 @@
   color: var(--text-secondary);
   line-height: 1.6;
   margin: 0 0 2rem 0;
+  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 /* Buttons */
@@ -346,6 +363,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 .btn-primary {

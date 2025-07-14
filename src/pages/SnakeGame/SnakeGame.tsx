@@ -1,4 +1,3 @@
-import React from "react";
 import "./SnakeGame.css";
 import SnakeGameComponent from "../../components/SnakeGame/SnakeGame";
 
