@@ -1,4 +1,4 @@
-import { useRef, useCallback, useReducer } from "react";
+import { useRef, useCallback, useReducer, useEffect } from "react";
 import {
   FileSystemItem,
   HistoryEntry,
@@ -29,17 +29,20 @@ const terminalReducer = (
     case "SET_AUTOCOMPLETE_INDEX":
       return { ...state, autocompleteIndex: action.payload };
 
-    case "SET_FADE_OUT_WELCOME":
-      return { ...state, fadeOutWelcome: action.payload };
-
     case "SET_CURRENT_DIRECTORY":
       return { ...state, currentDirectory: action.payload };
 
     case "SET_IS_MINIMIZED":
       return { ...state, isMinimized: action.payload };
 
+    case "SET_IS_MAXIMIZED":
+      return { ...state, isMaximized: action.payload };
+
     case "SET_SHOW_PREVIEW":
       return { ...state, showPreview: action.payload };
+
+    case "SET_ACTIVE_TYPEWRITER":
+      return { ...state, activeTypewriter: action.payload };
 
     case "ADD_HISTORY_ENTRY":
       return {
@@ -67,6 +70,13 @@ const terminalReducer = (
         showPreview: false,
       };
 
+    case "MAXIMIZE_TERMINAL":
+      return {
+        ...state,
+        isMaximized: !state.isMaximized,
+        isMinimized: false, // Ensure minimized is false when maximizing
+      };
+
     case "SHOW_PREVIEW":
       return {
         ...state,
@@ -77,12 +87,6 @@ const terminalReducer = (
       return {
         ...state,
         showPreview: false,
-      };
-
-    case "FADE_OUT_WELCOME":
-      return {
-        ...state,
-        fadeOutWelcome: true,
       };
 
     default:
@@ -199,15 +203,431 @@ const fileContents: Record<string, string[]> = {
     "I believe in continuous learning and staying updated with the latest",
     "technologies and industry trends to deliver the best solutions.",
   ],
+  "resolute consulting group": [
+    "=== Resolute Consulting Group ===",
+    "",
+    "Role: Software Consultant",
+    "Duration: 2024 - Present",
+    "Location: Remote",
+    "",
+    "Role Overview:",
+    "Leading development initiatives and architecting enterprise solutions",
+    "for Fortune 500 clients in the consulting space.",
+    "",
+    "Key Responsibilities:",
+    "- Lead development of enterprise applications for major clients",
+    "- Architect scalable solutions using modern cloud technologies",
+    "- Mentor junior developers and conduct technical interviews",
+    "- Collaborate with cross-functional teams to deliver high-quality solutions",
+    "- Implement best practices and coding standards across projects",
+    "",
+    "Technologies Used:",
+    "- Backend: Node.js, Python, Java, Spring Boot, .NET",
+    "- Frontend: React, Angular, TypeScript, JavaScript",
+    "- Database: SQL Server, PostgreSQL, MongoDB, Redis",
+    "- Cloud: AWS, Azure, Docker, Kubernetes",
+    "- Tools: Git, Azure DevOps, Jira, Confluence",
+    "",
+    "Key Achievements:",
+    "- Successfully delivered 8+ enterprise applications on time",
+    "- Reduced deployment time by 70% through CI/CD optimization",
+    "- Implemented automated testing achieving 90% code coverage",
+    "- Received 'Excellence in Delivery' award for Q4 2023",
+    "",
+    "Client Impact:",
+    "- Improved client system performance by 60%",
+    "- Reduced operational costs by 40% through automation",
+    "- Enhanced security posture for financial services clients",
+    "",
+    "Leadership:",
+    "- Led technical teams of 5-8 developers",
+    "- Conducted 15+ technical interviews",
+    "- Established development standards and processes",
+  ],
+  capgemini: [
+    "=== Capgemini ===",
+    "",
+    "Role: Full Stack Developer",
+    "Duration: 2021 - 2022",
+    "Location: Remote",
+    "",
+    "Role Overview:",
+    "Developed enterprise-level applications and digital solutions",
+    "for global clients in a consulting environment.",
+    "",
+    "Key Responsibilities:",
+    "- Built scalable web applications using modern frameworks",
+    "- Developed RESTful APIs and microservices architecture",
+    "- Implemented CI/CD pipelines and DevOps practices",
+    "- Collaborated with international teams across time zones",
+    "- Participated in agile development methodologies",
+    "",
+    "Technologies Used:",
+    "- Frontend: React, Angular, TypeScript, JavaScript, HTML5, CSS3",
+    "- Backend: Java, Spring Boot, Node.js, Python",
+    "- Database: Oracle, PostgreSQL, MongoDB",
+    "- Cloud: AWS, Azure, Docker, Kubernetes",
+    "- Tools: Git, Jenkins, Jira, Confluence",
+    "",
+    "Key Projects:",
+    "- Banking Platform: Developed core banking features for major financial institution",
+    "- E-commerce Solution: Built scalable online retail platform",
+    "- Data Analytics Dashboard: Real-time business intelligence tools",
+    "- Mobile App Backend: REST API for cross-platform mobile applications",
+    "",
+    "Achievements:",
+    "- Delivered 5+ major client projects on schedule",
+    "- Improved application performance by 45%",
+    "- Reduced deployment time by 60% through automation",
+    "- Received 'Outstanding Performance' recognition",
+    "",
+    "Global Collaboration:",
+    "- Worked with teams across 3 continents",
+    "- Contributed to knowledge sharing initiatives",
+    "- Mentored junior developers in best practices",
+  ],
+  freelance: [
+    "=== Freelance Development ===",
+    "",
+    "Role: Independent Software Developer",
+    "Duration: 2021 - Present",
+    "Location: Remote",
+    "",
+    "Role Overview:",
+    "Providing specialized software development services to diverse clients",
+    "across various industries and technology stacks.",
+    "",
+    "Key Responsibilities:",
+    "- Develop custom web applications and mobile solutions",
+    "- Provide technical consulting and architecture guidance",
+    "- Implement modern development practices and best practices",
+    "- Deliver end-to-end solutions from concept to deployment",
+    "- Maintain and optimize existing applications",
+    "",
+    "Technologies Used:",
+    "- Frontend: React, Vue.js, Angular, TypeScript, JavaScript",
+    "- Backend: Node.js, Python, Django, Flask, Express",
+    "- Database: PostgreSQL, MongoDB, MySQL, Redis",
+    "- Mobile: React Native, Flutter, Ionic",
+    "- Cloud: AWS, Google Cloud, Heroku, Vercel",
+    "",
+    "Client Projects:",
+    "- E-commerce Platform: Built complete online store with payment integration",
+    "- Real Estate Management System: Property listing and management platform",
+    "- Healthcare Dashboard: Patient data visualization and reporting tools",
+    "- Educational Platform: Learning management system for online courses",
+    "- Restaurant Management: Order processing and inventory management",
+    "",
+    "Achievements:",
+    "- Completed 25+ successful client projects",
+    "- Maintained 100% client satisfaction rate",
+    "- Delivered projects 15% under average industry timeline",
+    "- Built long-term relationships with recurring clients",
+    "",
+    "Business Skills:",
+    "- Project management and client communication",
+    "- Technical proposal writing and cost estimation",
+    "- Time management and deadline adherence",
+    "- Continuous learning and skill development",
+  ],
+  "outlier ai": [
+    "=== Outlier AI ===",
+    "",
+    "Role: AI/ML Engineer",
+    "Duration: 2022 - 2023",
+    "Location: Remote",
+    "",
+    "Role Overview:",
+    "Developed machine learning models and AI solutions for data analysis",
+    "and predictive analytics in the artificial intelligence space.",
+    "",
+    "Key Responsibilities:",
+    "- Developed and deployed machine learning models for data analysis",
+    "- Implemented natural language processing solutions",
+    "- Built data pipelines and ETL processes",
+    "- Collaborated with data scientists and engineers",
+    "- Optimized model performance and accuracy",
+    "",
+    "Technologies Used:",
+    "- Python: TensorFlow, PyTorch, Scikit-learn, Pandas, NumPy",
+    "- ML/AI: Natural Language Processing, Computer Vision, Deep Learning",
+    "- Data Processing: Apache Spark, Kafka, Airflow",
+    "- Cloud: AWS SageMaker, Google Cloud AI, Azure ML",
+    "- Tools: Jupyter, Git, Docker, Kubernetes",
+    "",
+    "Key Projects:",
+    "- Sentiment Analysis Model: Analyzed customer feedback for product insights",
+    "- Recommendation System: Built personalized content recommendation engine",
+    "- Data Classification Pipeline: Automated document classification system",
+    "- Predictive Analytics Dashboard: Real-time business forecasting tools",
+    "",
+    "Achievements:",
+    "- Improved model accuracy by 25% through optimization",
+    "- Reduced processing time by 60% through pipeline optimization",
+    "- Successfully deployed 3 production ML models",
+    "- Published research paper on novel NLP approach",
+    "",
+    "Innovation:",
+    "- Developed custom algorithms for specific business use cases",
+    "- Contributed to open-source ML libraries",
+    "- Mentored junior data scientists",
+  ],
+  "varsity tutors": [
+    "=== Varsity Tutors ===",
+    "",
+    "Role: Software Development Intern",
+    "Duration: 2021 - 2022",
+    "Location: Remote / St. Louis, MO",
+    "",
+    "Role Overview:",
+    "Gained hands-on experience in software development while contributing",
+    "to educational technology platforms and learning management systems.",
+    "",
+    "Key Responsibilities:",
+    "- Assisted in developing web applications for online education",
+    "- Implemented features for virtual classroom functionality",
+    "- Fixed bugs and improved application performance",
+    "- Participated in code reviews and team meetings",
+    "- Documented code and user guides",
+    "",
+    "Technologies Used:",
+    "- Frontend: React, JavaScript, HTML5, CSS3",
+    "- Backend: Node.js, Express, Python",
+    "- Database: MongoDB, PostgreSQL",
+    "- Tools: Git, VS Code, Postman, Jira",
+    "",
+    "Projects Contributed To:",
+    "- Virtual Classroom Platform: Enhanced real-time communication features",
+    "- Student Dashboard: Built personalized learning analytics interface",
+    "- Tutor Matching System: Improved algorithm for student-tutor pairing",
+    "- Mobile App Backend: Developed API endpoints for mobile application",
+    "",
+    "Learning Outcomes:",
+    "- Gained practical experience with modern web technologies",
+    "- Learned agile development methodologies",
+    "- Improved problem-solving and debugging skills",
+    "- Developed professional communication skills",
+    "",
+    "Impact:",
+    "- Contributed to platform serving 100K+ students",
+    "- Improved user experience for virtual learning",
+    "- Received positive feedback from development team",
+    "",
+    "Growth:",
+    "This role provided valuable experience in educational technology",
+    "and laid the foundation for future software development opportunities.",
+  ],
+  "react-complete-guide": [
+    "=== React Complete Guide Course ===",
+    "",
+    "Platform: Udemy / GitHub",
+    "Instructor: Maximilian Schwarzmüller",
+    "Duration: 50+ hours",
+    "Status: Completed",
+    "",
+    "Course Overview:",
+    "Comprehensive React.js course covering everything from basics to advanced",
+    "concepts including hooks, context, Redux, and modern React patterns.",
+    "",
+    "Key Topics Covered:",
+    "- React fundamentals and JSX",
+    "- Components, props, and state management",
+    "- React Hooks (useState, useEffect, useContext, useReducer)",
+    "- Custom hooks and hook rules",
+    "- Context API and state management",
+    "- Redux Toolkit and async actions",
+    "- React Router and navigation",
+    "- Forms, validation, and user input",
+    "- HTTP requests and API integration",
+    "- Error handling and debugging",
+    "",
+    "Projects Built:",
+    "- E-commerce application with cart functionality",
+    "- User authentication system",
+    "- Real-time chat application",
+    "- Task management app with Redux",
+    "",
+    "Skills Acquired:",
+    "- Modern React development patterns",
+    "- State management best practices",
+    "- Component architecture and reusability",
+    "- Performance optimization techniques",
+    "",
+    "GitHub Repository:",
+    "Access the complete course materials and projects on GitHub.",
+    "Click to open the repository and explore the code examples.",
+  ],
+  "nodejs-masterclass": [
+    "=== Node.js Masterclass Course ===",
+    "",
+    "Platform: Udemy / GitHub",
+    "Instructor: Andrew Mead",
+    "Duration: 40+ hours",
+    "Status: Completed",
+    "",
+    "Course Overview:",
+    "Complete Node.js course covering server-side JavaScript development,",
+    "including Express.js, MongoDB, authentication, and deployment.",
+    "",
+    "Key Topics Covered:",
+    "- Node.js fundamentals and event loop",
+    "- Express.js framework and middleware",
+    "- RESTful API development",
+    "- MongoDB and Mongoose ODM",
+    "- User authentication and authorization",
+    "- File uploads and data validation",
+    "- Testing with Jest and Supertest",
+    "- Error handling and logging",
+    "- Deployment and production setup",
+    "- Security best practices",
+    "",
+    "Projects Built:",
+    "- Task management API with authentication",
+    "- Weather application with external APIs",
+    "- Chat application with Socket.io",
+    "- E-commerce backend with payment integration",
+    "",
+    "Skills Acquired:",
+    "- Server-side JavaScript development",
+    "- API design and documentation",
+    "- Database design and optimization",
+    "- Authentication and security implementation",
+    "",
+    "GitHub Repository:",
+    "Access the complete course materials and projects on GitHub.",
+    "Click to open the repository and explore the backend code.",
+  ],
+  "typescript-fundamentals": [
+    "=== TypeScript Fundamentals Course ===",
+    "",
+    "Platform: Frontend Masters / GitHub",
+    "Instructor: Mike North",
+    "Duration: 6+ hours",
+    "Status: Completed",
+    "",
+    "Course Overview:",
+    "Comprehensive TypeScript course covering type system fundamentals,",
+    "advanced patterns, and real-world application development.",
+    "",
+    "Key Topics Covered:",
+    "- TypeScript basics and type annotations",
+    "- Interfaces and type aliases",
+    "- Generics and advanced types",
+    "- Union and intersection types",
+    "- Type guards and narrowing",
+    "- Decorators and metadata",
+    "- Module systems and namespaces",
+    "- Configuration and compilation",
+    "- Integration with React and Node.js",
+    "- Best practices and patterns",
+    "",
+    "Projects Built:",
+    "- Type-safe API client library",
+    "- React application with TypeScript",
+    "- Node.js backend with type safety",
+    "- Utility library with generics",
+    "",
+    "Skills Acquired:",
+    "- Strong typing and type safety",
+    "- Advanced TypeScript patterns",
+    "- Integration with existing JavaScript code",
+    "- Type system design and architecture",
+    "",
+    "GitHub Repository:",
+    "Access the complete course materials and projects on GitHub.",
+    "Click to open the repository and explore the TypeScript examples.",
+  ],
+  "python-data-science": [
+    "=== Python Data Science Course ===",
+    "",
+    "Platform: Coursera / GitHub",
+    "Instructor: Dr. Charles Severance",
+    "Duration: 30+ hours",
+    "Status: Completed",
+    "",
+    "Course Overview:",
+    "Comprehensive data science course covering Python programming,",
+    "data analysis, visualization, and machine learning fundamentals.",
+    "",
+    "Key Topics Covered:",
+    "- Python programming fundamentals",
+    "- Data manipulation with Pandas",
+    "- Data visualization with Matplotlib and Seaborn",
+    "- Statistical analysis and hypothesis testing",
+    "- Machine learning with Scikit-learn",
+    "- Data cleaning and preprocessing",
+    "- Exploratory data analysis (EDA)",
+    "- Jupyter notebooks and data storytelling",
+    "- SQL and database integration",
+    "- Big data tools and techniques",
+    "",
+    "Projects Built:",
+    "- Data analysis dashboard",
+    "- Machine learning model for prediction",
+    "- Data visualization portfolio",
+    "- Automated data processing pipeline",
+    "",
+    "Skills Acquired:",
+    "- Data analysis and manipulation",
+    "- Statistical modeling and inference",
+    "- Machine learning fundamentals",
+    "- Data visualization and storytelling",
+    "",
+    "GitHub Repository:",
+    "Access the complete course materials and projects on GitHub.",
+    "Click to open the repository and explore the data science projects.",
+  ],
+  "aws-cloud-practitioner": [
+    "=== AWS Cloud Practitioner Course ===",
+    "",
+    "Platform: AWS Training / GitHub",
+    "Instructor: AWS Official",
+    "Duration: 20+ hours",
+    "Status: Completed",
+    "",
+    "Course Overview:",
+    "AWS Cloud Practitioner certification course covering cloud fundamentals,",
+    "AWS services, security, and best practices for cloud architecture.",
+    "",
+    "Key Topics Covered:",
+    "- Cloud computing fundamentals",
+    "- AWS global infrastructure",
+    "- Core AWS services (EC2, S3, RDS, Lambda)",
+    "- Security and compliance",
+    "- Pricing and cost optimization",
+    "- Well-Architected Framework",
+    "- AWS CLI and SDKs",
+    "- Monitoring and logging",
+    "- Disaster recovery and backup",
+    "- DevOps and CI/CD practices",
+    "",
+    "Projects Built:",
+    "- Multi-tier web application deployment",
+    "- Serverless application with Lambda",
+    "- Automated backup and recovery system",
+    "- Cloud monitoring and alerting setup",
+    "",
+    "Skills Acquired:",
+    "- AWS service architecture",
+    "- Cloud security best practices",
+    "- Cost optimization strategies",
+    "- Infrastructure as Code (IaC)",
+    "",
+    "GitHub Repository:",
+    "Access the complete course materials and projects on GitHub.",
+    "Click to open the repository and explore the AWS infrastructure code.",
+  ],
 };
 
 // Helper function to create properly typed history entries
 const createHistoryEntry = (
   text: string,
-  type?: "error" | "success" | "info" | "command"
+  type?: "error" | "success" | "info" | "command",
+  useTypewriter?: boolean
 ): HistoryEntry => ({
   text,
   type,
+  useTypewriter,
 });
 
 // Shared helper function to get items in current directory
@@ -315,7 +735,8 @@ class CdCommand implements Command {
     history: HistoryEntry[],
     fileSystem: FileSystemItem[],
     dispatch: React.Dispatch<TerminalAction>,
-    currentDirectory: string
+    currentDirectory: string,
+    onNavigate?: (route: string) => void
   ): HistoryEntry[] {
     const newHistory = [...history];
     const target = args[0];
@@ -375,12 +796,30 @@ class CdCommand implements Command {
     const item = currentItems.find((fs) => fs.name === target);
 
     if (item && item.type === "directory") {
-      const newPath =
-        currentDirectory === "/"
-          ? `/${target}`
-          : `${currentDirectory}/${target}`;
-      dispatch({ type: "SET_CURRENT_DIRECTORY", payload: newPath });
-      newHistory.push(createHistoryEntry(`Changed to ${newPath}`, "success"));
+      // Check if this is a project directory with a GitHub URL
+      if (item.githubUrl) {
+        newHistory.push(
+          createHistoryEntry(`Opening ${target} on GitHub...`, "info")
+        );
+        newHistory.push(
+          createHistoryEntry(
+            `Access granted. Redirecting to GitHub repository.`,
+            "success"
+          )
+        );
+        // Open GitHub URL in a new tab
+        setTimeout(() => {
+          window.open(item.githubUrl, "_blank");
+        }, 1500);
+      } else {
+        // Regular directory navigation
+        const newPath =
+          currentDirectory === "/"
+            ? `/${target}`
+            : `${currentDirectory}/${target}`;
+        dispatch({ type: "SET_CURRENT_DIRECTORY", payload: newPath });
+        newHistory.push(createHistoryEntry(`Changed to ${newPath}`, "success"));
+      }
     } else if (item && item.type === "file") {
       newHistory.push(
         createHistoryEntry(
@@ -389,14 +828,31 @@ class CdCommand implements Command {
         )
       );
     } else {
-      // Check if this is a project directory that should open a page
+      // Check if this is a path to a project directory that should open a page or GitHub
       const fullPath =
         currentDirectory === "/"
           ? `/${target}`
           : `${currentDirectory}/${target}`;
       const pathItem = findItemByPath(fullPath);
 
-      if (pathItem && pathItem.route) {
+      if (pathItem && pathItem.githubUrl) {
+        // This is a project directory with a GitHub URL
+        const projectName = target.split("/").pop() || target;
+        newHistory.push(
+          createHistoryEntry(`Opening ${projectName} on GitHub...`, "info")
+        );
+        newHistory.push(
+          createHistoryEntry(
+            `Access granted. Redirecting to GitHub repository.`,
+            "success"
+          )
+        );
+        // Open GitHub URL in a new tab
+        setTimeout(() => {
+          window.open(pathItem.githubUrl, "_blank");
+        }, 1500);
+      } else if (pathItem && pathItem.route) {
+        // This is a file or directory that should open a page
         newHistory.push(createHistoryEntry(`Opening ${target}...`, "info"));
         newHistory.push(
           createHistoryEntry(
@@ -405,10 +861,12 @@ class CdCommand implements Command {
           )
         );
         const route = `/${pathItem.route}`;
-        dispatch({ type: "SET_TARGET_ROUTE", payload: route });
-        setTimeout(() => {
-          dispatch({ type: "SET_FADE_OUT_WELCOME", payload: true });
-        }, 1500);
+        // Navigate directly instead of using fade out
+        if (onNavigate) {
+          setTimeout(() => {
+            onNavigate(route);
+          }, 1500);
+        }
       } else {
         newHistory.push(
           createHistoryEntry(`Error: Directory '${target}' not found.`, "error")
@@ -484,7 +942,7 @@ class HelpCommand implements Command {
     );
     newHistory.push(
       createHistoryEntry(
-        "  exit       Close terminal and go to home page",
+        "  exit [route] Close terminal and go to specified page (default: home)",
         "info"
       )
     );
@@ -506,7 +964,15 @@ class HelpCommand implements Command {
 class ClearCommand implements Command {
   name = "clear";
 
-  execute(_args: string[], _history: HistoryEntry[]): HistoryEntry[] {
+  execute(
+    _args: string[],
+    _history: HistoryEntry[],
+    _fileSystem: FileSystemItem[],
+    dispatch: React.Dispatch<TerminalAction>,
+    _currentDirectory: string
+  ): HistoryEntry[] {
+    // Stop any active typewriter animation
+    dispatch({ type: "SET_ACTIVE_TYPEWRITER", payload: false });
     return [];
   }
 }
@@ -532,24 +998,32 @@ class ExitCommand implements Command {
   name = "exit";
 
   execute(
-    _args: string[],
+    args: string[],
     history: HistoryEntry[],
     _fileSystem: FileSystemItem[],
     dispatch: React.Dispatch<TerminalAction>,
-    _currentDirectory: string
+    _currentDirectory: string,
+    onNavigate?: (route: string) => void
   ): HistoryEntry[] {
     const newHistory = [...history];
+    const targetRoute = args[0] || "/"; // Allow specifying a target route
+
     newHistory.push(createHistoryEntry("Closing terminal...", "info"));
     newHistory.push(
-      createHistoryEntry("Access granted. Opening home page.", "success")
+      createHistoryEntry(
+        `Access granted. Opening ${
+          targetRoute === "/" ? "home" : targetRoute
+        } page.`,
+        "success"
+      )
     );
 
-    // Set the target route and trigger fade out
-    dispatch({
-      type: "SET_TARGET_ROUTE",
-      payload: "/",
-    });
-    dispatch({ type: "SET_FADE_OUT_WELCOME", payload: true });
+    // Navigate directly instead of using fade out
+    if (onNavigate) {
+      setTimeout(() => {
+        onNavigate(targetRoute);
+      }, 1000);
+    }
 
     return newHistory;
   }
@@ -563,10 +1037,13 @@ class CatCommand implements Command {
     history: HistoryEntry[],
     fileSystem: FileSystemItem[],
     dispatch: React.Dispatch<TerminalAction>,
-    currentDirectory: string
+    currentDirectory: string,
+    onNavigate?: (route: string) => void,
+    state?: TerminalState
   ): HistoryEntry[] {
     const newHistory = [...history];
-    const filename = args[0];
+    // Handle quoted filenames by joining args and removing quotes
+    const filename = args.join(" ").replace(/^["']|["']$/g, "");
 
     if (!filename) {
       newHistory.push(
@@ -592,41 +1069,141 @@ class CatCommand implements Command {
       return newHistory;
     }
 
-    // Check if we have content for this specific file first
-    const content = fileContents[filename];
-    if (content) {
-      // Display the actual file content
-      content.forEach((line) => {
-        newHistory.push(createHistoryEntry(line, "info"));
-      });
-    } else if (file.route) {
-      // This is a file that should open a page (only if no specific content is defined)
-      newHistory.push(createHistoryEntry(`Opening ${filename}...`, "info"));
+    // Check if this file has a GitHub URL first (for course files that should redirect)
+    if (file.githubUrl) {
+      newHistory.push(
+        createHistoryEntry(`Opening ${filename} on GitHub...`, "info")
+      );
       newHistory.push(
         createHistoryEntry(
-          `Access granted. Opening ${filename} page.`,
+          `Access granted. Redirecting to GitHub repository.`,
           "success"
         )
       );
-      const route = `/${file.route}`;
-      dispatch({ type: "SET_TARGET_ROUTE", payload: route });
+      // Open GitHub URL in a new tab
       setTimeout(() => {
-        dispatch({ type: "SET_FADE_OUT_WELCOME", payload: true });
+        window.open(file.githubUrl, "_blank");
       }, 1500);
     } else {
-      // Show file contents (simulated) for files without specific content
-      newHistory.push(createHistoryEntry(`--- ${filename} ---`, "info"));
-      newHistory.push(createHistoryEntry(`File size: ${file.size}`, "info"));
-      newHistory.push(
-        createHistoryEntry(`Last modified: ${file.date}`, "info")
-      );
-      newHistory.push(
-        createHistoryEntry(`Permissions: ${file.permissions}`, "info")
-      );
-      newHistory.push(createHistoryEntry("", "info"));
-      newHistory.push(
-        createHistoryEntry("(File content would be displayed here)", "info")
-      );
+      // Check if we have content for this specific file
+      const content = fileContents[filename];
+      if (content) {
+        // Mark typewriter as active
+        dispatch({ type: "SET_ACTIVE_TYPEWRITER", payload: true });
+
+        // Start with the first line
+        newHistory.push(createHistoryEntry(content[0], "info", true));
+
+        // Schedule the remaining lines to appear after the previous line completes
+        let currentIndex = 1;
+        const scheduleNextLine = () => {
+          // Check if typewriter was cancelled
+          if (state && !state.activeTypewriter) {
+            return;
+          }
+
+          if (currentIndex < content.length) {
+            // Calculate delay based on the length of the previous line
+            const previousLine = content[currentIndex - 1];
+            const typewriterDelay = previousLine.length * 30; // 30ms per character
+            const lineDelay = 100; // Additional delay between lines
+            const totalDelay = typewriterDelay + lineDelay;
+
+            setTimeout(() => {
+              // Check again if typewriter was cancelled during the delay
+              if (state && state.activeTypewriter) {
+                dispatch({
+                  type: "ADD_HISTORY_ENTRY",
+                  payload: createHistoryEntry(
+                    content[currentIndex],
+                    "info",
+                    true
+                  ),
+                });
+                currentIndex++;
+                scheduleNextLine();
+              }
+            }, totalDelay);
+          } else {
+            // Typewriter animation completed
+            dispatch({ type: "SET_ACTIVE_TYPEWRITER", payload: false });
+          }
+        };
+
+        // Start scheduling the next lines
+        scheduleNextLine();
+      } else if (file.route) {
+        // This is a file that should open a page (only if no specific content is defined)
+        newHistory.push(createHistoryEntry(`Opening ${filename}...`, "info"));
+        newHistory.push(
+          createHistoryEntry(
+            `Access granted. Opening ${filename} page.`,
+            "success"
+          )
+        );
+        const route = `/${file.route}`;
+        // Navigate directly instead of using fade out
+        if (onNavigate) {
+          setTimeout(() => {
+            onNavigate(route);
+          }, 1500);
+        }
+      } else {
+        // Show file contents (simulated) for files without specific content
+        const defaultContent = [
+          `--- ${filename} ---`,
+          `File size: ${file.size}`,
+          `Last modified: ${file.date}`,
+          `Permissions: ${file.permissions}`,
+          "",
+          "(File content would be displayed here)",
+        ];
+
+        // Mark typewriter as active
+        dispatch({ type: "SET_ACTIVE_TYPEWRITER", payload: true });
+
+        // Start with the first line
+        newHistory.push(createHistoryEntry(defaultContent[0], "info", true));
+
+        // Schedule the remaining lines to appear after the previous line completes
+        let currentIndex = 1;
+        const scheduleNextLine = () => {
+          // Check if typewriter was cancelled
+          if (state && !state.activeTypewriter) {
+            return;
+          }
+
+          if (currentIndex < defaultContent.length) {
+            // Calculate delay based on the length of the previous line
+            const previousLine = defaultContent[currentIndex - 1];
+            const typewriterDelay = previousLine.length * 30; // 30ms per character
+            const lineDelay = 100; // Additional delay between lines
+            const totalDelay = typewriterDelay + lineDelay;
+
+            setTimeout(() => {
+              // Check again if typewriter was cancelled during the delay
+              if (state && state.activeTypewriter) {
+                dispatch({
+                  type: "ADD_HISTORY_ENTRY",
+                  payload: createHistoryEntry(
+                    defaultContent[currentIndex],
+                    "info",
+                    true
+                  ),
+                });
+                currentIndex++;
+                scheduleNextLine();
+              }
+            }, totalDelay);
+          } else {
+            // Typewriter animation completed
+            dispatch({ type: "SET_ACTIVE_TYPEWRITER", payload: false });
+          }
+        };
+
+        // Start scheduling the next lines
+        scheduleNextLine();
+      }
     }
 
     return newHistory;
@@ -638,7 +1215,13 @@ class CatCommand implements Command {
     currentDirectory: string
   ): string[] {
     if (input.toLowerCase().startsWith("cat ")) {
-      const partialFile = input.substring(4).trim();
+      const partialFile = input.substring(4);
+
+      // Check if the partial file starts with a quote
+      const isQuoted =
+        partialFile.startsWith('"') || partialFile.startsWith("'");
+      const searchTerm = isQuoted ? partialFile.slice(1) : partialFile;
+
       const currentItems = getCurrentDirectoryItems(
         fileSystem,
         currentDirectory
@@ -647,9 +1230,17 @@ class CatCommand implements Command {
         .filter(
           (item) =>
             item.type === "file" &&
-            item.name.toLowerCase().startsWith(partialFile.toLowerCase())
+            item.name.toLowerCase().startsWith(searchTerm.toLowerCase())
         )
-        .map((item) => `cat ${item.name}`);
+        .map((item) => {
+          // If the original input was quoted, keep it quoted
+          // If the filename contains spaces, wrap in quotes
+          let displayName = item.name;
+          if (isQuoted || item.name.includes(" ")) {
+            displayName = `"${item.name}"`;
+          }
+          return `cat ${displayName}`;
+        });
     }
     return [];
   }
@@ -670,21 +1261,84 @@ const availableCommands = [
 
 export const useTerminal = (
   fileSystem: FileSystemItem[],
-  onNavigate: (route: string) => void
+  onNavigate: (route: string) => void,
+  isVisible: boolean = true
 ) => {
-  const [state, dispatch] = useReducer(terminalReducer, {
-    commandHistory: [],
-    currentCommand: "",
-    showPrompt: false,
-    targetRoute: "/",
-    autocompleteIndex: 0,
-    fadeOutWelcome: false,
-    currentDirectory: "/", // Start at root
-    isMinimized: false,
-    showPreview: false,
-  });
+  // Load initial state from localStorage
+  const getInitialState = (): TerminalState => {
+    try {
+      const savedState = localStorage.getItem("terminal-state");
+      if (savedState) {
+        const parsed = JSON.parse(savedState);
+        // Ensure we have all required properties with fallbacks
+        return {
+          commandHistory: parsed.commandHistory || [],
+          currentCommand: parsed.currentCommand || "",
+          showPrompt: parsed.showPrompt || false,
+          targetRoute: parsed.targetRoute || "/",
+          autocompleteIndex: parsed.autocompleteIndex || 0,
+          currentDirectory: parsed.currentDirectory || "/",
+          isMinimized: parsed.isMinimized || false, // Load minimized state
+          isMaximized: parsed.isMaximized || false,
+          showPreview: false, // Always start hidden
+          activeTypewriter: false, // Always start inactive
+        };
+      }
+    } catch (error) {
+      console.warn("Failed to load terminal state from localStorage:", error);
+    }
+
+    // Default state if no saved state or error
+    return {
+      commandHistory: [],
+      currentCommand: "",
+      showPrompt: false,
+      targetRoute: "/",
+      autocompleteIndex: 0,
+      currentDirectory: "/",
+      isMinimized: false,
+      isMaximized: false,
+      showPreview: false,
+      activeTypewriter: false,
+    };
+  };
+
+  const [state, dispatch] = useReducer(terminalReducer, getInitialState());
 
   const terminalRef = useRef<HTMLDivElement>(null);
+
+  // Save state to localStorage whenever it changes
+  const saveStateToStorage = useCallback((newState: TerminalState) => {
+    try {
+      // Only save persistent state (exclude temporary UI states)
+      const stateToSave = {
+        commandHistory: newState.commandHistory,
+        currentCommand: newState.currentCommand,
+        showPrompt: newState.showPrompt,
+        targetRoute: newState.targetRoute,
+        autocompleteIndex: newState.autocompleteIndex,
+        currentDirectory: newState.currentDirectory,
+        isMinimized: newState.isMinimized,
+        isMaximized: newState.isMaximized,
+      };
+      localStorage.setItem("terminal-state", JSON.stringify(stateToSave));
+    } catch (error) {
+      console.warn("Failed to save terminal state to localStorage:", error);
+    }
+  }, []);
+
+  // Custom dispatch that saves state
+  const dispatchWithSave = useCallback(
+    (action: TerminalAction) => {
+      dispatch(action);
+    },
+    [dispatch]
+  );
+
+  // Save state whenever it changes
+  useEffect(() => {
+    saveStateToStorage(state);
+  }, [state, saveStateToStorage]);
 
   // Helper function to find item by path
   const findItemByPath = useCallback(
@@ -730,7 +1384,7 @@ export const useTerminal = (
   const executeCommand = useCallback(
     (command: string) => {
       const newHistoryEntry = createHistoryEntry(`$ ${command}`, "command");
-      dispatch({ type: "ADD_HISTORY_ENTRY", payload: newHistoryEntry });
+      dispatchWithSave({ type: "ADD_HISTORY_ENTRY", payload: newHistoryEntry });
 
       const [commandName, ...args] = command.split(" ");
 
@@ -752,12 +1406,17 @@ export const useTerminal = (
           expandedArgs,
           [...state.commandHistory, newHistoryEntry], // Pass the updated history
           fileSystem,
-          dispatch, // Pass dispatch instead of setState
-          state.currentDirectory
+          dispatchWithSave, // Pass dispatchWithSave instead of dispatch
+          state.currentDirectory,
+          onNavigate, // Pass the navigation function
+          state // Pass the current state
         );
-        dispatch({ type: "SET_COMMAND_HISTORY", payload: updatedHistory });
+        dispatchWithSave({
+          type: "SET_COMMAND_HISTORY",
+          payload: updatedHistory,
+        });
       } else {
-        dispatch({
+        dispatchWithSave({
           type: "ADD_HISTORY_ENTRY",
           payload: createHistoryEntry(
             `Command not found: ${command}. Type 'help' for available commands.`,
@@ -771,7 +1430,7 @@ export const useTerminal = (
       state.currentDirectory,
       fileSystem,
       commandRegistry,
-      dispatch,
+      dispatchWithSave,
     ]
   );
 
@@ -830,13 +1489,26 @@ export const useTerminal = (
 
       // Check for cat command with file names
       if (input.toLowerCase().startsWith("cat ")) {
-        const partialFile = input.substring(4).trim();
+        // Handle filenames with spaces by getting everything after "cat "
+        const partialFile = input.substring(4);
+
+        // Check if the partial file starts with a quote
+        const isQuoted =
+          partialFile.startsWith('"') || partialFile.startsWith("'");
+        const searchTerm = isQuoted ? partialFile.slice(1) : partialFile;
+
         currentItems.forEach((item) => {
           if (
             item.type === "file" &&
-            item.name.toLowerCase().startsWith(partialFile.toLowerCase())
+            item.name.toLowerCase().startsWith(searchTerm.toLowerCase())
           ) {
-            suggestions.push(`cat ${item.name}`);
+            // If the original input was quoted, keep it quoted
+            // If the filename contains spaces, wrap in quotes
+            let displayName = item.name;
+            if (isQuoted || item.name.includes(" ")) {
+              displayName = `"${item.name}"`;
+            }
+            suggestions.push(`cat ${displayName}`);
           }
         });
       }
@@ -874,7 +1546,10 @@ export const useTerminal = (
           createHistoryEntry(`$ ${currentCommand}`, "command"), // Re-add the current command for context
           createHistoryEntry(suggestions.join("  "), "info"), // Show suggestions in a single line
         ];
-        dispatch({ type: "SET_COMMAND_HISTORY", payload: updatedHistory });
+        dispatchWithSave({
+          type: "SET_COMMAND_HISTORY",
+          payload: updatedHistory,
+        });
 
         // Don't change the command, but prepare for cycling.
         // We set the next command and the next index here.
@@ -891,59 +1566,67 @@ export const useTerminal = (
         };
       }
     },
-    [getAutocompleteSuggestions, state.commandHistory, dispatch]
+    [getAutocompleteSuggestions, state.commandHistory, dispatchWithSave]
   );
 
-  const setCurrentCommand = useCallback((command: string) => {
-    dispatch({ type: "SET_CURRENT_COMMAND", payload: command });
-  }, []);
+  const setCurrentCommand = useCallback(
+    (command: string) => {
+      dispatchWithSave({ type: "SET_CURRENT_COMMAND", payload: command });
+    },
+    [dispatchWithSave]
+  );
 
-  const setShowPrompt = useCallback((show: boolean) => {
-    dispatch({ type: "SET_SHOW_PROMPT", payload: show });
-  }, []);
+  const setShowPrompt = useCallback(
+    (show: boolean) => {
+      dispatchWithSave({ type: "SET_SHOW_PROMPT", payload: show });
+    },
+    [dispatchWithSave]
+  );
 
-  const setAutocompleteIndex = useCallback((index: number) => {
-    dispatch({ type: "SET_AUTOCOMPLETE_INDEX", payload: index });
-  }, []);
+  const setAutocompleteIndex = useCallback(
+    (index: number) => {
+      dispatchWithSave({ type: "SET_AUTOCOMPLETE_INDEX", payload: index });
+    },
+    [dispatchWithSave]
+  );
 
   const clearCommand = useCallback(() => {
-    dispatch({ type: "CLEAR_COMMAND" });
-  }, []);
+    dispatchWithSave({ type: "CLEAR_COMMAND" });
+  }, [dispatchWithSave]);
 
   const minimizeTerminal = useCallback(() => {
-    dispatch({ type: "MINIMIZE_TERMINAL" });
-  }, []);
+    dispatchWithSave({ type: "MINIMIZE_TERMINAL" });
+  }, [dispatchWithSave]);
 
   const restoreTerminal = useCallback(() => {
-    dispatch({ type: "RESTORE_TERMINAL" });
-  }, []);
+    dispatchWithSave({ type: "RESTORE_TERMINAL" });
+  }, [dispatchWithSave]);
+
+  const maximizeTerminal = useCallback(() => {
+    dispatchWithSave({ type: "MAXIMIZE_TERMINAL" });
+  }, [dispatchWithSave]);
 
   const showPreviewFunc = useCallback(() => {
     if (state.isMinimized) {
-      dispatch({ type: "SHOW_PREVIEW" });
+      dispatchWithSave({ type: "SHOW_PREVIEW" });
     }
-  }, [state.isMinimized]);
+  }, [state.isMinimized, dispatchWithSave]);
 
   const hidePreview = useCallback(() => {
-    dispatch({ type: "HIDE_PREVIEW" });
-  }, []);
-
-  const handleAnimationComplete = useCallback(() => {
-    if (state.fadeOutWelcome) {
-      onNavigate(state.targetRoute);
-    }
-  }, [state.fadeOutWelcome, state.targetRoute, onNavigate]);
+    dispatchWithSave({ type: "HIDE_PREVIEW" });
+  }, [dispatchWithSave]);
 
   return {
     // State
     commandHistory: state.commandHistory,
     currentCommand: state.currentCommand,
     showPrompt: state.showPrompt,
-    fadeOutWelcome: state.fadeOutWelcome,
     autocompleteIndex: state.autocompleteIndex,
     currentDirectory: state.currentDirectory,
     isMinimized: state.isMinimized,
+    isMaximized: state.isMaximized,
     showPreview: state.showPreview,
+    activeTypewriter: state.activeTypewriter,
 
     // Refs
     terminalRef,
@@ -958,9 +1641,9 @@ export const useTerminal = (
     clearCommand,
     minimizeTerminal,
     restoreTerminal,
+    maximizeTerminal,
     showPreviewFunc,
     hidePreview,
-    handleAnimationComplete,
 
     // Helpers
     findItemByPath,

@@ -1,16 +1,22 @@
-/* Settings Panel */
+/* Settings Panel - Mac Style */
 .settings-panel {
     position: fixed;
     top: 0;
     right: 0;
     width: 400px;
     height: 100vh;
-    background: var(--background-color-transparent);
+    background: var(--dock-background, rgba(255, 255, 255, 0.1));
     backdrop-filter: blur(20px);
-    z-index: calc(var(--z-index-navigation) + 1);
-    border-left: 2px solid var(--primary-color);
+    -webkit-backdrop-filter: blur(20px);
+    z-index: 10000;
+    border-left: 1px solid var(--dock-border, rgba(255, 255, 255, 0.2));
     display: flex;
     flex-direction: column;
+    box-shadow: -8px 0 32px rgba(0, 0, 0, 0.3);
+    transform: translateZ(0);
+    will-change: transform;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
 }
 
 /* Settings Header */
@@ -18,100 +24,225 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: var(--spacing-lg);
-    border-bottom: 1px solid var(--border-color);
-    background: rgba(255, 255, 255, 0.1);
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    flex-shrink: 0;
 }
 
 .settings-header h3 {
     margin: 0;
-    color: var(--primary-color);
-    font-size: 1.5rem;
-    font-weight: bold;
+    color: var(--text-color);
+    font-size: 1.2rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.settings-header h3::before {
+    content: "⚙️";
+    font-size: 1.2rem;
 }
 
 .settings-close {
-    background: none;
-    border: none;
-    color: var(--primary-color);
-    font-size: 1.2rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--text-color, #ffffff);
+    font-size: 1.1rem;
     cursor: pointer;
-    padding: var(--spacing-xs);
-    border-radius: var(--border-radius-sm);
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: none;
+    outline: none;
+}
+
+.settings-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
 }
 
 /* Settings Content */
 .settings-content {
     flex: 1;
-    padding: var(--spacing-lg);
+    padding: 1rem;
     overflow-y: auto;
+    min-height: 0;
+    position: relative;
+    opacity: 1;
+    transform: translateZ(0);
 }
 
 .setting-group {
-    margin-bottom: var(--spacing-xl);
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.setting-group:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
 }
 
 .setting-label {
     display: block;
-    color: var(--primary-color);
-    font-weight: bold;
-    font-size: 1.1rem;
-    margin-bottom: var(--spacing-sm);
+    color: var(--text-color, #ffffff);
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.setting-label::before {
+    content: "🎛️";
+    font-size: 1rem;
 }
 
 .setting-control {
     display: flex;
     align-items: center;
-    margin-bottom: var(--spacing-sm);
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    padding: 0.75rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.dock-size-slider {
+.dock-size-value,
+.dock-stiffness-value,
+.magnification-value {
+    background: var(--primary-color, #af2a2a);
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    min-width: 50px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(175, 42, 42, 0.3);
+    flex-shrink: 0;
+}
+
+/* Dock Size Slider - Mac Style */
+.dock-size-slider,
+.dock-stiffness-slider,
+.magnification-slider {
     width: 100%;
-    height: 6px;
-    border-radius: 3px;
-    background: rgba(255, 255, 255, 0.2);
+    height: 8px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1);
     outline: none;
     -webkit-appearance: none;
     appearance: none;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
 }
 
-.dock-size-slider::-webkit-slider-thumb {
+.dock-size-slider:focus,
+.dock-stiffness-slider:focus,
+.magnification-slider:focus {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(175, 42, 42, 0.1);
+}
+
+.dock-size-slider::-webkit-slider-thumb,
+.dock-stiffness-slider::-webkit-slider-thumb,
+.magnification-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
-    background: var(--primary-color);
+    background: linear-gradient(135deg, var(--primary-color) 0%, #d32f2f 100%);
     cursor: pointer;
-    border: 2px solid white;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+    transition: all 0.3s ease;
 }
 
-.dock-size-slider::-webkit-slider-thumb:hover {
+.dock-size-slider::-webkit-slider-thumb:hover,
+.dock-stiffness-slider::-webkit-slider-thumb:hover,
+.magnification-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow:
+        0 6px 20px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.3) inset;
+}
+
+.dock-size-slider::-webkit-slider-thumb:active,
+.dock-stiffness-slider::-webkit-slider-thumb:active,
+.magnification-slider::-webkit-slider-thumb:active {
     transform: scale(1.1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-.dock-size-slider::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
+.dock-size-slider::-moz-range-thumb,
+.dock-stiffness-slider::-moz-range-thumb,
+.magnification-slider::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
-    background: var(--primary-color);
+    background: linear-gradient(135deg, var(--primary-color) 0%, #d32f2f 100%);
     cursor: pointer;
-    border: 2px solid white;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+    transition: all 0.3s ease;
 }
 
-.dock-size-slider::-moz-range-thumb:hover {
+.dock-size-slider::-moz-range-thumb:hover,
+.dock-stiffness-slider::-moz-range-thumb:hover,
+.magnification-slider::-moz-range-thumb:hover {
+    transform: scale(1.2);
+    box-shadow:
+        0 6px 20px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.3) inset;
+}
+
+.dock-size-slider::-moz-range-thumb:active,
+.dock-stiffness-slider::-moz-range-thumb:active,
+.magnification-slider::-moz-range-thumb:active {
     transform: scale(1.1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Track styling for Firefox */
+.dock-size-slider::-moz-range-track,
+.dock-stiffness-slider::-moz-range-track,
+.magnification-slider::-moz-range-track {
+    height: 8px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .setting-description {
-    color: var(--text-color);
-    opacity: 0.8;
-    font-size: 0.9rem;
+    color: var(--text-secondary, #adb5bd);
+    font-size: 0.85rem;
     line-height: 1.4;
+    padding: 0.4rem;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    border-left: 2px solid var(--primary-color, #af2a2a);
 }
 
 /* Settings Overlay */
@@ -121,9 +252,10 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: var(--shadow-color);
-    z-index: var(--z-index-navigation);
-    backdrop-filter: blur(2px);
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
 }
 
 /* Mobile Responsive */
@@ -133,10 +265,39 @@
     }
 
     .settings-content {
-        padding: var(--spacing-md);
+        padding: 0.75rem;
     }
 
     .settings-header {
-        padding: var(--spacing-md);
+        padding: 0.75rem;
     }
+
+    .setting-group {
+        padding: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .setting-control {
+        padding: 0.5rem;
+    }
+}
+
+/* Scrollbar styling for settings content */
+.settings-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.settings-content::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+}
+
+.settings-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.settings-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
 }

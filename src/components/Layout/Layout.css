@@ -1,4 +1,17 @@
-.layout {
-    min-height: 100vh;
+.app-layout {
     position: relative;
+    min-height: 100vh;
+    /* Add any other global layout styles */
+}
+
+.app-content {
+    /* This ensures your content doesn't get hidden behind a fixed/absolute nav */
+    padding-top: 80px;
+    /* Adjust based on your nav height */
+    min-height: calc(100vh - 80px);
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    overflow-x: hidden;
+    /* Prevent horizontal scrolling */
 }

@@ -1,0 +1,184 @@
+:root {
+    --dock-icon-size: 40px;
+    /* Default size variable */
+
+    /* Terminal-inspired theme variables */
+    --dock-primary: #00ff00;
+    --dock-background: rgba(26, 26, 26, 0.85);
+    --dock-border: #00ff00;
+    --dock-text: #ffffff;
+    --dock-text-muted: #666;
+    --dock-shadow: rgba(0, 0, 0, 0.3);
+}
+
+/* Light theme overrides */
+[data-theme="light"] {
+    --dock-primary: #00aa00;
+    --dock-background: rgba(245, 245, 245, 0.85);
+    --dock-border: #00aa00;
+    --dock-text: #2c2c2c;
+    --dock-text-muted: #5a5a5a;
+    --dock-shadow: rgba(0, 0, 0, 0.1);
+}
+
+.dock-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: fit-content;
+    max-width: 90vw;
+
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    /* This makes icons sit on the "floor" */
+    gap: 12px;
+    padding: 8px 12px;
+
+    background: var(--dock-background);
+    border-radius: 16px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 8px 32px var(--dock-shadow);
+
+    will-change: transform;
+    /* Performance optimization */
+    z-index: 9999;
+
+    /* Terminal-inspired styling */
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+
+    /* Ensure dock stays within viewport bounds */
+    transform-origin: bottom right;
+}
+
+.dock-icon-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    pointer-events: auto;
+    /* Let Framer Motion handle sizing */
+}
+
+.dock-nav-link {
+    display: block;
+    color: var(--dock-text);
+    transition: color 0.2s ease-in-out;
+    text-decoration: none;
+    pointer-events: auto;
+}
+
+.dock-nav-link.active {
+    color: var(--dock-primary);
+}
+
+.dock-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Font size handled by Framer Motion */
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    will-change: width, height;
+    /* Performance optimization */
+    /* REMOVE the simple transition property, as framer-motion now handles it */
+    user-select: none;
+    transition: border-color 0.2s ease-in-out;
+    /* Let Framer Motion handle width and height */
+}
+
+.dock-icon:hover,
+.dock-icon.hovered {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-color: var(--dock-primary);
+}
+
+/* Add a little dot under the active icon like the real dock */
+.dock-nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: var(--dock-primary);
+}
+
+/* Dock Settings Button */
+.dock-settings-button {
+    background: none;
+    border: none;
+    color: var(--dock-text);
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.dock-settings-button .dock-icon {
+    width: var(--dock-icon-size);
+    /* Use the variable */
+    height: var(--dock-icon-size);
+    /* Use the variable */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: calc(var(--dock-icon-size) * 0.6);
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid transparent;
+    border-radius: 6px;
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+.dock-settings-button:hover .dock-icon {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-color: var(--dock-primary);
+}
+
+.dock-settings-button.active .dock-icon {
+    color: var(--dock-primary);
+    border-color: var(--dock-primary);
+}
+
+.dock-active-indicator {
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: var(--dock-primary);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .dock-container {
+        bottom: 10px;
+        right: 10px;
+        gap: 8px;
+        padding: 6px 8px;
+    }
+}
+
+/* Handle dock positioning when settings are open on smaller screens */
+@media (max-width: 1200px) {
+    .dock-container.settings-open {
+        /* On smaller screens, don't shift as much to prevent cutoff */
+        transform: translateX(-200px) !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .dock-container.settings-open {
+        /* On mobile, don't shift at all to keep dock accessible */
+        transform: translateX(0) !important;
+    }
+}

@@ -18,6 +18,9 @@ body {
   background-color: var(--background-color);
   color: var(--text-color);
   transition: var(--theme-transition);
+  overflow-x: hidden;
+  /* Prevent horizontal scrolling */
+  width: 100%;
 }
 
 main {
@@ -193,9 +196,10 @@ template {
 /* Custom Properties */
 :root {
   /* Color Palette */
-  --primary-color: #AF2A2A;
+  --primary-color: #2AAF2A;
   --primary-color-light: rgba(175, 42, 42, 0.2);
   --primary-color-medium: rgba(175, 42, 42, 0.3);
+  --primary-color-dark: #1A8B1A;
   --accent-color: #FFD700;
 
   /* Theme colors - will be overridden by ThemeContext */
@@ -204,6 +208,7 @@ template {
   --background-color-tertiary: #404040;
   --background-color-transparent: rgba(26, 26, 26, 0.7);
   --background-color-overlay: rgba(26, 26, 26, 0.95);
+  --card-background: #2d2d2d;
   --text-color: #f8f9fa;
   --text-color-secondary: #adb5bd;
   --text-color-muted: #6c757d;
@@ -237,11 +242,14 @@ template {
   /* Z-index layers */
   --z-index-background: -1;
   --z-index-content: 1;
-  --z-index-navigation: 1000;
+  --z-index-navigation: 1001;
   --z-index-overlay: 1000;
 
   /* Dock Settings */
-  --dock-icon-size: 50px;
+  --dock-icon-size: 60px;
+  --dock-spacing: 4px;
+  --dock-padding: 8px 16px;
+  --dock-border-radius: 20px;
 
   /* Page Layout */
   --page-padding: var(--spacing-lg);
@@ -313,8 +321,10 @@ button {
 /* Standardized page layout */
 .page-content {
   margin-top: var(--page-margin-top);
+  margin-bottom: 100px;
+  /* Space for Mac dock */
   padding: var(--page-padding);
-  min-height: calc(100vh - var(--page-margin-top));
+  min-height: calc(100vh - var(--page-margin-top) - 100px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -329,6 +339,9 @@ button {
 @media (max-width: 768px) {
   .page-content {
     margin-top: var(--page-margin-top-mobile);
+    margin-bottom: 0;
+    /* No dock on mobile */
     padding: var(--spacing-sm);
+    min-height: calc(100vh - var(--page-margin-top-mobile));
   }
 }

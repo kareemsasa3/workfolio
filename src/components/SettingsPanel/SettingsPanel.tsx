@@ -8,6 +8,10 @@ import "./SettingsPanel.css";
 interface SettingsPanelProps {
   onDockSizeChange: (size: number) => void;
   currentDockSize: number;
+  onDockStiffnessChange: (stiffness: number) => void;
+  currentDockStiffness: number;
+  onMagnificationChange: (magnification: number) => void;
+  currentMagnification: number;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -15,12 +19,30 @@ interface SettingsPanelProps {
 const SettingsPanel: React.FC<SettingsPanelProps> = ({
   onDockSizeChange,
   currentDockSize,
+  onDockStiffnessChange,
+  currentDockStiffness,
+  onMagnificationChange,
+  currentMagnification,
   isOpen,
   onClose,
 }) => {
   const handleDockSizeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newSize = parseInt(event.target.value);
     onDockSizeChange(newSize);
+  };
+
+  const handleDockStiffnessChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const newStiffness = parseInt(event.target.value);
+    onDockStiffnessChange(newStiffness);
+  };
+
+  const handleMagnificationChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const newMagnification = parseInt(event.target.value);
+    onMagnificationChange(newMagnification);
   };
 
   return (
@@ -37,15 +59,9 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
               type: "spring",
               damping: 25,
               stiffness: 200,
-              duration: 0.3,
             }}
           >
-            <motion.div
-              className="settings-header"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1, duration: 0.3 }}
-            >
+            <div className="settings-header">
               <h3>Settings</h3>
               <motion.button
                 className="settings-close"
@@ -56,20 +72,15 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
               >
                 <FontAwesomeIcon icon={faTimes} />
               </motion.button>
-            </motion.div>
+            </div>
 
             <motion.div
               className="settings-content"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.2, duration: 0.3 }}
+              transition={{ delay: 0.1, duration: 0.2 }}
             >
-              <motion.div
-                className="setting-group"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3, duration: 0.3 }}
-              >
+              <div className="setting-group">
                 <label htmlFor="dock-size" className="setting-label">
                   Dock Size
                 </label>
@@ -77,32 +88,90 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   <input
                     type="range"
                     id="dock-size"
-                    min="20"
+                    min="40"
                     max="60"
                     value={currentDockSize}
                     onChange={handleDockSizeChange}
                     className="dock-size-slider"
                   />
+                  <div className="dock-size-value">{currentDockSize}px</div>
                 </div>
                 <div className="setting-description">
-                  Adjust the size of navigation icons in the dock
+                  Adjust the base size of navigation icons in the dock.
                 </div>
-              </motion.div>
+              </div>
 
-              <motion.div
-                className="setting-group"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4, duration: 0.3 }}
-              >
+              <div className="setting-group">
+                <label htmlFor="dock-stiffness" className="setting-label">
+                  Dock Stiffness
+                </label>
+                <div className="setting-control">
+                  <input
+                    type="range"
+                    id="dock-stiffness"
+                    min="200"
+                    max="600"
+                    step="50"
+                    value={currentDockStiffness}
+                    onChange={handleDockStiffnessChange}
+                    className="dock-stiffness-slider"
+                  />
+                  <div className="dock-stiffness-value">
+                    {currentDockStiffness}
+                  </div>
+                </div>
+                <div className="setting-description">
+                  Control how responsive the dock animations are. Higher values
+                  = snappier animations.
+                </div>
+              </div>
+
+              <div className="setting-group">
+                <label htmlFor="magnification" className="setting-label">
+                  Magnification
+                </label>
+                <div className="setting-control">
+                  <input
+                    type="range"
+                    id="magnification"
+                    min="20"
+                    max="100"
+                    step="10"
+                    value={currentMagnification}
+                    onChange={handleMagnificationChange}
+                    className="magnification-slider"
+                  />
+                  <div className="magnification-value">
+                    {currentMagnification}%
+                  </div>
+                </div>
+                <div className="setting-description">
+                  Control how much icons magnify on hover. Higher values = more
+                  dramatic effect.
+                </div>
+              </div>
+
+              <div className="setting-group">
                 <label className="setting-label">Theme</label>
                 <div className="setting-control">
                   <ThemeToggle />
                 </div>
                 <div className="setting-description">
-                  Switch between light and dark themes
+                  Switch between light and dark themes for the entire
+                  application
                 </div>
-              </motion.div>
+              </div>
+
+              <div className="setting-group">
+                <label className="setting-label">About</label>
+                <div className="setting-description">
+                  <strong>Workfolio v1.0</strong>
+                  <br />
+                  A Mac-inspired portfolio with interactive dock navigation.
+                  <br />
+                  Built with React, TypeScript, and Framer Motion.
+                </div>
+              </div>
             </motion.div>
           </motion.div>
 
