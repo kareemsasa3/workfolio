@@ -12,6 +12,7 @@ import {
 import { getFileContentByPath } from "../data/fileContents";
 import { manPages } from "../data/manPages";
 import { generateProcessList, updateProcessList } from "../data/processData";
+import { VimCommand } from "../components/Terminal/commands/VimCommand";
 
 // Terminal reducer function
 const terminalReducer = (
@@ -239,6 +240,118 @@ const terminalReducer = (
         ...state,
         nextHistoryId: action.payload,
       };
+
+    // AI Chat actions
+    case "START_AI_CHAT":
+      return {
+        ...state,
+        isAiChatting: true,
+        aiInputValue: "",
+      };
+
+    case "EXIT_AI_CHAT":
+      return {
+        ...state,
+        isAiChatting: false,
+        aiInputValue: "",
+      };
+
+    case "ADD_AI_MESSAGE":
+      return {
+        ...state,
+        aiChatHistory: [...state.aiChatHistory, action.payload],
+      };
+
+    case "SET_AI_TYPING":
+      return {
+        ...state,
+        isAiTyping: action.payload,
+      };
+
+    case "SET_AI_INPUT_VALUE":
+      return {
+        ...state,
+        aiInputValue: action.payload,
+      };
+
+    case "CLEAR_AI_CHAT_HISTORY":
+      return {
+        ...state,
+        aiChatHistory: [],
+      };
+
+    // Vim editor actions
+    case "SHOW_VIM_EDITOR":
+      return {
+        ...state,
+        isVimEditing: true,
+        vimFilePath: action.payload.filePath,
+        vimFileContent: action.payload.content,
+        vimCursorPosition: { line: 0, column: 0 },
+        vimMode: "normal",
+        vimScrollPosition: 0,
+      };
+
+    case "HIDE_VIM_EDITOR":
+      return {
+        ...state,
+        isVimEditing: false,
+        vimFilePath: "",
+        vimFileContent: [],
+        vimCursorPosition: { line: 0, column: 0 },
+        vimMode: "normal",
+        vimScrollPosition: 0,
+      };
+
+    case "UPDATE_VIM_CONTENT":
+      return {
+        ...state,
+        vimFileContent: action.payload,
+      };
+
+    case "SET_VIM_CURSOR":
+      return {
+        ...state,
+        vimCursorPosition: action.payload,
+      };
+
+    case "SET_VIM_MODE":
+      return {
+        ...state,
+        vimMode: action.payload,
+      };
+
+    case "SET_VIM_SCROLL":
+      return {
+        ...state,
+        vimScrollPosition: action.payload,
+      };
+
+    case "SAVE_VIM_FILE":
+      return {
+        ...state,
+        vimFileContent: action.payload.content,
+      };
+
+    case "SHOW_SCRAPE_RESULTS":
+      return {
+        ...state,
+        showScrapeResults: true,
+        scrapeResults: action.payload.results,
+        currentScrapeJobId: action.payload.jobId,
+      };
+
+    case "HIDE_SCRAPE_RESULTS":
+      return {
+        ...state,
+        showScrapeResults: false,
+        scrapeResults: [],
+        currentScrapeJobId: "",
+      };
+
+    case "ADD_FILE_TO_FILESYSTEM":
+      // This will be handled by the file system context
+      return state;
 
     default:
       return state;
@@ -1127,6 +1240,18 @@ class HelpCommand implements Command {
     );
     newHistory.push(
       createHistoryEntry(
+        "  arachne     Web scraping service with real-time tracking",
+        "info"
+      )
+    );
+    newHistory.push(
+      createHistoryEntry(
+        "  ai [message] Start AI chat assistant with optional initial message",
+        "info"
+      )
+    );
+    newHistory.push(
+      createHistoryEntry(
         "  exit [route] Close terminal and go to specified page (default: home)",
         "info"
       )
@@ -1293,7 +1418,8 @@ class CatCommand implements Command {
     currentDirectory: string,
     onNavigate?: (route: string) => void,
     _state?: TerminalState,
-    _stdin?: string[]
+    _stdin?: string[],
+    getFileContent?: (path: string) => { content: string[] } | null
   ): CommandResult {
     const newHistory = [...history];
     // Handle quoted filenames by joining args and removing quotes
@@ -1382,7 +1508,9 @@ class CatCommand implements Command {
         resolvedPath = filename.substring(1);
       }
 
-      const fileContent = getFileContentByPath(resolvedPath);
+      const fileContent = getFileContent
+        ? getFileContent(resolvedPath)
+        : getFileContentByPath(resolvedPath);
       if (fileContent) {
         // Check if we're in a pipe context by looking at the command history
         // If the last command entry contains a pipe, we're in a pipe
@@ -1486,7 +1614,8 @@ class GrepCommand implements Command {
     currentDirectory: string,
     _onNavigate?: (route: string) => void,
     _state?: TerminalState,
-    stdin?: string[]
+    stdin?: string[],
+    getFileContent?: (path: string) => { content: string[] } | null
   ): CommandResult {
     const newHistory = [...history];
 
@@ -1535,7 +1664,9 @@ class GrepCommand implements Command {
         resolvedPath = filePath.substring(1);
       }
 
-      const fileContent = getFileContentByPath(resolvedPath);
+      const fileContent = getFileContent
+        ? getFileContent(resolvedPath)
+        : getFileContentByPath(resolvedPath);
       if (!fileContent) {
         newHistory.push(
           createHistoryEntry(
@@ -1620,7 +1751,8 @@ class WcCommand implements Command {
     currentDirectory: string,
     _onNavigate?: (route: string) => void,
     _state?: TerminalState,
-    stdin?: string[]
+    stdin?: string[],
+    getFileContent?: (path: string) => { content: string[] } | null
   ): CommandResult {
     const newHistory = [...history];
 
@@ -1660,7 +1792,9 @@ class WcCommand implements Command {
           resolvedPath = fileArg.substring(1);
         }
 
-        const fileContent = getFileContentByPath(resolvedPath);
+        const fileContent = getFileContent
+          ? getFileContent(resolvedPath)
+          : getFileContentByPath(resolvedPath);
         if (!fileContent) {
           newHistory.push(
             createHistoryEntry(
@@ -1828,6 +1962,11 @@ class ManCommand implements Command {
           suggestions.push(`man ${command}`);
         }
       });
+    } else if (input.toLowerCase().startsWith("man")) {
+      // Suggest man command with available pages
+      Object.keys(manPages).forEach((command) => {
+        suggestions.push(`man ${command}`);
+      });
     }
     return suggestions.filter((s) =>
       s.toLowerCase().startsWith(input.toLowerCase())
@@ -1858,6 +1997,16 @@ const availableCommands = [
   "top -d=3",
   "exit",
   "curl",
+  "arachne",
+  "arachne help",
+  "arachne scrape",
+  "arachne status",
+  "arachne jobs",
+  "ai",
+  'ai "Tell me about this portfolio"',
+  'ai "What technologies did you use?"',
+  'ai "How does the terminal work?"',
+  "vim",
 ];
 
 class CurlCommand implements Command {
@@ -1877,8 +2026,10 @@ class CurlCommand implements Command {
     // Parse URLs from arguments
     const urls: string[] = [];
     for (const arg of args) {
-      if (arg.startsWith("http://") || arg.startsWith("https://")) {
-        urls.push(arg);
+      // Remove quotes from the argument
+      const cleanArg = arg.replace(/^["']|["']$/g, "");
+      if (cleanArg.startsWith("http://") || cleanArg.startsWith("https://")) {
+        urls.push(cleanArg);
       }
     }
 
@@ -1960,6 +2111,421 @@ class CurlCommand implements Command {
   }
 }
 
+class ArachneCommand implements Command {
+  name = "arachne";
+
+  async execute(
+    args: string[],
+    history: HistoryEntry[],
+    _fileSystem: FileSystemItem[],
+    dispatch: React.Dispatch<TerminalAction>,
+    _currentDirectory: string,
+    _onNavigate?: (route: string) => void,
+    state?: TerminalState
+  ): Promise<HistoryEntry[]> {
+    const newHistory = [...history];
+
+    if (args.length === 0) {
+      newHistory.push(
+        createHistoryEntry(
+          `🌐 Arachne Web Scraper v2.0.0
+
+Usage:
+  arachne scrape <url1> [url2] [url3] ...  Submit scraping job
+  arachne status <job_id>                   Check job status
+  arachne jobs                              List active jobs
+  arachne help                              Show this help
+
+Examples:
+  arachne scrape https://example.com
+  arachne scrape https://google.com https://github.com
+  arachne status 2c424e7e-18dc-44b2-a37a-cd757916febc
+  arachne jobs`,
+          "info"
+        )
+      );
+      return newHistory;
+    }
+
+    const subcommand = args[0].toLowerCase();
+
+    switch (subcommand) {
+      case "scrape":
+        return await this.handleScrape(
+          args.slice(1),
+          newHistory,
+          dispatch,
+          state
+        );
+      case "status":
+        return await this.handleStatus(args.slice(1), newHistory);
+      case "jobs":
+        return this.handleJobs(newHistory, state);
+      case "help":
+        return this.handleHelp(newHistory);
+      default:
+        newHistory.push(
+          createHistoryEntry(
+            `arachne: Unknown subcommand '${subcommand}'. Use 'arachne help' for usage.`,
+            "error"
+          )
+        );
+        return newHistory;
+    }
+  }
+
+  private async handleScrape(
+    args: string[],
+    history: HistoryEntry[],
+    dispatch: React.Dispatch<TerminalAction>,
+    state?: TerminalState
+  ): Promise<HistoryEntry[]> {
+    const urls: string[] = [];
+    for (const arg of args) {
+      const cleanArg = arg.replace(/^["']|["']$/g, "");
+      if (cleanArg.startsWith("http://") || cleanArg.startsWith("https://")) {
+        urls.push(cleanArg);
+      }
+    }
+
+    if (urls.length === 0) {
+      history.push(
+        createHistoryEntry(
+          "arachne scrape: No valid URLs provided. Usage: arachne scrape <url1> [url2] [url3] ...",
+          "error"
+        )
+      );
+      return history;
+    }
+
+    try {
+      const { submitScrapeJob } = await import("../services/arachneApi");
+      const response = await submitScrapeJob(urls);
+
+      const historyId = state?.nextHistoryId || 1;
+      const successEntry = createHistoryEntry(
+        `🌐 Submitting scraping job for ${urls.length} URL${
+          urls.length > 1 ? "s" : ""
+        }... Success! Job ID: ${response.job_id}`,
+        "success",
+        false,
+        historyId
+      );
+
+      if (state) {
+        dispatch({
+          type: "ADD_SCRAPE_JOB",
+          payload: {
+            jobId: response.job_id,
+            status: "submitted",
+            historyEntryId: historyId,
+            urls,
+            startTime: Date.now(),
+          },
+        });
+
+        dispatch({
+          type: "SET_NEXT_HISTORY_ID",
+          payload: historyId + 1,
+        });
+      }
+
+      history.push(successEntry);
+      return history;
+    } catch (error) {
+      history.push(
+        createHistoryEntry(
+          `arachne scrape: Failed to submit job: ${
+            error instanceof Error ? error.message : "Unknown error"
+          }`,
+          "error"
+        )
+      );
+      return history;
+    }
+  }
+
+  private async handleStatus(
+    args: string[],
+    history: HistoryEntry[]
+  ): Promise<HistoryEntry[]> {
+    if (args.length === 0) {
+      history.push(
+        createHistoryEntry(
+          "arachne status: Job ID required. Usage: arachne status <job_id>",
+          "error"
+        )
+      );
+      return history;
+    }
+
+    const jobId = args[0];
+
+    try {
+      const { getScrapeStatus } = await import("../services/arachneApi");
+      const status = await getScrapeStatus(jobId);
+
+      const statusText = this.formatJobStatus(status);
+      history.push(createHistoryEntry(statusText, "info"));
+      return history;
+    } catch (error) {
+      history.push(
+        createHistoryEntry(
+          `arachne status: Failed to get status: ${
+            error instanceof Error ? error.message : "Unknown error"
+          }`,
+          "error"
+        )
+      );
+      return history;
+    }
+  }
+
+  private handleJobs(
+    history: HistoryEntry[],
+    state?: TerminalState
+  ): HistoryEntry[] {
+    if (!state || Object.keys(state.activeScrapeJobs).length === 0) {
+      history.push(createHistoryEntry("No active scraping jobs.", "info"));
+      return history;
+    }
+
+    const jobsList = Object.values(state.activeScrapeJobs)
+      .map((job) => {
+        const duration = Math.floor((Date.now() - job.startTime) / 1000);
+        const statusIcon =
+          job.status === "completed"
+            ? "✅"
+            : job.status === "failed"
+            ? "❌"
+            : job.status === "running"
+            ? "🔄"
+            : "⏳";
+
+        return `${statusIcon} ${job.jobId} - ${
+          job.status
+        } (${duration}s) - ${job.urls.join(", ")}`;
+      })
+      .join("\n");
+
+    history.push(
+      createHistoryEntry(`Active Scraping Jobs:\n${jobsList}`, "info")
+    );
+    return history;
+  }
+
+  private handleHelp(history: HistoryEntry[]): HistoryEntry[] {
+    history.push(
+      createHistoryEntry(
+        `🌐 Arachne Web Scraper v2.0.0
+
+A powerful web scraping service with real-time progress tracking.
+
+Commands:
+  scrape <urls>    Submit URLs for scraping
+  status <job_id>  Check job status and results
+  jobs             List all active jobs
+  help             Show this help
+
+Examples:
+  arachne scrape https://example.com
+  arachne scrape https://google.com https://github.com
+  arachne status 2c424e7e-18dc-44b2-a37a-cd757916febc
+  arachne jobs
+
+Features:
+  • Real-time progress tracking
+  • Concurrent scraping
+  • Error handling and retries
+  • Results storage
+  • Metrics and analytics`,
+        "info"
+      )
+    );
+    return history;
+  }
+
+  private formatJobStatus(status: any): string {
+    // Handle the case where status might be undefined or null
+    if (!status) {
+      return "❌ Job Status: UNKNOWN (No status data received)\n";
+    }
+
+    // The API returns a JobStatusResponse with a 'job' property
+    const jobData = status.job || status;
+
+    // Ensure we have a valid status
+    if (!jobData || !jobData.status) {
+      return "❌ Job Status: UNKNOWN (Invalid status data)\n";
+    }
+
+    const statusIcon =
+      jobData.status === "completed"
+        ? "✅"
+        : jobData.status === "failed"
+        ? "❌"
+        : jobData.status === "running"
+        ? "🔄"
+        : "⏳";
+
+    let result = `${statusIcon} Job Status: ${jobData.status.toUpperCase()}\n`;
+
+    if (jobData.progress !== undefined) {
+      result += `Progress: ${jobData.progress}%\n`;
+    }
+
+    if (jobData.status === "completed" && jobData.results) {
+      result += `\nResults:\n`;
+      jobData.results.forEach((resultItem: any, index: number) => {
+        result += `  ${index + 1}. ${resultItem.url} (${resultItem.status}) - ${
+          resultItem.size
+        } bytes\n`;
+        if (resultItem.title) {
+          result += `     Title: ${resultItem.title}\n`;
+        }
+      });
+    }
+
+    if (jobData.status === "failed" && jobData.error) {
+      result += `Error: ${jobData.error}\n`;
+    }
+
+    return result;
+  }
+
+  getSuggestions(input: string): string[] {
+    if (input.toLowerCase().startsWith("arachne ")) {
+      const afterArachne = input.substring(8).trim();
+      if (!afterArachne) {
+        return [
+          "arachne scrape",
+          "arachne status",
+          "arachne jobs",
+          "arachne help",
+        ];
+      }
+      if (afterArachne.startsWith("scrape ")) {
+        const afterScrape = afterArachne.substring(7).trim();
+        if (!afterScrape) {
+          return [
+            "arachne scrape https://example.com",
+            "arachne scrape https://google.com https://github.com",
+            "arachne scrape https://news.ycombinator.com",
+          ];
+        }
+      }
+      if (afterArachne.startsWith("status ")) {
+        return ["arachne status <job_id>"];
+      }
+    }
+    return [];
+  }
+}
+
+class AiCommand implements Command {
+  name = "ai";
+
+  async execute(
+    args: string[],
+    history: HistoryEntry[],
+    _fileSystem: FileSystemItem[],
+    _dispatch: React.Dispatch<TerminalAction>,
+    _currentDirectory: string,
+    _onNavigate?: (route: string) => void
+  ): Promise<CommandResult> {
+    const newHistory = [...history];
+
+    // Check if an initial message was provided
+    const initialMessage = args.join(" ").trim();
+
+    if (!initialMessage) {
+      newHistory.push(
+        createHistoryEntry(
+          "Usage: ai <message>\nExample: ai 'Tell me about this portfolio'",
+          "error"
+        )
+      );
+      return newHistory;
+    }
+
+    // Add user message to history
+    newHistory.push(createHistoryEntry(`🤖 AI: ${initialMessage}`, "info"));
+
+    // Add typing indicator
+    newHistory.push(createHistoryEntry("🤖 AI is thinking...", "info"));
+
+    try {
+      // Import the AI API function
+      const { sendMessageToAI } = await import("../services/aiApi");
+
+      // Send message to AI
+      const response = await sendMessageToAI(initialMessage, []);
+
+      // Remove the typing indicator
+      newHistory.pop(); // Remove "AI is thinking..."
+
+      // Save conversation to localStorage
+      const conversation = {
+        id: Date.now().toString(),
+        timestamp: Date.now(),
+        userMessage: initialMessage,
+        aiResponse: response.response,
+      };
+
+      // Load existing conversations
+      const existingConversations = localStorage.getItem("ai-conversations");
+      const conversations = existingConversations
+        ? JSON.parse(existingConversations)
+        : [];
+
+      // Add new conversation (keep only last 50 conversations)
+      conversations.unshift(conversation);
+      if (conversations.length > 50) {
+        conversations.splice(50);
+      }
+
+      // Save back to localStorage
+      localStorage.setItem("ai-conversations", JSON.stringify(conversations));
+
+      // Split the AI response into lines for typewriter effect
+      const aiResponseLines = response.response.split("\n");
+
+      // Return typewriter effect for the AI response
+      return {
+        _effect: "TYPEWRITER",
+        lines: aiResponseLines,
+      };
+    } catch (error) {
+      // Remove the typing indicator and add error message
+      newHistory.pop(); // Remove "AI is thinking..."
+      newHistory.push(
+        createHistoryEntry(
+          `🤖 AI Error: ${
+            error instanceof Error ? error.message : "Unknown error"
+          }`,
+          "error"
+        )
+      );
+      return newHistory;
+    }
+  }
+
+  getSuggestions(input: string): string[] {
+    if (input.toLowerCase().startsWith("ai ")) {
+      const afterAi = input.substring(3).trim();
+      if (!afterAi) {
+        return [
+          'ai "Tell me about this portfolio"',
+          'ai "What technologies did you use?"',
+          'ai "How does the terminal work?"',
+          'ai "Show me some cool features"',
+        ];
+      }
+    }
+    return [];
+  }
+}
+
 export const useTerminal = (
   fileSystem: FileSystemItem[],
   onNavigate: (route: string) => void,
@@ -1972,6 +2538,13 @@ export const useTerminal = (
   const [processUpdateInterval, setProcessUpdateInterval] = useState<
     number | null
   >(null);
+
+  // State for dynamic file system (for scrape results)
+  const [dynamicFileSystem, setDynamicFileSystem] =
+    useState<FileSystemItem[]>(fileSystem);
+  const [dynamicFileContents, setDynamicFileContents] = useState<
+    Record<string, string[]>
+  >({});
 
   // Load initial state from localStorage
   const getInitialState = (): TerminalState => {
@@ -2007,6 +2580,21 @@ export const useTerminal = (
           topRefreshRate: 1000,
           activeScrapeJobs: parsed.activeScrapeJobs || {},
           nextHistoryId: parsed.nextHistoryId || 1,
+          // AI Chat functionality
+          isAiChatting: false,
+          aiChatHistory: [],
+          isAiTyping: false,
+          aiInputValue: "",
+          // Vim editor functionality
+          isVimEditing: false,
+          vimFileContent: [],
+          vimFilePath: "",
+          vimCursorPosition: { line: 0, column: 0 },
+          vimMode: "normal",
+          vimScrollPosition: 0,
+          showScrapeResults: false,
+          scrapeResults: [],
+          currentScrapeJobId: "",
         };
       }
     } catch (error) {
@@ -2041,6 +2629,21 @@ export const useTerminal = (
       topRefreshRate: 1000,
       activeScrapeJobs: {},
       nextHistoryId: 1,
+      // AI Chat functionality
+      isAiChatting: false,
+      aiChatHistory: [],
+      isAiTyping: false,
+      aiInputValue: "",
+      // Vim editor functionality
+      isVimEditing: false,
+      vimFileContent: [],
+      vimFilePath: "",
+      vimCursorPosition: { line: 0, column: 0 },
+      vimMode: "normal",
+      vimScrollPosition: 0,
+      showScrapeResults: false,
+      scrapeResults: [],
+      currentScrapeJobId: "",
     };
   };
 
@@ -2130,7 +2733,7 @@ export const useTerminal = (
       if (path === "/") return null;
 
       const pathParts = path.split("/").filter((part) => part);
-      let currentItems = fileSystem;
+      let currentItems = dynamicFileSystem;
 
       for (let i = 0; i < pathParts.length; i++) {
         const part = pathParts[i];
@@ -2151,7 +2754,99 @@ export const useTerminal = (
 
       return null;
     },
-    [fileSystem]
+    [dynamicFileSystem]
+  );
+
+  // Function to get file content from both static and dynamic sources
+  const getFileContent = useCallback(
+    (path: string) => {
+      // First check dynamic file contents
+      if (dynamicFileContents[path]) {
+        return { content: dynamicFileContents[path] };
+      }
+
+      // Fall back to static file contents
+      return getFileContentByPath(path);
+    },
+    [dynamicFileContents]
+  );
+
+  // Function to save scrape results to the virtual file system
+  const saveScrapeResultsToFile = useCallback(
+    (jobId: string, results: any[]) => {
+      try {
+        console.log(
+          "Saving scrape results to file:",
+          jobId,
+          results.length,
+          "results"
+        );
+
+        // Create JSON content for the results
+        const jsonContent = JSON.stringify(results, null, 2);
+        const filename = `job_${jobId}.json`;
+
+        // Split JSON content into lines for display
+        const contentLines = jsonContent.split("\n");
+
+        // Add file to dynamic file system
+        setDynamicFileSystem((prevFileSystem) => {
+          console.log("Previous file system:", prevFileSystem.length, "items");
+          const newFileSystem = [...prevFileSystem];
+
+          // Find the scraping_results directory
+          const scrapingResultsDir = newFileSystem.find(
+            (item) => item.name === "scraping_results"
+          );
+          console.log("Found scraping_results dir:", !!scrapingResultsDir);
+
+          if (scrapingResultsDir) {
+            // Ensure children array exists
+            if (!scrapingResultsDir.children) {
+              scrapingResultsDir.children = [];
+            }
+
+            // Add the new file
+            scrapingResultsDir.children.push({
+              name: filename,
+              type: "file",
+              permissions: "-rw-r--r--",
+              size: `${Math.round((jsonContent.length / 1024) * 10) / 10}K`,
+              date: new Date().toLocaleDateString("en-US", {
+                month: "short",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+              }),
+            });
+            console.log("Added file to scraping_results:", filename);
+          } else {
+            console.error("scraping_results directory not found");
+          }
+
+          return newFileSystem;
+        });
+
+        // Add file content to dynamic file contents
+        setDynamicFileContents((prev) => {
+          const newContents = {
+            ...prev,
+            [`scraping_results/${filename}`]: contentLines,
+          };
+          console.log(
+            "Updated file contents, total files:",
+            Object.keys(newContents).length
+          );
+          return newContents;
+        });
+
+        return true;
+      } catch (error) {
+        console.error("Failed to save scrape results to file:", error);
+        return false;
+      }
+    },
+    [setDynamicFileSystem, setDynamicFileContents]
   );
 
   // Command registry using Command Pattern
@@ -2169,6 +2864,9 @@ export const useTerminal = (
     top: new TopCommand(),
     exit: new ExitCommand(),
     curl: new CurlCommand(),
+    arachne: new ArachneCommand(),
+    ai: new AiCommand(),
+    vim: new VimCommand(),
   };
 
   const executeCommand = useCallback(
@@ -2209,12 +2907,13 @@ export const useTerminal = (
         const result = commandRegistry[commandName].execute(
           expandedArgs,
           [...state.commandHistory, newHistoryEntry], // Pass the updated history
-          fileSystem,
+          dynamicFileSystem, // Use dynamic file system instead of static
           dispatchWithSave, // Pass dispatchWithSave instead of dispatch
           state.currentDirectory,
           onNavigate, // Pass the navigation function
           state, // Pass the current state
-          undefined // No stdin for single commands
+          undefined, // No stdin for single commands
+          getFileContent // Pass the file content function
         );
 
         // Handle both sync and async results
@@ -2246,10 +2945,11 @@ export const useTerminal = (
     [
       state.commandHistory,
       state.currentDirectory,
-      fileSystem,
+      dynamicFileSystem,
       commandRegistry,
       dispatchWithSave,
       setTypewriter,
+      getFileContent,
     ]
   );
 
@@ -2315,12 +3015,13 @@ export const useTerminal = (
         const result = commandRegistry[commandName].execute(
           expandedArgs,
           finalHistory,
-          fileSystem,
+          dynamicFileSystem, // Use dynamic file system
           dispatchWithSave,
           state.currentDirectory,
           onNavigate,
           state,
-          stdin
+          stdin,
+          getFileContent
         );
 
         // Handle the result and prepare stdin for next command
@@ -2364,7 +3065,7 @@ export const useTerminal = (
     },
     [
       commandRegistry,
-      fileSystem,
+      dynamicFileSystem,
       dispatchWithSave,
       state.currentDirectory,
       onNavigate,
@@ -2380,7 +3081,7 @@ export const useTerminal = (
       const suggestions: string[] = [];
       // Use the shared helper
       const currentItems = getCurrentDirectoryItems(
-        fileSystem,
+        dynamicFileSystem,
         state.currentDirectory
       );
 
@@ -2484,6 +3185,52 @@ export const useTerminal = (
               suggestions.push(`wc ${afterWc} ${item.name}`);
             }
           });
+        }
+      }
+
+      // Check for man command with available man pages
+      if (input.toLowerCase().startsWith("man ")) {
+        const afterMan = input.substring(4).trim();
+
+        // Get all available man pages
+        const manPageNames = Object.keys(manPages);
+
+        // Filter man pages that match the partial input
+        manPageNames.forEach((pageName) => {
+          if (pageName.toLowerCase().startsWith(afterMan.toLowerCase())) {
+            suggestions.push(`man ${pageName}`);
+          }
+        });
+      }
+
+      // Check for arachne command with subcommands
+      if (input.toLowerCase().startsWith("arachne ")) {
+        const afterArachne = input.substring(8).trim();
+
+        if (!afterArachne) {
+          // No subcommand yet, suggest all subcommands
+          suggestions.push(
+            "arachne scrape",
+            "arachne status",
+            "arachne jobs",
+            "arachne help"
+          );
+        } else if (afterArachne.startsWith("scrape ")) {
+          // Suggest URLs for scraping
+          const afterScrape = afterArachne.substring(7).trim();
+          if (!afterScrape) {
+            suggestions.push(
+              "arachne scrape https://example.com",
+              "arachne scrape https://google.com https://github.com",
+              "arachne scrape https://news.ycombinator.com"
+            );
+          }
+        } else if (afterArachne.startsWith("status ")) {
+          // Suggest status command format
+          const afterStatus = afterArachne.substring(7).trim();
+          if (!afterStatus) {
+            suggestions.push("arachne status <job_id>");
+          }
         }
       }
 
@@ -2865,8 +3612,13 @@ export const useTerminal = (
 
           // Handle completion
           if (status.status === "completed" && status.results) {
-            // Note: Virtual file creation would need to be handled by the file system context
-            // For now, we'll just update the job status
+            console.log(
+              "Job completed, saving results:",
+              job.jobId,
+              status.results.length,
+              "results"
+            );
+
             dispatchWithSave({
               type: "UPDATE_SCRAPE_JOB",
               payload: {
@@ -2874,6 +3626,18 @@ export const useTerminal = (
                 updates: {
                   results: status.results,
                 },
+              },
+            });
+
+            // Save results to file system
+            saveScrapeResultsToFile(job.jobId, status.results);
+
+            // Show results modal
+            dispatchWithSave({
+              type: "SHOW_SCRAPE_RESULTS",
+              payload: {
+                results: status.results,
+                jobId: job.jobId,
               },
             });
 
@@ -2903,7 +3667,7 @@ export const useTerminal = (
     }, 2000); // Poll every 2 seconds
 
     return () => clearInterval(pollInterval);
-  }, [state.activeScrapeJobs, dispatchWithSave]);
+  }, [state.activeScrapeJobs, dispatchWithSave, saveScrapeResultsToFile]);
 
   return {
     // State
@@ -2930,6 +3694,16 @@ export const useTerminal = (
     topSortOrder: state.topSortOrder,
     topRefreshRate: state.topRefreshRate,
     activeScrapeJobs: state.activeScrapeJobs,
+
+    // Vim editor state
+    isVimEditing: state.isVimEditing,
+    vimFileContent: state.vimFileContent,
+    vimFilePath: state.vimFilePath,
+
+    // Scrape results state
+    showScrapeResults: state.showScrapeResults,
+    scrapeResults: state.scrapeResults,
+    currentScrapeJobId: state.currentScrapeJobId,
 
     // Refs
     terminalRef,
@@ -2964,6 +3738,9 @@ export const useTerminal = (
     setTopRefreshRate,
     setTopSelectedPid,
     killTopProcess,
+
+    // AI Chat actions
+    dispatch: dispatchWithSave,
 
     // Helpers
     findItemByPath,

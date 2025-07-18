@@ -5,15 +5,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import "./Dock.css";
 
-// Get the base size from CSS custom property, fallback to 40
-const getBaseSize = () => {
-  const size = getComputedStyle(document.documentElement)
-    .getPropertyValue("--dock-icon-size")
-    .trim();
-  return size ? parseInt(size) : 40;
-};
-
-const BASE_SIZE = getBaseSize();
 const MAGNIFICATION_RANGE = 150;
 
 interface DockIconProps {
@@ -90,7 +81,7 @@ const DockIcon: React.FC<DockIconProps> = ({
 
   // The animation logic now uses perfectly matched coordinates
   useEffect(() => {
-    const unsubscribe = mouseX.onChange((latestMouseX) => {
+    const unsubscribe = mouseX.on("change", (latestMouseX) => {
       if (latestMouseX === null) {
         size.set(baseSize);
         fontSize.set(baseSize * 0.6);

@@ -20,6 +20,7 @@ const ManPageUI: React.FC<ManPageUIProps> = ({
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "q" || e.key === "Q") {
+        e.preventDefault();
         onExit();
       } else if (e.key === "ArrowUp") {
         e.preventDefault();

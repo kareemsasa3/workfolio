@@ -7,6 +7,8 @@ import { useTerminal } from "../../hooks/useTerminal";
 import { fileSystem } from "../../data/fileSystem";
 import ManPageUI from "./ManPageUI";
 import TopUI from "./TopUI";
+import VimUI from "./VimUI";
+import { ScrapeResults } from "../ScrapeResults";
 import { manPages } from "../../data/manPages";
 
 interface TerminalProps {
@@ -126,6 +128,16 @@ const Terminal: React.FC<TerminalProps> = ({ isIntro }) => {
     topSortOrder,
     topRefreshRate,
     topSelectedPid,
+
+    // Vim editor functionality
+    isVimEditing,
+    vimFileContent,
+    vimFilePath,
+
+    // Scrape results functionality
+    showScrapeResults,
+    scrapeResults,
+    dispatch,
   } = useTerminal(
     fileSystem,
     handleRouteNavigation,
@@ -188,12 +200,6 @@ const Terminal: React.FC<TerminalProps> = ({ isIntro }) => {
       inputRef.current.focus();
     }
   }, [showPrompt]);
-
-  useEffect(() => {
-    if (terminalRef.current) {
-      terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
-    }
-  }, [commandHistory, terminalRef]);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
@@ -357,6 +363,21 @@ const Terminal: React.FC<TerminalProps> = ({ isIntro }) => {
     return () => window.removeEventListener("resize", handleResize);
   }, [isMaximized, isMinimized, position, keepPositionInBounds]);
 
+  // Smart auto-scroll: only scroll to bottom if user is already near the bottom
+  useEffect(() => {
+    if (terminalRef.current) {
+      const container = terminalRef.current;
+      const isScrolledToBottom =
+        container.scrollHeight - container.clientHeight <=
+        container.scrollTop + 50; // 50px threshold
+
+      // Only auto-scroll if user is already near the bottom
+      if (isScrolledToBottom) {
+        container.scrollTop = container.scrollHeight;
+      }
+    }
+  }, [commandHistory, terminalRef]);
+
   // Calculate container styles based on state
   const getContainerStyles = () => {
     if (isMaximized) {
@@ -444,6 +465,25 @@ const Terminal: React.FC<TerminalProps> = ({ isIntro }) => {
           sortBy={topSortBy}
           sortOrder={topSortOrder}
           refreshRate={topRefreshRate}
+        />
+      )}
+
+      {/* Vim Editor Overlay */}
+      {isVimEditing && (
+        <VimUI
+          isVisible={isVimEditing}
+          filePath={vimFilePath}
+          content={vimFileContent}
+          onClose={() => dispatch({ type: "HIDE_VIM_EDITOR" })}
+          isReadOnly={true}
+        />
+      )}
+
+      {/* Scrape Results Modal */}
+      {showScrapeResults && scrapeResults.length > 0 && (
+        <ScrapeResults
+          results={scrapeResults}
+          onClose={() => dispatch({ type: "HIDE_SCRAPE_RESULTS" })}
         />
       )}
 

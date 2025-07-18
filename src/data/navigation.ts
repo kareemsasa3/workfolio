@@ -10,6 +10,7 @@ import {
   faUser,
   faInfo,
   faTerminal,
+  faComments,
 } from "@fortawesome/free-solid-svg-icons";
 
 export const navItems = [
@@ -22,5 +23,6 @@ export const navItems = [
   { path: "/games", label: "Games", icon: faGamepad },
   { path: "/resume", label: "Resume", icon: faFileAlt },
   { path: "/contact", label: "Contact", icon: faEnvelope },
+  { path: "/ai-conversations", label: "AI Chat", icon: faComments },
   { path: "/info", label: "Info", icon: faInfo },
 ];

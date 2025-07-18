@@ -1,4 +1,8 @@
 /* Terminal Matrix Theme for Projects Page */
+:root {
+    --terminal-primary: #003300;
+}
+
 .projects-container {
     width: 100%;
     max-width: 1400px;
@@ -8,20 +12,17 @@
 
 .projects-header {
     text-align: center;
-    margin-bottom: 3rem;
-    padding: 2rem 0;
-    border-bottom: 2px solid var(--terminal-primary, #00ff00);
-    background: var(--terminal-background, #1a1a1a);
-    border-radius: 8px;
-    margin-bottom: 2rem;
+    padding: 1rem 0;
+    background: transparent;
+    margin-bottom: 1rem;
 }
 
 .projects-title {
     font-size: 3rem;
     font-weight: 700;
-    color: var(--terminal-primary, #00ff00);
+    color: var(--terminal-primary, #003300);
     margin: 0 0 1rem 0;
-    text-shadow: 0 0 10px var(--terminal-primary, #00ff00);
+    text-shadow: 0 0 10px var(--terminal-primary, #003300);
 }
 
 .projects-subtitle {
@@ -35,7 +36,7 @@
 
 /* Terminal Elements */
 .terminal-prompt {
-    color: var(--terminal-primary, #00ff00);
+    color: var(--terminal-primary, #003300);
     font-weight: bold;
     margin-right: 0.5rem;
 }
@@ -53,12 +54,10 @@
 }
 
 .terminal-output {
-    background: var(--terminal-background, #1a1a1a);
-    border: 1px solid var(--terminal-primary, #00ff00);
-    border-radius: 8px;
+    background: transparent;
+    border: none;
     padding: 1rem;
     margin-top: 1rem;
-    box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
 }
 
 .terminal-line {
@@ -76,10 +75,8 @@
     align-items: center;
     margin-bottom: 2rem;
     padding: 1.5rem;
-    background: var(--terminal-background, #1a1a1a);
-    border-radius: 8px;
-    border: 1px solid var(--terminal-primary, #00ff00);
-    box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+    background: transparent;
+    border: none;
 }
 
 .filters-section {
@@ -95,39 +92,9 @@
     gap: 0.5rem;
 }
 
-.filter-group label {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--terminal-primary, #00ff00);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
+/* Filter group styles - labels are now handled by TerminalDropdown component */
 
-.filter-select,
-.sort-select {
-    padding: 0.5rem 1rem;
-    border: 1px solid var(--terminal-primary, #00ff00);
-    border-radius: 4px;
-    background: var(--terminal-background, #1a1a1a);
-    color: var(--terminal-primary, #00ff00);
-    font-size: 0.9rem;
-    min-width: 120px;
-    transition: all 0.3s ease;
-}
-
-.filter-select:focus,
-.sort-select:focus {
-    outline: none;
-    border-color: var(--terminal-primary, #00ff00);
-    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-    background: rgba(0, 255, 0, 0.1);
-}
-
-.filter-select option,
-.sort-select option {
-    background: var(--terminal-background, #1a1a1a);
-    color: var(--terminal-primary, #00ff00);
-}
+/* Custom dropdown styles are now handled by TerminalDropdown component */
 
 .sort-section {
     display: flex;
@@ -136,13 +103,7 @@
     align-items: flex-end;
 }
 
-.sort-section label {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--terminal-primary, #00ff00);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
+/* Sort section styles - labels are now handled by TerminalDropdown component */
 
 /* Statistics Section - Terminal Style */
 .projects-stats {
@@ -153,13 +114,11 @@
 }
 
 .stat-card {
-    background: var(--terminal-background, #1a1a1a);
-    border: 1px solid var(--terminal-primary, #00ff00);
-    border-radius: 8px;
+    background: transparent;
+    border: none;
     padding: 1.5rem;
     text-align: center;
     transition: all 0.3s ease;
-    box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
     cursor: pointer;
     position: relative;
     overflow: hidden;
@@ -181,15 +140,16 @@
 }
 
 .stat-card:hover {
+    border-radius: 12px;
     transform: translateY(-2px);
-    box-shadow: 0 0 25px rgba(0, 255, 0, 0.4);
-    border-color: var(--terminal-primary, #00ff00);
+    border-color: var(--terminal-primary, #003300);
     background: rgba(0, 255, 0, 0.05);
 }
 
 .stat-card.active {
+    border-radius: 12px;
     background: rgba(0, 255, 0, 0.1);
-    border-color: var(--terminal-primary, #00ff00);
+    border-color: var(--terminal-primary, #003300);
     box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
     transform: translateY(-1px);
 }
@@ -199,10 +159,10 @@
     position: absolute;
     top: 0.5rem;
     right: 0.5rem;
-    color: var(--terminal-primary, #00ff00);
+    color: var(--terminal-primary, #003300);
     font-weight: bold;
     font-size: 1.2rem;
-    text-shadow: 0 0 10px var(--terminal-primary, #00ff00);
+    text-shadow: 0 0 10px var(--terminal-primary, #003300);
 }
 
 .stat-card:active {
@@ -214,10 +174,10 @@
     display: block;
     font-size: 2.5rem;
     font-weight: 700;
-    color: var(--terminal-primary, #00ff00);
+    color: var(--terminal-primary, #003300);
     margin-bottom: 0.5rem;
     line-height: 1;
-    text-shadow: 0 0 10px var(--terminal-primary, #00ff00);
+    text-shadow: 0 0 10px var(--terminal-primary, #003300);
 }
 
 .stat-label {
@@ -238,14 +198,14 @@
     padding: 4rem 2rem;
     background: var(--terminal-background, #1a1a1a);
     border-radius: 8px;
-    border: 1px solid var(--terminal-primary, #00ff00);
+    border: 1px solid var(--terminal-primary, #003300);
 }
 
 .no-projects h3 {
     font-size: 1.5rem;
-    color: var(--terminal-primary, #00ff00);
+    color: var(--terminal-primary, #003300);
     margin: 0 0 1rem 0;
-    text-shadow: 0 0 10px var(--terminal-primary, #00ff00);
+    text-shadow: 0 0 10px var(--terminal-primary, #003300);
 }
 
 .no-projects p {
@@ -287,7 +247,7 @@
 
 .tech-stack-content {
     background: var(--terminal-background, #1a1a1a);
-    border: 2px solid var(--terminal-primary, #00ff00);
+    border: 2px solid var(--terminal-primary, #003300);
     border-radius: 8px;
     max-width: 800px;
     width: 90%;
@@ -300,23 +260,23 @@
 .tech-stack-header {
     background: var(--terminal-header-bg, #2a2a2a);
     padding: 1rem 1.5rem;
-    border-bottom: 1px solid var(--terminal-primary, #00ff00);
+    border-bottom: 1px solid var(--terminal-primary, #003300);
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
 .tech-stack-header h3 {
-    color: var(--terminal-primary, #00ff00);
+    color: var(--terminal-primary, #003300);
     margin: 0;
     font-size: 1.2rem;
-    text-shadow: 0 0 10px var(--terminal-primary, #00ff00);
+    text-shadow: 0 0 10px var(--terminal-primary, #003300);
 }
 
 .close-tech-stack {
     background: var(--terminal-background, #1a1a1a);
-    color: var(--terminal-primary, #00ff00);
-    border: 1px solid var(--terminal-primary, #00ff00);
+    color: var(--terminal-primary, #003300);
+    border: 1px solid var(--terminal-primary, #003300);
     border-radius: 4px;
     padding: 0.5rem 1rem;
     cursor: pointer;
@@ -356,7 +316,7 @@
 }
 
 .tech-stack-grid::-webkit-scrollbar-thumb {
-    background: var(--terminal-primary, #00ff00);
+    background: var(--terminal-primary, #003300);
     border-radius: 4px;
 }
 
@@ -373,16 +333,16 @@
 
 .tech-item:hover {
     background: rgba(0, 255, 0, 0.1);
-    border-color: var(--terminal-primary, #00ff00);
+    border-color: var(--terminal-primary, #003300);
     box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
     transform: translateY(-1px);
 }
 
 .tech-name {
-    color: var(--terminal-primary, #00ff00);
+    color: var(--terminal-primary, #003300);
     font-weight: 600;
     font-size: 0.95rem;
-    text-shadow: 0 0 5px var(--terminal-primary, #00ff00);
+    text-shadow: 0 0 5px var(--terminal-primary, #003300);
 }
 
 .tech-count {

@@ -1,6 +1,7 @@
 import { useState, useMemo, useReducer } from "react";
 import "./Projects.css";
 import ProjectsList from "../../components/ProjectsList";
+import TerminalDropdown from "../../components/TerminalDropdown";
 import {
   projectsData,
   complexityOrder,
@@ -188,77 +189,67 @@ const Projects = () => {
         <div className="projects-controls">
           <div className="filters-section">
             <div className="filter-group">
-              <label htmlFor="category-filter">
-                <span className="terminal-prompt">$</span> filter --category:
-              </label>
-              <select
-                id="category-filter"
+              <TerminalDropdown
+                options={categories}
                 value={category}
-                onChange={(e) => handleFilterChange("category", e.target.value)}
-                className="filter-select"
-              >
-                {categories.map((category) => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </select>
+                onChange={(value) => handleFilterChange("category", value)}
+                label="filter --category:"
+                placeholder="Select category"
+              />
             </div>
 
             <div className="filter-group">
-              <label htmlFor="complexity-filter">
-                <span className="terminal-prompt">$</span> filter --complexity:
-              </label>
-              <select
-                id="complexity-filter"
+              <TerminalDropdown
+                options={complexities}
                 value={complexity}
-                onChange={(e) =>
-                  handleFilterChange("complexity", e.target.value)
-                }
-                className="filter-select"
-              >
-                {complexities.map((complexity) => (
-                  <option key={complexity} value={complexity}>
-                    {complexity}
-                  </option>
-                ))}
-              </select>
+                onChange={(value) => handleFilterChange("complexity", value)}
+                label="filter --complexity:"
+                placeholder="Select complexity"
+              />
             </div>
 
             <div className="filter-group">
-              <label htmlFor="status-filter">
-                <span className="terminal-prompt">$</span> filter --status:
-              </label>
-              <select
-                id="status-filter"
+              <TerminalDropdown
+                options={statuses}
                 value={status}
-                onChange={(e) => handleFilterChange("status", e.target.value)}
-                className="filter-select"
-              >
-                {statuses.map((status) => (
-                  <option key={status} value={status}>
-                    {status}
-                  </option>
-                ))}
-              </select>
+                onChange={(value) => handleFilterChange("status", value)}
+                label="filter --status:"
+                placeholder="Select status"
+              />
             </div>
           </div>
 
           <div className="sort-section">
-            <label htmlFor="sort-select">
-              <span className="terminal-prompt">$</span> sort --by:
-            </label>
-            <select
-              id="sort-select"
-              value={sortBy}
-              onChange={(e) => handleSortChange(e.target.value)}
-              className="sort-select"
-            >
-              <option value="date">Date (Newest)</option>
-              <option value="complexity">Complexity</option>
-              <option value="name">Name</option>
-              <option value="category">Category</option>
-            </select>
+            <TerminalDropdown
+              options={[
+                { value: "date", label: "Date (Newest)" },
+                { value: "complexity", label: "Complexity" },
+                { value: "name", label: "Name" },
+                { value: "category", label: "Category" },
+              ].map((option) => option.label)}
+              value={
+                [
+                  { value: "date", label: "Date (Newest)" },
+                  { value: "complexity", label: "Complexity" },
+                  { value: "name", label: "Name" },
+                  { value: "category", label: "Category" },
+                ].find((option) => option.value === sortBy)?.label ||
+                "Date (Newest)"
+              }
+              onChange={(label) => {
+                const option = [
+                  { value: "date", label: "Date (Newest)" },
+                  { value: "complexity", label: "Complexity" },
+                  { value: "name", label: "Name" },
+                  { value: "category", label: "Category" },
+                ].find((opt) => opt.label === label);
+                if (option) {
+                  handleSortChange(option.value);
+                }
+              }}
+              label="sort --by:"
+              placeholder="Select sort option"
+            />
           </div>
         </div>
 

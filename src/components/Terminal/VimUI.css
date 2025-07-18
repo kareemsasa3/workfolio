@@ -1,0 +1,261 @@
+.vim-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.vim-container {
+    width: 90vw;
+    height: 90vh;
+    background-color: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.vim-header {
+    background-color: #2d2d2d;
+    border-bottom: 1px solid #333;
+    padding: 8px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #fff;
+}
+
+.vim-title {
+    font-weight: 500;
+    color: #e6e6e6;
+}
+
+.vim-close-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+}
+
+.vim-close-btn:hover {
+    background-color: #404040;
+}
+
+.vim-editor {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background-color: #1e1e1e;
+    color: #e6e6e6;
+}
+
+.vim-content {
+    padding: 16px;
+    height: 100%;
+    overflow-y: auto;
+    position: relative;
+}
+
+.vim-line {
+    display: flex;
+    align-items: center;
+    height: 20px;
+    position: relative;
+    transition: background-color 0.1s ease;
+}
+
+.vim-current-line {
+    background-color: #2d2d2d;
+}
+
+.vim-line-number {
+    width: 40px;
+    color: #666;
+    font-size: 12px;
+    text-align: right;
+    padding-right: 16px;
+    user-select: none;
+    flex-shrink: 0;
+}
+
+.vim-line-content {
+    flex: 1;
+    position: relative;
+}
+
+.vim-line-input {
+    background: none;
+    border: none;
+    color: #e6e6e6;
+    font-family: inherit;
+    font-size: inherit;
+    width: 100%;
+    outline: none;
+    padding: 0;
+    margin: 0;
+}
+
+.vim-line-input:focus {
+    background-color: transparent;
+}
+
+.vim-cursor {
+    position: absolute;
+    width: 2px;
+    height: 18px;
+    background-color: #fff;
+    animation: blink 1s infinite;
+    pointer-events: none;
+    z-index: 10;
+}
+
+@keyframes blink {
+    0%, 50% {
+        opacity: 1;
+    }
+
+    51%, 100% {
+        opacity: 0;
+    }
+}
+
+.vim-command-line {
+    background-color: #2d2d2d;
+    border-top: 1px solid #333;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    color: #fff;
+}
+
+.vim-command-prompt {
+    color: #4CAF50;
+    font-weight: bold;
+    margin-right: 8px;
+}
+
+.vim-command-input {
+    background: none;
+    border: none;
+    color: #fff;
+    font-family: inherit;
+    font-size: inherit;
+    flex: 1;
+    outline: none;
+}
+
+.vim-status-bar {
+    background-color: #2d2d2d;
+    border-top: 1px solid #333;
+    padding: 4px 16px;
+    color: #999;
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.vim-status-text {
+    color: #999;
+}
+
+/* Prism.js syntax highlighting overrides */
+.vim-editor .token {
+    font-family: inherit;
+    font-size: inherit;
+}
+
+.vim-editor .token.keyword {
+    color: #569cd6;
+}
+
+.vim-editor .token.string {
+    color: #ce9178;
+}
+
+.vim-editor .token.comment {
+    color: #6a9955;
+    font-style: italic;
+}
+
+.vim-editor .token.function {
+    color: #dcdcaa;
+}
+
+.vim-editor .token.number {
+    color: #b5cea8;
+}
+
+.vim-editor .token.operator {
+    color: #d4d4d4;
+}
+
+.vim-editor .token.punctuation {
+    color: #d4d4d4;
+}
+
+.vim-editor .token.class-name {
+    color: #4ec9b0;
+}
+
+.vim-editor .token.variable {
+    color: #9cdcfe;
+}
+
+.vim-editor .token.property {
+    color: #9cdcfe;
+}
+
+/* Scrollbar styling */
+.vim-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.vim-content::-webkit-scrollbar-track {
+    background: #1e1e1e;
+}
+
+.vim-content::-webkit-scrollbar-thumb {
+    background: #404040;
+    border-radius: 4px;
+}
+
+.vim-content::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .vim-container {
+        width: 95vw;
+        height: 95vh;
+    }
+
+    .vim-content {
+        padding: 8px;
+    }
+
+    .vim-line-number {
+        width: 30px;
+        padding-right: 8px;
+        font-size: 11px;
+    }
+}

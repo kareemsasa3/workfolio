@@ -1,3 +1,5 @@
+import { ChatMessage } from "../services/aiApi";
+
 export interface FileSystemItem {
   name: string;
   type: "directory" | "file";
@@ -67,6 +69,22 @@ export interface TerminalState {
   topSelectedPid: number | null; // Currently selected process PID
   activeScrapeJobs: Record<string, ActiveScrapeJob>; // Track active scraping jobs
   nextHistoryId: number; // Auto-incrementing ID for history entries
+  // AI Chat functionality
+  isAiChatting: boolean; // Track if we're in AI chat mode
+  aiChatHistory: ChatMessage[]; // AI conversation history
+  isAiTyping: boolean; // Track if AI is currently typing
+  aiInputValue: string; // Current input value in AI chat
+  // Vim editor functionality
+  isVimEditing: boolean; // Track if we're in vim editor mode
+  vimFileContent: string[]; // Current file content in vim
+  vimFilePath: string; // Path of the file being edited
+  vimCursorPosition: { line: number; column: number }; // Current cursor position
+  vimMode: "normal" | "insert" | "visual"; // Current vim mode
+  vimScrollPosition: number; // Scroll position in vim editor
+  // Scrape results modal
+  showScrapeResults: boolean; // Track if scrape results modal is shown
+  scrapeResults: any[]; // Current scrape results to display
+  currentScrapeJobId: string; // ID of the job whose results are being shown
 }
 
 // Action types for the terminal reducer
@@ -123,7 +141,31 @@ export type TerminalAction =
     }
   | { type: "REMOVE_SCRAPE_JOB"; payload: string }
   | { type: "CREATE_VIRTUAL_FILE"; payload: { path: string; content: string } }
-  | { type: "SET_NEXT_HISTORY_ID"; payload: number };
+  | { type: "SET_NEXT_HISTORY_ID"; payload: number }
+  // AI Chat actions
+  | { type: "START_AI_CHAT" }
+  | { type: "EXIT_AI_CHAT" }
+  | { type: "ADD_AI_MESSAGE"; payload: ChatMessage }
+  | { type: "SET_AI_TYPING"; payload: boolean }
+  | { type: "SET_AI_INPUT_VALUE"; payload: string }
+  | { type: "CLEAR_AI_CHAT_HISTORY" }
+  // Vim editor actions
+  | {
+      type: "SHOW_VIM_EDITOR";
+      payload: { filePath: string; content: string[] };
+    }
+  | { type: "HIDE_VIM_EDITOR" }
+  | { type: "UPDATE_VIM_CONTENT"; payload: string[] }
+  | { type: "SET_VIM_CURSOR"; payload: { line: number; column: number } }
+  | { type: "SET_VIM_MODE"; payload: "normal" | "insert" | "visual" }
+  | { type: "SET_VIM_SCROLL"; payload: number }
+  | { type: "SAVE_VIM_FILE"; payload: { filePath: string; content: string[] } }
+  | { type: "SHOW_SCRAPE_RESULTS"; payload: { results: any[]; jobId: string } }
+  | { type: "HIDE_SCRAPE_RESULTS" }
+  | {
+      type: "ADD_FILE_TO_FILESYSTEM";
+      payload: { path: string; content: string; filename: string };
+    };
 
 export interface Command {
   name: string;
@@ -135,7 +177,8 @@ export interface Command {
     currentDirectory: string,
     onNavigate?: (route: string) => void,
     state?: TerminalState,
-    stdin?: string[] // New stdin parameter for piping
+    stdin?: string[], // New stdin parameter for piping
+    getFileContent?: (path: string) => { content: string[] } | null // File content function
   ) => CommandResult | Promise<CommandResult>;
   getSuggestions?: (
     input: string,

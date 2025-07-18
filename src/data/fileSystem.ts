@@ -325,4 +325,12 @@ export const fileSystem: FileSystemItem[] = [
       },
     ],
   },
+  {
+    name: "scraping_results",
+    type: "directory",
+    permissions: "drwxr-xr-x",
+    size: "4096",
+    date: "Dec 15 10:30",
+    children: [],
+  },
 ];

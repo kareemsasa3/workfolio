@@ -72,11 +72,11 @@
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   will-change: transform, opacity;
-  /* Prevent text selection during drag */
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
+  /* Allow text selection in terminal content */
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
 }
 
 .terminal-container.maximized {
@@ -98,6 +98,11 @@
   align-items: center;
   border-bottom: 1px solid var(--terminal-border);
   cursor: grab;
+  /* Prevent text selection in header for drag functionality */
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .terminal-header:active {
@@ -162,6 +167,11 @@
   font-size: 14px;
   line-height: 1.4;
   overflow-y: auto;
+  /* Ensure text selection is allowed in terminal body */
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
 }
 
 .terminal-body::-webkit-scrollbar {
@@ -415,4 +425,33 @@
 /* Prevent horizontal scroll on terminal page */
 body.terminal-page-active {
   overflow-x: hidden;
+}
+
+/* Override global user-select: none for terminal content */
+.terminal-screen,
+.terminal-screen * {
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+}
+
+/* Custom text selection colors for terminal */
+.terminal-screen ::selection {
+  background-color: rgba(0, 255, 0, 0.3);
+  color: #ffffff;
+}
+
+.terminal-screen ::-moz-selection {
+  background-color: rgba(0, 255, 0, 0.3);
+  color: #ffffff;
+}
+
+/* But keep header non-selectable for drag functionality */
+.terminal-screen .terminal-header,
+.terminal-screen .terminal-header * {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
 }

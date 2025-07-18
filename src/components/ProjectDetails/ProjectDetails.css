@@ -1,24 +1,19 @@
 /* Terminal Matrix Theme for Project Details */
 .project-card {
-    background: var(--terminal-background, #1a1a1a);
-    border: 1px solid var(--terminal-primary, #00ff00);
-    border-radius: 8px;
+    background: transparent;
+    border: none;
     margin-bottom: 1.5rem;
     overflow: hidden;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
     font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 .project-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 0 25px rgba(0, 255, 0, 0.4);
-    border-color: var(--terminal-primary, #00ff00);
 }
 
 .project-card.expanded {
-    border-color: var(--terminal-primary, #00ff00);
-    box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
+    border-color: var(--terminal-primary, #003300);
 }
 
 .project-header {
@@ -27,13 +22,8 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    background: var(--terminal-background, #1a1a1a);
+    background: transparent;
     transition: background 0.3s ease;
-    border-bottom: 1px solid rgba(0, 255, 0, 0.3);
-}
-
-.project-header:hover {
-    background: rgba(0, 255, 0, 0.05);
 }
 
 .project-main-info {

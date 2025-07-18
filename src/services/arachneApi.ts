@@ -14,10 +14,21 @@ export interface ScrapeStatusResponse {
   progress?: number;
   results?: any;
   error?: string;
+  job?: {
+    id: string;
+    status: string;
+    request: any;
+    created_at: string;
+    started_at?: string;
+    completed_at?: string;
+    progress: number;
+    results?: any;
+  };
+  metrics?: any;
 }
 
-// Configuration - update this with your deployed Arachne instance URL
-const ARACHNE_BASE_URL = "https://your-arachne-instance.com"; // TODO: Update with actual URL
+// Configuration - Arachne service proxied through nginx
+const ARACHNE_BASE_URL = "/api/scrape"; // Nginx proxy endpoint
 
 export class ArachneApiError extends Error {
   constructor(message: string, public status?: number) {
@@ -35,6 +46,9 @@ export async function submitScrapeJob(
   urls: string[]
 ): Promise<ScrapeJobResponse> {
   try {
+    console.log("Submitting scrape job to:", `${ARACHNE_BASE_URL}/scrape`);
+    console.log("URLs:", urls);
+
     const response = await fetch(`${ARACHNE_BASE_URL}/scrape`, {
       method: "POST",
       headers: {
@@ -43,16 +57,26 @@ export async function submitScrapeJob(
       body: JSON.stringify({ urls } as ScrapeJobRequest),
     });
 
+    console.log("Response status:", response.status);
+    console.log(
+      "Response headers:",
+      Object.fromEntries(response.headers.entries())
+    );
+
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Error response:", errorText);
       throw new ArachneApiError(
-        `Failed to submit scrape job: ${response.statusText}`,
+        `Failed to submit scrape job: ${response.statusText} - ${errorText}`,
         response.status
       );
     }
 
     const data = await response.json();
+    console.log("Response data:", data);
     return data as ScrapeJobResponse;
   } catch (error) {
+    console.error("Error in submitScrapeJob:", error);
     if (error instanceof ArachneApiError) {
       throw error;
     }
@@ -73,6 +97,12 @@ export async function getScrapeStatus(
   jobId: string
 ): Promise<ScrapeStatusResponse> {
   try {
+    console.log("Getting scrape status for job:", jobId);
+    console.log(
+      "Status URL:",
+      `${ARACHNE_BASE_URL}/scrape/status?id=${encodeURIComponent(jobId)}`
+    );
+
     const response = await fetch(
       `${ARACHNE_BASE_URL}/scrape/status?id=${encodeURIComponent(jobId)}`,
       {
@@ -83,16 +113,22 @@ export async function getScrapeStatus(
       }
     );
 
+    console.log("Status response status:", response.status);
+
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Status error response:", errorText);
       throw new ArachneApiError(
-        `Failed to get scrape status: ${response.statusText}`,
+        `Failed to get scrape status: ${response.statusText} - ${errorText}`,
         response.status
       );
     }
 
     const data = await response.json();
+    console.log("Status response data:", data);
     return data as ScrapeStatusResponse;
   } catch (error) {
+    console.error("Error in getScrapeStatus:", error);
     if (error instanceof ArachneApiError) {
       throw error;
     }
