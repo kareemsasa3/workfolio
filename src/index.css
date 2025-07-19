@@ -5,11 +5,19 @@
   box-sizing: border-box;
 }
 
+/* 
+  Default state for the entire app:
+  Use modern scrollbar-gutter to prevent layout shifts.
+*/
 html {
   line-height: 1.15;
   -webkit-text-size-adjust: 100%;
+  overflow-x: hidden;
+  /* Prevent horizontal scrollbars */
+  scroll-behavior: smooth;
 }
 
+/* Single scrolling container - the body element */
 body {
   margin: 0;
   font-family: var(--font-family-primary);
@@ -17,10 +25,32 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--background-color);
   color: var(--text-color);
-  transition: var(--theme-transition);
+  transition: background-color 0.4s ease, color 0.4s ease;
+  /* CORRECT: Let body scroll */
+  overflow-y: auto;
   overflow-x: hidden;
-  /* Prevent horizontal scrolling */
-  width: 100%;
+  scrollbar-gutter: stable;
+  /* Ensure minimum height to prevent layout shifts */
+  min-height: 100vh;
+}
+
+/* Root container - no overflow rules to avoid nested scrolling */
+#root {
+  isolation: isolate;
+  /* This is a modern CSS property that is a good practice for root elements.
+                         It creates a new stacking context without needing position/z-index,
+                         preventing any weird bleed-through from external browser extensions.
+                         This is the one exception to the "no stacking context" rule for the root. */
+}
+
+/* App layout - no overflow rules to avoid nested scrolling */
+.app-layout {
+  /* Remove overflow rules - let body handle scrolling */
+}
+
+/* Page content - let it grow naturally */
+.page-content {
+  /* Remove overflow-x: hidden - html element handles this globally */
 }
 
 main {
@@ -197,8 +227,8 @@ template {
 :root {
   /* Color Palette */
   --primary-color: #2AAF2A;
-  --primary-color-light: rgba(175, 42, 42, 0.2);
-  --primary-color-medium: rgba(175, 42, 42, 0.3);
+  --overlay-color-light: rgba(0, 0, 0, 0.8);
+  --overlay-color-medium: rgba(0, 0, 0, 0.9);
   --primary-color-dark: #1A8B1A;
   --accent-color: #FFD700;
 
@@ -215,11 +245,8 @@ template {
   --border-color: #495057;
   --shadow-color: rgba(0, 0, 0, 0.3);
 
-  /* Theme transition - smoother and longer */
-  --theme-transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-
-  /* Typography */
-  --font-family-primary: Papyrus, fantasy;
+  /* Typography - Updated to use system UI fonts for better performance and readability */
+  --font-family-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
   --font-family-mono: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 
   /* Spacing */
@@ -238,6 +265,7 @@ template {
   --transition-fast: 0.1s ease-in-out;
   --transition-normal: 0.3s ease;
   --transition-slow: 0.5s ease-out;
+  --interaction-transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 
   /* Z-index layers */
   --z-index-background: -1;
@@ -245,7 +273,13 @@ template {
   --z-index-navigation: 1001;
   --z-index-overlay: 1000;
 
-  /* Dock Settings */
+  /* Layout dimensions */
+  --header-height: 100px;
+  --footer-height: 50px;
+
+  /* Dock Settings - Single source of truth for dimensions */
+  --dock-height: 80px;
+  --dock-height-mobile: 60px;
   --dock-icon-size: 60px;
   --dock-spacing: 4px;
   --dock-padding: 8px 16px;
@@ -268,80 +302,37 @@ code {
   font-family: var(--font-family-mono);
 }
 
-/* Theme transitions - comprehensive and smooth */
-* {
-  transition:
-    background-color var(--theme-transition),
-    color var(--theme-transition),
-    border-color var(--theme-transition),
-    box-shadow var(--theme-transition),
-    opacity var(--theme-transition);
-}
-
-/* Ensure smooth transitions for specific elements */
-body,
-div,
-section,
-article,
-aside,
-header,
-footer,
-nav,
-main {
-  transition:
-    background-color var(--theme-transition),
-    color var(--theme-transition),
-    border-color var(--theme-transition),
-    box-shadow var(--theme-transition);
-}
-
-/* Smooth transitions for form elements */
+/* Apply transitions only to interactive elements for better performance */
+a,
+button,
 input,
 textarea,
-select,
-button {
-  transition:
-    background-color var(--theme-transition),
-    color var(--theme-transition),
-    border-color var(--theme-transition),
-    box-shadow var(--theme-transition);
+select {
+  transition: var(--interaction-transition);
 }
 
-/* Focus states for accessibility */
-*:focus {
+/* Focus states for accessibility - scoped to interactive elements for better performance */
+:where(a, button, input, textarea, select, [tabindex]):focus-visible {
   outline: 2px solid var(--primary-color);
   outline-offset: 2px;
 }
 
-/* Remove focus outline for mouse users */
-*:focus:not(:focus-visible) {
-  outline: none;
-}
-
-/* Standardized page layout */
+/* CORRECT: .page-content is now purely a padding/content container */
 .page-content {
-  margin-top: 0;
-  margin-bottom: 100px;
-  /* Space for Mac dock */
   padding: var(--page-padding);
-  min-height: calc(100vh - 100px);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
+  width: 100%;
+  box-sizing: border-box;
+  /* NO height, min-height, or margin rules here! It inherits its size. */
 }
 
 .page-content.game-page {
   margin-top: 60px;
-  min-height: calc(100vh - 60px);
+  /* Remove hardcoded height - let layout handle this */
 }
 
 @media (max-width: 768px) {
   .page-content {
-    margin-top: 0;
-    margin-bottom: 0;
-    /* No dock on mobile */
     padding: var(--spacing-sm);
-    min-height: calc(100vh);
+    /* NO height or min-height rules here! */
   }
 }

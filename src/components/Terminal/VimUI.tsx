@@ -12,7 +12,7 @@ import "prismjs/components/prism-json";
 import "prismjs/components/prism-markdown";
 import "prismjs/components/prism-bash";
 import "prismjs/components/prism-markup";
-import { getSyntaxLanguage } from "../../data/sourceFileSystem";
+// Removed sourceFileSystem dependency
 import "./VimUI.css";
 
 interface VimUIProps {
@@ -39,6 +39,24 @@ const VimUI: React.FC<VimUIProps> = ({
   const [commandLine, setCommandLine] = useState("");
   const [showCommandLine, setShowCommandLine] = useState(false);
   const editorRef = useRef<HTMLDivElement>(null);
+
+  // Simple syntax language detection
+  const getSyntaxLanguage = (path: string): string => {
+    const ext = path.split(".").pop()?.toLowerCase();
+    const languageMap: { [key: string]: string } = {
+      ts: "typescript",
+      tsx: "typescript",
+      js: "javascript",
+      jsx: "javascript",
+      json: "json",
+      css: "css",
+      html: "markup",
+      md: "markdown",
+      txt: "text",
+    };
+    return languageMap[ext || ""] || "text";
+  };
+
   const language = getSyntaxLanguage(filePath);
 
   // Update content when file changes

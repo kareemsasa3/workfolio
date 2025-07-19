@@ -1,0 +1,81 @@
+/* Global Section Navigation - positioned like the Dock */
+.global-section-navigation {
+    position: fixed;
+    top: 45vh;
+    right: 2rem;
+    transform: translateY(-50%);
+    z-index: 10000;
+    pointer-events: auto;
+}
+
+.nav-dots {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.nav-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    border: 2px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.nav-dot:hover {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+}
+
+.nav-dot.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.7);
+}
+
+.dot-tooltip {
+    position: absolute;
+    right: 20px;
+    background: var(--background-color);
+    color: var(--text-color);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+}
+
+.nav-dot:hover .dot-tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-5px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+    .global-section-navigation {
+        right: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .global-section-navigation {
+        right: 1rem;
+    }
+}

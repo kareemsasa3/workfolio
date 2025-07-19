@@ -1,13 +1,26 @@
 /* Terminal Matrix Theme for Projects Page */
 :root {
-    --terminal-primary: #003300;
+    --terminal-primary: #2AAF2A;
+    --terminal-font: 'Courier New', 'Monaco', 'Menlo', monospace;
+}
+
+/* Accessibility - Visually hidden but screen reader accessible */
+.visually-hidden {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
 }
 
 .projects-container {
     width: 100%;
     max-width: 1400px;
     margin: 0 auto;
-    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+    font-family: var(--terminal-font);
 }
 
 .projects-header {
@@ -20,9 +33,9 @@
 .projects-title {
     font-size: 3rem;
     font-weight: 700;
-    color: var(--terminal-primary, #003300);
+    color: var(--terminal-primary, #2AAF2A);
     margin: 0 0 1rem 0;
-    text-shadow: 0 0 10px var(--terminal-primary, #003300);
+    text-shadow: 0 0 10px var(--terminal-primary, #2AAF2A);
 }
 
 .projects-subtitle {
@@ -36,7 +49,7 @@
 
 /* Terminal Elements */
 .terminal-prompt {
-    color: var(--terminal-primary, #003300);
+    color: var(--terminal-primary, #2AAF2A);
     font-weight: bold;
     margin-right: 0.5rem;
 }
@@ -122,6 +135,11 @@
     cursor: pointer;
     position: relative;
     overflow: hidden;
+    /* Reset button styles */
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+    outline: none;
 }
 
 .stat-card::before {
@@ -142,14 +160,14 @@
 .stat-card:hover {
     border-radius: 12px;
     transform: translateY(-2px);
-    border-color: var(--terminal-primary, #003300);
+    border-color: var(--terminal-primary, #2AAF2A);
     background: rgba(0, 255, 0, 0.05);
 }
 
 .stat-card.active {
     border-radius: 12px;
     background: rgba(0, 255, 0, 0.1);
-    border-color: var(--terminal-primary, #003300);
+    border-color: var(--terminal-primary, #2AAF2A);
     box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
     transform: translateY(-1px);
 }
@@ -159,10 +177,10 @@
     position: absolute;
     top: 0.5rem;
     right: 0.5rem;
-    color: var(--terminal-primary, #003300);
+    color: var(--terminal-primary, #2AAF2A);
     font-weight: bold;
     font-size: 1.2rem;
-    text-shadow: 0 0 10px var(--terminal-primary, #003300);
+    text-shadow: 0 0 10px var(--terminal-primary, #2AAF2A);
 }
 
 .stat-card:active {
@@ -174,10 +192,10 @@
     display: block;
     font-size: 2.5rem;
     font-weight: 700;
-    color: var(--terminal-primary, #003300);
+    color: var(--terminal-primary, #2AAF2A);
     margin-bottom: 0.5rem;
     line-height: 1;
-    text-shadow: 0 0 10px var(--terminal-primary, #003300);
+    text-shadow: 0 0 10px var(--terminal-primary, #2AAF2A);
 }
 
 .stat-label {
@@ -198,14 +216,14 @@
     padding: 4rem 2rem;
     background: var(--terminal-background, #1a1a1a);
     border-radius: 8px;
-    border: 1px solid var(--terminal-primary, #003300);
+    border: 1px solid var(--terminal-primary, #2AAF2A);
 }
 
 .no-projects h3 {
     font-size: 1.5rem;
-    color: var(--terminal-primary, #003300);
+    color: var(--terminal-primary, #2AAF2A);
     margin: 0 0 1rem 0;
-    text-shadow: 0 0 10px var(--terminal-primary, #003300);
+    text-shadow: 0 0 10px var(--terminal-primary, #2AAF2A);
 }
 
 .no-projects p {
@@ -247,7 +265,7 @@
 
 .tech-stack-content {
     background: var(--terminal-background, #1a1a1a);
-    border: 2px solid var(--terminal-primary, #003300);
+    border: 2px solid var(--terminal-primary, #2AAF2A);
     border-radius: 8px;
     max-width: 800px;
     width: 90%;
@@ -260,23 +278,23 @@
 .tech-stack-header {
     background: var(--terminal-header-bg, #2a2a2a);
     padding: 1rem 1.5rem;
-    border-bottom: 1px solid var(--terminal-primary, #003300);
+    border-bottom: 1px solid var(--terminal-primary, #2AAF2A);
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
 .tech-stack-header h3 {
-    color: var(--terminal-primary, #003300);
+    color: var(--terminal-primary, #2AAF2A);
     margin: 0;
     font-size: 1.2rem;
-    text-shadow: 0 0 10px var(--terminal-primary, #003300);
+    text-shadow: 0 0 10px var(--terminal-primary, #2AAF2A);
 }
 
 .close-tech-stack {
     background: var(--terminal-background, #1a1a1a);
-    color: var(--terminal-primary, #003300);
-    border: 1px solid var(--terminal-primary, #003300);
+    color: var(--terminal-primary, #2AAF2A);
+    border: 1px solid var(--terminal-primary, #2AAF2A);
     border-radius: 4px;
     padding: 0.5rem 1rem;
     cursor: pointer;
@@ -301,7 +319,7 @@
 .tech-stack-grid {
     padding: 1.5rem;
     max-height: 60vh;
-    overflow-y: auto;
+    overflow-y: hidden;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 1rem;
@@ -316,7 +334,7 @@
 }
 
 .tech-stack-grid::-webkit-scrollbar-thumb {
-    background: var(--terminal-primary, #003300);
+    background: var(--terminal-primary, #2AAF2A);
     border-radius: 4px;
 }
 
@@ -333,16 +351,16 @@
 
 .tech-item:hover {
     background: rgba(0, 255, 0, 0.1);
-    border-color: var(--terminal-primary, #003300);
+    border-color: var(--terminal-primary, #2AAF2A);
     box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
     transform: translateY(-1px);
 }
 
 .tech-name {
-    color: var(--terminal-primary, #003300);
+    color: var(--terminal-primary, #2AAF2A);
     font-weight: 600;
     font-size: 0.95rem;
-    text-shadow: 0 0 5px var(--terminal-primary, #003300);
+    text-shadow: 0 0 5px var(--terminal-primary, #2AAF2A);
 }
 
 .tech-count {

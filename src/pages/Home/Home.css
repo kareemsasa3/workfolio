@@ -1,31 +1,54 @@
+/* Home Page Theme */
+
+/* Scroll Progress Bar is now handled globally in Layout */
+
+/* Section Navigation is now handled globally in Layout */
+
 /* Home Container */
 .home-container {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
+  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+  /* Ensure smooth scrolling for the entire container */
+  scroll-behavior: smooth;
 }
 
 /* Override page-content margin for home page */
 .page-content.home-page {
   margin-top: 0;
   min-height: 100vh;
+  /* Ensure proper spacing for dock */
+  /* Space for dock */
+}
+
+/* Section Base Styles - All sections now use 80vh */
+.hero-section,
+.featured-projects-section,
+.skills-section,
+.about-section,
+.cta-section {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
 }
 
 /* Hero Section */
 .hero-section {
   text-align: center;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem 0;
-  margin-bottom: 4rem;
+  margin-bottom: 0;
+  /* Remove margin since we're using 80vh */
   font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 .hero-content {
   max-width: 800px;
   margin: 0 auto;
+  padding: 0 2rem;
 }
 
 .hero-title {
@@ -35,6 +58,8 @@
   margin: 0 0 1rem 0;
   line-height: 1.2;
   font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+  /* Add text shadow for depth */
+  text-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
 }
 
 .hero-subtitle {
@@ -43,6 +68,8 @@
   margin: 0 0 2rem 0;
   font-weight: 600;
   font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+  /* Add glow effect */
+  text-shadow: 0 0 15px rgba(175, 42, 42, 0.5);
 }
 
 .hero-description {
@@ -63,13 +90,49 @@
   flex-wrap: wrap;
 }
 
+/* Shared Interactive Card Styles */
+.interactive-card {
+  background: var(--background-color);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+  position: relative;
+  overflow: hidden;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.interactive-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.interactive-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  border-color: var(--primary-color);
+  background: rgba(0, 255, 0, 0.05);
+  box-shadow:
+    0 0 30px rgba(0, 255, 0, 0.3),
+    0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+.interactive-card:hover::before {
+  left: 100%;
+}
+
 /* Featured Projects Section */
 .featured-projects-section {
-  margin-bottom: 4rem;
-  padding: 3rem 0;
-  background: var(--card-background);
+  background: transparent;
   border-radius: 16px;
-  border: 1px solid var(--border-color);
+  border: none;
 }
 
 .featured-projects-grid {
@@ -77,22 +140,13 @@
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   gap: 2rem;
   margin: 2rem 0;
+  width: 100%;
+  max-width: 1200px;
+  padding: 0 2rem;
 }
 
 .featured-project-card {
-  background: var(--background-color);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 1.5rem;
-  transition: all 0.3s ease;
-  box-shadow: none;
-  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
-}
-
-.featured-project-card:hover {
-  transform: translateY(-4px);
-  border-color: var(--primary-color);
-  background: rgba(0, 255, 0, 0.05);
+  /* Uses shared .interactive-card styles */
 }
 
 .project-header {
@@ -183,6 +237,13 @@
   font-weight: 500;
   border: 1px solid var(--primary-color-medium);
   font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+  transition: all 0.3s ease;
+}
+
+.tech-tag:hover {
+  background: var(--primary-color);
+  color: white;
+  transform: translateY(-2px);
 }
 
 .featured-projects-cta {
@@ -199,6 +260,8 @@
   margin: 0 0 2rem 0;
   position: relative;
   font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+  /* Enhanced title styling */
+  text-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
 }
 
 .section-title::after {
@@ -209,35 +272,39 @@
   transform: translateX(-50%);
   width: 60px;
   height: 3px;
-  background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+  background: linear-gradient(90deg, var(--primary-color), #000000);
   border-radius: 2px;
+  /* Add animation */
+  animation: titleUnderline 2s ease-in-out infinite alternate;
+}
+
+@keyframes titleUnderline {
+  0% {
+    width: 60px;
+    opacity: 0.7;
+  }
+
+  100% {
+    width: 80px;
+    opacity: 1;
+  }
 }
 
 /* Skills Section */
-.skills-section {
-  margin-bottom: 4rem;
-}
+.skills-section {}
 
 .skills-categories {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
   margin-top: 2rem;
+  width: 100%;
+  max-width: 1200px;
+  padding: 0 2rem;
 }
 
 .skill-category {
-  background: var(--card-background);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 1.5rem;
-  transition: all 0.3s ease;
-  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
-}
-
-.skill-category:hover {
-  transform: translateY(-2px);
-  border-color: var(--primary-color);
-  background: rgba(0, 255, 0, 0.05);
+  /* Uses shared .interactive-card styles */
 }
 
 .category-title {
@@ -253,21 +320,21 @@
 
 .skills-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
 /* About Section */
-.about-section {
-  margin-bottom: 4rem;
-}
+.about-section {}
 
 .about-content {
   max-width: 1000px;
   margin: 0 auto;
+  width: 100%;
+  padding: 0 2rem;
 }
 
 .about-grid {
@@ -280,20 +347,9 @@
 }
 
 .about-card {
-  background: var(--card-background);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
+  /* Uses shared .interactive-card styles */
   padding: 2rem;
   text-align: center;
-  transition: all 0.3s ease;
-  box-shadow: none;
-  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
-}
-
-.about-card:hover {
-  transform: translateY(-4px);
-  border-color: var(--primary-color);
-  background: rgba(0, 255, 0, 0.05);
 }
 
 .card-icon {
@@ -301,6 +357,18 @@
   margin-bottom: 1rem;
   display: inline-block;
   text-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
+  /* Add floating animation */
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 .about-card h3 {
@@ -321,16 +389,16 @@
 /* CTA Section */
 .cta-section {
   text-align: center;
-  padding: 4rem 0;
-  background: var(--card-background);
+  background: transparent;
   border-radius: 16px;
-  border: 1px solid var(--border-color);
+  border: none;
   margin-bottom: 2rem;
 }
 
 .cta-content {
   max-width: 600px;
   margin: 0 auto;
+  padding: 0 2rem;
 }
 
 .cta-content h2 {
@@ -339,6 +407,8 @@
   color: var(--text-color);
   margin: 0 0 1rem 0;
   font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+  /* Add glow effect */
+  text-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
 }
 
 .cta-content p {
@@ -364,6 +434,26 @@
   justify-content: center;
   gap: 0.5rem;
   font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+  /* Enhanced button styling */
+  position: relative;
+  overflow: hidden;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn:hover::before {
+  left: 100%;
 }
 
 .btn-primary {
@@ -373,8 +463,10 @@
 
 .btn-primary:hover {
   background: var(--primary-color-dark);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(175, 42, 42, 0.4);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow:
+    0 8px 20px rgba(175, 42, 42, 0.4),
+    0 0 30px rgba(0, 255, 0, 0.3);
 }
 
 .btn-secondary {
@@ -386,7 +478,8 @@
 .btn-secondary:hover {
   border-color: var(--primary-color);
   color: var(--primary-color);
-  transform: translateY(-2px);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
 .btn-outline {
@@ -398,7 +491,8 @@
 .btn-outline:hover {
   background: var(--primary-color);
   color: white;
-  transform: translateY(-2px);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 20px rgba(175, 42, 42, 0.4);
 }
 
 .btn-large {
@@ -427,126 +521,6 @@
 .floating-action-btn:hover {
   transform: scale(1.1);
   box-shadow: 0 8px 30px rgba(175, 42, 42, 0.6);
-}
-
-/* Responsive Design */
-@media (max-width: 1024px) {
-  .home-container {
-    max-width: 900px;
-  }
-
-  .hero-title {
-    font-size: 3rem;
-  }
-
-  .featured-projects-grid {
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  }
-}
-
-@media (max-width: 768px) {
-  .home-container {
-    max-width: 100%;
-    padding: 0 1rem;
-  }
-
-  .hero-title {
-    font-size: 2.5rem;
-  }
-
-  .hero-subtitle {
-    font-size: 1.25rem;
-  }
-
-  .hero-description {
-    font-size: 1rem;
-  }
-
-  .hero-buttons {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .featured-projects-grid {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-
-  .skills-categories {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-
-  .about-grid {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-
-  .cta-content h2 {
-    font-size: 2rem;
-  }
-
-  .cta-content p {
-    font-size: 1rem;
-  }
-
-  .floating-action-btn {
-    bottom: 1rem;
-    right: 1rem;
-    width: 50px;
-    height: 50px;
-    font-size: 1.25rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .hero-section {
-    min-height: 100vh;
-    padding: 1rem 0;
-  }
-
-  .hero-title {
-    font-size: 2rem;
-  }
-
-  .hero-subtitle {
-    font-size: 1.1rem;
-  }
-
-  .featured-projects-section {
-    padding: 2rem 0;
-  }
-
-  .featured-project-card {
-    padding: 1rem;
-  }
-
-  .project-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-
-  .project-title {
-    font-size: 1.25rem;
-  }
-
-  .skills-grid {
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 0.75rem;
-  }
-
-  .about-card {
-    padding: 1.5rem;
-  }
-
-  .card-icon {
-    font-size: 2.5rem;
-  }
-
-  .about-card h3 {
-    font-size: 1.2rem;
-  }
 }
 
 /* Enhanced Animations */
@@ -598,8 +572,6 @@
   }
 }
 
-
-
 @keyframes pulse {
   0%, 100% {
     opacity: 0.6;
@@ -611,14 +583,45 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .home-container {
-    padding: 0 var(--spacing-sm);
+    max-width: 900px;
   }
 
-  .hero-section {
-    min-height: 100vh;
-    margin-bottom: var(--spacing-xl);
+  .hero-title {
+    font-size: 3rem;
+  }
+
+  .featured-projects-grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+
+  /* Adjust navigation position for medium screens */
+  .section-navigation {
+    right: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .home-container {
+    max-width: 100%;
+    padding: 0 1rem;
+  }
+
+  /* Hide section navigation on mobile */
+  .section-navigation {
+    display: none;
+  }
+
+  /* Adjust section heights for mobile */
+  .hero-section,
+  .featured-projects-section,
+  .skills-section,
+  .about-section,
+  .cta-section {
+    min-height: 70vh;
+    /* Slightly smaller on mobile */
+    padding: 1rem 0;
   }
 
   .hero-title {
@@ -626,7 +629,7 @@
   }
 
   .hero-subtitle {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
   }
 
   .hero-description {
@@ -638,29 +641,21 @@
     align-items: center;
   }
 
-  .btn {
-    width: 100%;
-    max-width: 250px;
-    min-height: 44px;
-    /* Touch-friendly size */
+  .featured-projects-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 0 1rem;
   }
 
-  .section-title {
-    font-size: 2rem;
-  }
-
-  .skills-grid {
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: var(--spacing-sm);
+  .skills-categories {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 0 1rem;
   }
 
   .about-grid {
     grid-template-columns: 1fr;
-    gap: var(--spacing-md);
-  }
-
-  .about-card {
-    padding: var(--spacing-lg);
+    gap: 1.5rem;
   }
 
   .cta-content h2 {
@@ -672,29 +667,67 @@
   }
 
   .floating-action-btn {
-    width: 56px;
-    height: 56px;
-    bottom: var(--spacing-md);
-    right: var(--spacing-md);
-    font-size: 1.3rem;
+    bottom: 1rem;
+    right: 1rem;
+    width: 50px;
+    height: 50px;
+    font-size: 1.25rem;
   }
 }
 
 @media (max-width: 480px) {
+
+  .hero-section,
+  .featured-projects-section,
+  .skills-section,
+  .about-section,
+  .cta-section {
+    min-height: 60vh;
+    /* Even smaller on very small screens */
+    padding: 0.5rem 0;
+  }
+
   .hero-title {
     font-size: 2rem;
   }
 
   .hero-subtitle {
-    font-size: 1rem;
+    font-size: 1.1rem;
   }
 
-  .section-title {
-    font-size: 1.8rem;
+  .featured-projects-section {
+    padding: 1rem 0;
+  }
+
+  .featured-project-card {
+    padding: 1rem;
+  }
+
+  .project-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .project-title {
+    font-size: 1.25rem;
   }
 
   .skills-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .about-card {
+    padding: 1.5rem;
+  }
+
+  .card-icon {
+    font-size: 2.5rem;
+  }
+
+  .about-card h3 {
+    font-size: 1.2rem;
   }
 }
 
@@ -718,12 +751,16 @@
 
   .btn,
   .about-card,
-  .card-icon {
+  .card-icon,
+  .featured-project-card,
+  .skill-category {
     transition: none;
   }
 
   .btn:hover,
-  .about-card:hover {
+  .about-card:hover,
+  .featured-project-card:hover,
+  .skill-category:hover {
     transform: none;
   }
 
@@ -733,5 +770,13 @@
 
   .floating-action-btn:hover {
     transform: none;
+  }
+
+  .card-icon {
+    animation: none;
+  }
+
+  .section-title::after {
+    animation: none;
   }
 }

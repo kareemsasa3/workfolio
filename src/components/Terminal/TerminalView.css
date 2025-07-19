@@ -1,0 +1,129 @@
+/* TerminalView.css - Styles for the terminal content component */
+
+.terminal-body {
+    background: var(--terminal-bg);
+    color: var(--terminal-text);
+    padding: 16px;
+    height: calc(100% - 40px);
+    /* Subtract header height */
+    overflow-y: auto;
+    overflow-x: hidden;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.terminal-message {
+    margin-bottom: 16px;
+    color: var(--terminal-text-light);
+}
+
+.command-history {
+    margin-bottom: 8px;
+}
+
+.history-line {
+    margin-bottom: 4px;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.history-line.error {
+    color: var(--terminal-error);
+}
+
+.history-line.success {
+    color: var(--terminal-success);
+}
+
+.history-line.info {
+    color: var(--terminal-info);
+}
+
+.grep-highlight {
+    background-color: var(--terminal-highlight);
+    color: var(--terminal-text);
+    padding: 1px 2px;
+    border-radius: 2px;
+}
+
+.command-prompt {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.prompt-symbol {
+    color: var(--terminal-text-light);
+    white-space: nowrap;
+}
+
+.command-input {
+    background: transparent;
+    border: none;
+    color: var(--terminal-text);
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    outline: none;
+    flex: 1;
+    min-width: 200px;
+}
+
+.command-input::placeholder {
+    color: var(--terminal-text-muted);
+}
+
+.cursor {
+    color: var(--terminal-text);
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 50% {
+        opacity: 1;
+    }
+
+    51%, 100% {
+        opacity: 0;
+    }
+}
+
+/* Reverse search styles */
+.reverse-search-prompt {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    width: 100%;
+}
+
+.reverse-search-indicator {
+    color: var(--terminal-text-light);
+    white-space: nowrap;
+}
+
+.reverse-search-command {
+    color: var(--terminal-text);
+    background: var(--terminal-selection);
+    padding: 1px 4px;
+    border-radius: 2px;
+    white-space: nowrap;
+}
+
+.reverse-search-input {
+    background: transparent;
+    border: none;
+    color: var(--terminal-text);
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    outline: none;
+    flex: 1;
+    min-width: 150px;
+}
+
+.reverse-search-info {
+    color: var(--terminal-text-muted);
+    font-size: 12px;
+    white-space: nowrap;
+}

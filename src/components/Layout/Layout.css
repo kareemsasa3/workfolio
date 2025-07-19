@@ -1,17 +1,31 @@
-.app-layout {
+/* A simplified and more robust Layout.css */
+
+/* This is the new container for all interactive content */
+.layout-foreground {
     position: relative;
+    /* This is fine, it establishes a context for its children */
+    z-index: 1;
+    /* This is CRITICAL. It lifts the entire foreground above the background. */
     min-height: 100vh;
-    /* Add any other global layout styles */
+    display: flex;
+    flex-direction: column;
+    /* This container should be transparent so the background behind it is visible */
+    background-color: transparent;
 }
 
+/* This class remains as the main content area inside the foreground */
 .app-content {
-    /* This ensures your content doesn't get hidden behind a fixed/absolute nav */
-    padding-top: 80px;
-    /* Adjust based on your nav height */
-    min-height: calc(100vh - 80px);
     position: relative;
-    z-index: 1;
+    /* This is fine */
     width: 100%;
-    overflow-x: hidden;
-    /* Prevent horizontal scrolling */
+    flex-grow: 1;
+    /* This is still the correct way to fill space */
+    /* We still need padding for the dock, as the dock is inside .layout-foreground */
+    padding-bottom: var(--dock-height);
+}
+
+@media (max-width: 768px) {
+    .app-content {
+        padding-bottom: var(--dock-height-mobile);
+    }
 }

@@ -280,58 +280,7 @@ const terminalReducer = (
         aiChatHistory: [],
       };
 
-    // Vim editor actions
-    case "SHOW_VIM_EDITOR":
-      return {
-        ...state,
-        isVimEditing: true,
-        vimFilePath: action.payload.filePath,
-        vimFileContent: action.payload.content,
-        vimCursorPosition: { line: 0, column: 0 },
-        vimMode: "normal",
-        vimScrollPosition: 0,
-      };
-
-    case "HIDE_VIM_EDITOR":
-      return {
-        ...state,
-        isVimEditing: false,
-        vimFilePath: "",
-        vimFileContent: [],
-        vimCursorPosition: { line: 0, column: 0 },
-        vimMode: "normal",
-        vimScrollPosition: 0,
-      };
-
-    case "UPDATE_VIM_CONTENT":
-      return {
-        ...state,
-        vimFileContent: action.payload,
-      };
-
-    case "SET_VIM_CURSOR":
-      return {
-        ...state,
-        vimCursorPosition: action.payload,
-      };
-
-    case "SET_VIM_MODE":
-      return {
-        ...state,
-        vimMode: action.payload,
-      };
-
-    case "SET_VIM_SCROLL":
-      return {
-        ...state,
-        vimScrollPosition: action.payload,
-      };
-
-    case "SAVE_VIM_FILE":
-      return {
-        ...state,
-        vimFileContent: action.payload.content,
-      };
+    // Vim editor actions removed
 
     case "SHOW_SCRAPE_RESULTS":
       return {
@@ -1183,21 +1132,9 @@ class HelpCommand implements Command {
 
   execute(_args: string[], history: HistoryEntry[]): HistoryEntry[] {
     const newHistory = [...history];
-    newHistory.push(createHistoryEntry("Available commands:", "info"));
+    newHistory.push(createHistoryEntry("Available commands:", "success"));
     newHistory.push(
-      createHistoryEntry(
-        "  ls         List files and directories (names only)",
-        "info"
-      )
-    );
-    newHistory.push(
-      createHistoryEntry("  ls -l      List files in long format", "info")
-    );
-    newHistory.push(
-      createHistoryEntry("  ls -a      List all files including hidden", "info")
-    );
-    newHistory.push(
-      createHistoryEntry("  ls -al     List all files in long format", "info")
+      createHistoryEntry("  ls         List files and directories", "info")
     );
     newHistory.push(
       createHistoryEntry("  cd <dir>   Navigate to directory", "info")
@@ -1219,7 +1156,7 @@ class HelpCommand implements Command {
     );
     newHistory.push(
       createHistoryEntry(
-        "  wc [-lwc] [file] Count lines, words, and characters",
+        "  wc [file]  Count lines, words, and characters",
         "info"
       )
     );
@@ -1231,6 +1168,9 @@ class HelpCommand implements Command {
         "  man <cmd>  Show detailed manual for command",
         "info"
       )
+    );
+    newHistory.push(
+      createHistoryEntry("  top        System process monitor", "info")
     );
     newHistory.push(
       createHistoryEntry(
@@ -1260,7 +1200,7 @@ class HelpCommand implements Command {
     newHistory.push(
       createHistoryEntry(
         "Piping: Use | to chain commands (e.g., grep 'pattern' file | wc -l)",
-        "info"
+        "success"
       )
     );
     newHistory.push(
@@ -1271,19 +1211,26 @@ class HelpCommand implements Command {
     newHistory.push(
       createHistoryEntry(
         "Navigation: Use ↑/↓ arrow keys to browse command history",
-        "info"
+        "success"
       )
     );
     newHistory.push(
       createHistoryEntry(
         "Search: Press Ctrl+R for reverse-i-search in command history",
-        "info"
+        "success"
       )
     );
     newHistory.push(
       createHistoryEntry(
         "Tip: Press Tab to autocomplete commands and directory names",
-        "info"
+        "success"
+      )
+    );
+    newHistory.push(createHistoryEntry("", "info"));
+    newHistory.push(
+      createHistoryEntry(
+        "For detailed command options and examples, use: man <command>",
+        "success"
       )
     );
     return newHistory;
@@ -2585,13 +2532,7 @@ export const useTerminal = (
           aiChatHistory: [],
           isAiTyping: false,
           aiInputValue: "",
-          // Vim editor functionality
-          isVimEditing: false,
-          vimFileContent: [],
-          vimFilePath: "",
-          vimCursorPosition: { line: 0, column: 0 },
-          vimMode: "normal",
-          vimScrollPosition: 0,
+          // Vim editor functionality removed
           showScrapeResults: false,
           scrapeResults: [],
           currentScrapeJobId: "",
@@ -2634,13 +2575,6 @@ export const useTerminal = (
       aiChatHistory: [],
       isAiTyping: false,
       aiInputValue: "",
-      // Vim editor functionality
-      isVimEditing: false,
-      vimFileContent: [],
-      vimFilePath: "",
-      vimCursorPosition: { line: 0, column: 0 },
-      vimMode: "normal",
-      vimScrollPosition: 0,
       showScrapeResults: false,
       scrapeResults: [],
       currentScrapeJobId: "",
@@ -3695,10 +3629,7 @@ export const useTerminal = (
     topRefreshRate: state.topRefreshRate,
     activeScrapeJobs: state.activeScrapeJobs,
 
-    // Vim editor state
-    isVimEditing: state.isVimEditing,
-    vimFileContent: state.vimFileContent,
-    vimFilePath: state.vimFilePath,
+    // Vim editor state removed
 
     // Scrape results state
     showScrapeResults: state.showScrapeResults,

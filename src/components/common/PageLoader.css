@@ -1,0 +1,110 @@
+.page-loader-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    /* Must be the highest z-index in the app */
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    /* Transparent background with a subtle blur to hint at the content behind it */
+    background: transparent;
+    /* Use your theme's transparent bg */
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+
+    /* Smooth fade-in/out for the loader itself */
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.loader-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    /* Increased gap for better spacing */
+    font-family: var(--font-family-mono);
+    /* Use mono font for theme */
+}
+
+/* --- Thematic Matrix Spinner --- */
+.matrix-spinner {
+    width: 60px;
+    height: 60px;
+    color: var(--primary-color);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.matrix-spinner::before,
+.matrix-spinner::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    border-top-color: var(--primary-color);
+    animation: matrix-spin 1.5s linear infinite;
+}
+
+.matrix-spinner::after {
+    border: 2px solid transparent;
+    border-bottom-color: var(--primary-color);
+    animation: matrix-spin 2s linear infinite reverse;
+}
+
+.matrix-spinner-text {
+    text-shadow: 0 0 10px var(--primary-color);
+    animation: flicker 2s linear infinite;
+}
+
+@keyframes matrix-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes flicker {
+    0%, 18%, 22%, 25%, 53%, 57%, 100% {
+        text-shadow:
+            0 0 4px #fff,
+            0 0 11px var(--primary-color),
+            0 0 19px var(--primary-color),
+            0 0 40px var(--primary-color);
+    }
+
+    20%, 24%, 55% {
+        text-shadow: none;
+    }
+}
+
+/* --- End Matrix Spinner --- */
+
+.loading-text {
+    color: var(--text-color);
+    font-size: 1rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}

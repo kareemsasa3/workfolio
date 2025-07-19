@@ -50,6 +50,9 @@
 
     /* Ensure dock stays within viewport bounds */
     transform-origin: bottom right;
+
+    /* Prevent any overflow issues */
+    overflow: visible;
 }
 
 .dock-icon-container {
@@ -169,16 +172,5 @@
 }
 
 /* Handle dock positioning when settings are open on smaller screens */
-@media (max-width: 1200px) {
-    .dock-container.settings-open {
-        /* On smaller screens, don't shift as much to prevent cutoff */
-        transform: translateX(-200px) !important;
-    }
-}
-
-@media (max-width: 768px) {
-    .dock-container.settings-open {
-        /* On mobile, don't shift at all to keep dock accessible */
-        transform: translateX(0) !important;
-    }
-}
+/* Note: Transform is now handled entirely by Framer Motion via shiftAmount state */
+/* CSS transform overrides have been removed to prevent conflicts with JavaScript animations */

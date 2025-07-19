@@ -1,4 +1,4 @@
-/* Terminal.css - Simplified */
+/* Terminal.css - Simplified after refactoring */
 
 /* Basic CSS Variables */
 :root {
@@ -6,71 +6,59 @@
   --terminal-background: #1a1a1a;
   --terminal-header-bg: #2a2a2a;
   --terminal-error: #ff6b6b;
-  --terminal-success: #4ecdc4;
+  --terminal-success: #00ff00;
   --terminal-text-light: #ffffff;
   --terminal-text-muted: #666;
   --terminal-border: #00ff00;
+  --terminal-bg: #1a1a1a;
+  --terminal-text: #00ff00;
+  --terminal-highlight: #ff6b6b;
+  --terminal-selection: #2a2a2a;
+  --terminal-info: #4ecdc4;
 }
 
 .terminal-screen {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.9);
-  color: var(--terminal-primary);
-  z-index: 1000;
-  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
-  overflow: hidden;
-}
-
-.terminal-screen.route-mode {
-  position: fixed;
-  top: 0;
-  left: 0;
+  position: relative;
   width: 100%;
   height: 100vh;
   background: transparent;
-  z-index: 1000;
-  min-height: 100vh;
+  color: var(--terminal-primary);
+  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Override page-content styling for terminal page */
-.app-content.terminal-page {
-  margin-top: 0;
-  min-height: 100vh;
-  padding: 0;
+.terminal-screen.route-mode {
   position: relative;
-  overflow: hidden;
-}
-
-/* Ensure terminal breaks out of any container constraints */
-.app-content.terminal-page .terminal-screen {
-  position: fixed;
-  top: 0;
-  left: 0;
   width: 100%;
   height: 100vh;
-  z-index: 1000;
+  background: transparent;
+  min-height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
+
 
 .terminal-screen.route-mode .terminal-container {
   /* Position is now handled by inline styles */
 }
 
-/* Terminal Container */
+/* Terminal Container - Basic dimensions and positioning */
 .terminal-container {
   width: 90%;
   max-width: 800px;
   height: 70vh;
   max-height: 600px;
-  background: var(--terminal-background);
+  background: rgba(26, 26, 26, 0.95);
   border-radius: 8px;
   border: 1px solid var(--terminal-border);
   overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   will-change: transform, opacity;
   /* Allow text selection in terminal content */
   user-select: text;
@@ -88,92 +76,10 @@
   border: none;
   left: 0;
   top: 0;
+  background: rgba(26, 26, 26, 0.95);
 }
 
-/* Terminal Header */
-.terminal-header {
-  background: var(--terminal-header-bg);
-  padding: 8px 16px;
-  display: flex;
-  align-items: center;
-  border-bottom: 1px solid var(--terminal-border);
-  cursor: grab;
-  /* Prevent text selection in header for drag functionality */
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-}
-
-.terminal-header:active {
-  cursor: grabbing;
-}
-
-.terminal-buttons {
-  display: flex;
-  gap: 8px;
-  margin-right: 16px;
-  position: relative;
-  z-index: 10;
-  pointer-events: auto;
-}
-
-.terminal-button {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  cursor: pointer;
-  border: none;
-  padding: 0;
-  margin: 0;
-  outline: none;
-  position: relative;
-  z-index: 10;
-  pointer-events: auto;
-}
-
-.terminal-button:hover {
-  opacity: 0.8;
-}
-
-.terminal-button:active {
-  opacity: 0.6;
-}
-
-.terminal-button.close {
-  background: #ff5f56;
-}
-
-.terminal-button.minimize {
-  background: #ffbd2e;
-}
-
-.terminal-button.maximize {
-  background: #27ca3f;
-}
-
-.terminal-title {
-  color: var(--terminal-primary);
-  font-size: 14px;
-  font-weight: bold;
-}
-
-/* Terminal Body */
-.terminal-body {
-  padding: 16px;
-  height: calc(100% - 53px);
-  background: var(--terminal-background);
-  color: var(--terminal-primary);
-  font-size: 14px;
-  line-height: 1.4;
-  overflow-y: auto;
-  /* Ensure text selection is allowed in terminal body */
-  user-select: text;
-  -webkit-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
-}
-
+/* Scrollbar styles for terminal body */
 .terminal-body::-webkit-scrollbar {
   width: 8px;
 }
@@ -187,205 +93,56 @@
   border-radius: 4px;
 }
 
-/* Terminal Message */
-.terminal-message {
-  margin-bottom: 16px;
-  font-size: 16px;
-  font-weight: bold;
-  color: var(--terminal-primary);
-}
-
-/* Command History */
-.command-history {
-  margin-bottom: 16px;
-}
-
-.history-line {
-  margin-bottom: 4px;
-  word-wrap: break-word;
-  white-space: pre-wrap;
-  color: var(--terminal-text-light);
-}
-
-.history-line.command {
-  color: var(--terminal-primary);
-  font-weight: bold;
-}
-
-.history-line.error {
-  color: var(--terminal-error);
-}
-
-.history-line.success {
-  color: var(--terminal-success);
-}
-
-.history-line.info {
-  color: var(--terminal-text-light);
-}
-
-/* Grep Highlight */
-.grep-highlight {
-  background-color: #ff6b6b;
-  color: #000;
-  font-weight: bold;
-  padding: 1px 2px;
-  border-radius: 2px;
-}
-
-/* Command Prompt */
-.command-prompt {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.prompt-symbol {
-  color: var(--terminal-primary);
-  font-weight: bold;
-  font-size: 14px;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.command-input {
-  background: transparent;
-  border: none !important;
-  color: var(--terminal-text-light);
-  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
-  font-size: 14px;
-  outline: none !important;
-  flex: 1;
-  caret-color: var(--terminal-primary);
-  box-shadow: none !important;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-}
-
-.command-input:focus {
-  outline: none !important;
-  border: none !important;
-  box-shadow: none !important;
-}
-
-.command-input:focus-visible {
-  outline: none !important;
-  border: none !important;
-  box-shadow: none !important;
-}
-
-.command-input:hover {
-  outline: none !important;
-  border: none !important;
-  box-shadow: none !important;
-}
-
-.command-input:active {
-  outline: none !important;
-  border: none !important;
-  box-shadow: none !important;
-}
-
-.command-input::placeholder {
-  color: var(--terminal-text-muted);
-}
-
-.cursor {
-  color: var(--terminal-primary);
-  animation: blink 1s infinite;
-  font-weight: bold;
-}
-
-@keyframes blink {
-  0%, 50% {
-    opacity: 1;
-  }
-
-  51%, 100% {
-    opacity: 0;
-  }
-}
-
-/* Reverse Search Styles */
-.reverse-search-prompt {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--terminal-primary);
-}
-
-.reverse-search-indicator {
-  color: var(--terminal-primary);
-  font-weight: bold;
-  white-space: nowrap;
-}
-
-.reverse-search-input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  color: var(--terminal-primary);
-  font-family: inherit;
-  font-size: inherit;
-  outline: none;
-}
-
-.reverse-search-command {
-  color: var(--terminal-text-light);
-  margin-left: 8px;
-  flex: 1;
-}
-
-.reverse-search-info {
-  color: var(--terminal-text-muted);
-  font-size: 12px;
-  white-space: nowrap;
-  margin-left: 8px;
-}
-
-/* Terminal Sidecar */
+/* Terminal Sidecar (minimized state indicator) */
 .terminal-sidecar {
-  position: fixed;
+  position: absolute;
   left: 20px;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 1001;
-  cursor: pointer;
-  /* Override global transitions */
-  transition: none;
-  /* Ensure immediate positioning */
-  will-change: auto;
-  /* Override any inherited transitions */
-  background-color: transparent;
-  color: inherit;
-  border-color: transparent;
-  box-shadow: none;
-}
-
-.sidecar-icon {
   width: 60px;
   height: 60px;
-  background: rgba(26, 26, 26, 0.9);
+  background: rgba(26, 26, 26, 0.95);
   border: 2px solid var(--terminal-border);
-  border-radius: 12px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  z-index: 999;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.terminal-sidecar:hover {
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.4);
+}
+
+.sidecar-icon {
   font-size: 24px;
-  transition: transform 0.2s ease;
+  color: var(--terminal-primary);
+  animation: pulse 2s infinite;
 }
 
 .sidecar-icon:hover {
-  transform: scale(1.1);
+  animation: none;
 }
 
-/* Responsive design */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
   .terminal-container {
     width: 95%;
-    height: 80%;
+    height: 80vh;
   }
 
   .terminal-container.maximized {
@@ -393,65 +150,45 @@
     height: 100vh;
   }
 
-  .terminal-body {
-    font-size: 12px;
-    padding: 12px;
-  }
-
-  .terminal-message {
-    font-size: 14px;
-  }
-
-  .command-input {
-    font-size: 12px;
-  }
-
   .terminal-sidecar {
-    left: 10px;
+    width: 50px;
+    height: 50px;
+    left: 15px;
   }
 
   .sidecar-icon {
-    width: 50px;
-    height: 50px;
     font-size: 20px;
   }
 }
 
-/* Typewriter effect */
+/* Typewriter text animation */
 .typewriter-text {
-  color: var(--terminal-primary);
+  display: inline-block;
 }
 
-/* Prevent horizontal scroll on terminal page */
-body.terminal-page-active {
-  overflow-x: hidden;
-}
 
-/* Override global user-select: none for terminal content */
+
+/* Selection styles */
 .terminal-screen,
 .terminal-screen * {
-  user-select: text !important;
-  -webkit-user-select: text !important;
-  -moz-user-select: text !important;
-  -ms-user-select: text !important;
+  box-sizing: border-box;
 }
 
-/* Custom text selection colors for terminal */
 .terminal-screen ::selection {
-  background-color: rgba(0, 255, 0, 0.3);
-  color: #ffffff;
+  background: var(--terminal-primary);
+  color: var(--terminal-background);
 }
 
 .terminal-screen ::-moz-selection {
-  background-color: rgba(0, 255, 0, 0.3);
-  color: #ffffff;
+  background: var(--terminal-primary);
+  color: var(--terminal-background);
 }
 
-/* But keep header non-selectable for drag functionality */
+/* Prevent text selection in draggable areas */
 .terminal-screen .terminal-header,
-.terminal-screen .terminal-header * {
-  user-select: none !important;
-  -webkit-user-select: none !important;
-  -moz-user-select: none !important;
-  -ms-user-select: none !important;
+.terminal-screen .terminal-buttons {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }

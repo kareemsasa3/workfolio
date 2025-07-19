@@ -1,131 +1,36 @@
-import { useState, useEffect } from "react";
-import { motion, useMotionValue } from "framer-motion";
+import { motion } from "framer-motion";
 import { navItems } from "../../data/navigation";
 import DockIcon from "./DockIcon";
 import DockSettingsButton from "./DockSettingsButton";
 import SettingsPanel from "../SettingsPanel";
+import { useDock } from "./useDock";
 import "./Dock.css";
 
 const Dock = () => {
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [dockSize, setDockSize] = useState(40);
-  const [dockStiffness, setDockStiffness] = useState(400);
-  const [magnification, setMagnification] = useState(40); // 40% = 32px max size
-  const [shiftAmount, setShiftAmount] = useState(0);
-  const mouseX = useMotionValue<number | null>(null);
+  const {
+    // State
+    isSettingsOpen,
+    dockSize,
+    dockStiffness,
+    magnification,
+    shiftAmount,
+    mouseX,
 
-  // Load saved settings from localStorage on component mount
-  useEffect(() => {
-    const savedSettings = localStorage.getItem("dockSettings");
-    if (savedSettings) {
-      try {
-        const settings = JSON.parse(savedSettings);
-        if (settings.dockSize) {
-          setDockSize(settings.dockSize);
-          document.documentElement.style.setProperty(
-            "--dock-icon-size",
-            `${settings.dockSize}px`
-          );
-        }
-        if (settings.dockStiffness) setDockStiffness(settings.dockStiffness);
-        if (settings.magnification) setMagnification(settings.magnification);
-      } catch (error) {
-        console.warn("Failed to parse saved dock settings:", error);
-      }
-    }
-  }, []);
-
-  // Save settings to localStorage
-  const saveSettings = (settings: {
-    dockSize: number;
-    dockStiffness: number;
-    magnification: number;
-  }) => {
-    try {
-      localStorage.setItem("dockSettings", JSON.stringify(settings));
-    } catch (error) {
-      console.warn("Failed to save dock settings:", error);
-    }
-  };
-
-  // Calculate shift amount based on screen size and settings state
-  useEffect(() => {
-    const calculateShift = () => {
-      if (!isSettingsOpen) return 0;
-
-      if (window.innerWidth > 1200) {
-        return -420; // Full shift for large screens
-      } else if (window.innerWidth > 768) {
-        return -200; // Reduced shift for medium screens
-      } else {
-        return 0; // No shift for mobile
-      }
-    };
-
-    setShiftAmount(calculateShift());
-  }, [isSettingsOpen]);
-
-  // Handle window resize
-  useEffect(() => {
-    const handleResize = () => {
-      if (isSettingsOpen) {
-        const calculateShift = () => {
-          if (window.innerWidth > 1200) {
-            return -420;
-          } else if (window.innerWidth > 768) {
-            return -200;
-          } else {
-            return 0;
-          }
-        };
-        setShiftAmount(calculateShift());
-      }
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [isSettingsOpen]);
-
-  const toggleSettings = () => setIsSettingsOpen(!isSettingsOpen);
-  const closeSettings = () => setIsSettingsOpen(false);
-
-  const handleDockSizeChange = (newSize: number) => {
-    setDockSize(newSize);
-    document.documentElement.style.setProperty(
-      "--dock-icon-size",
-      `${newSize}px`
-    );
-    saveSettings({
-      dockSize: newSize,
-      dockStiffness,
-      magnification,
-    });
-  };
-
-  const handleDockStiffnessChange = (newStiffness: number) => {
-    setDockStiffness(newStiffness);
-    saveSettings({
-      dockSize,
-      dockStiffness: newStiffness,
-      magnification,
-    });
-  };
-
-  const handleMagnificationChange = (newMagnification: number) => {
-    setMagnification(newMagnification);
-    saveSettings({
-      dockSize,
-      dockStiffness,
-      magnification: newMagnification,
-    });
-  };
+    // Actions
+    toggleSettings,
+    closeSettings,
+    handleDockSizeChange,
+    handleDockStiffnessChange,
+    handleMagnificationChange,
+  } = useDock();
 
   return (
     <>
       <motion.div
         id="dock-container"
         className={`dock-container ${isSettingsOpen ? "settings-open" : ""}`}
-        // THIS IS THE KEY CHANGE: Use the viewport-relative clientX.
+        role="toolbar"
+        aria-label="Application Dock"
         onMouseMove={(e) => mouseX.set(e.clientX)}
         onMouseLeave={() => mouseX.set(null)}
         initial={{ opacity: 0, y: 20 }}

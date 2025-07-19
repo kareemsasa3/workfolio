@@ -7,7 +7,6 @@ import {
   faGamepad,
   faFileAlt,
   faEnvelope,
-  faUser,
   faInfo,
   faTerminal,
   faComments,

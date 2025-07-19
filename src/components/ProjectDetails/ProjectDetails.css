@@ -13,7 +13,7 @@
 }
 
 .project-card.expanded {
-    border-color: var(--terminal-primary, #003300);
+    border-color: var(--terminal-primary, #2AAF2A);
 }
 
 .project-header {

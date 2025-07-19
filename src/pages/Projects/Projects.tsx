@@ -1,176 +1,33 @@
-import { useState, useMemo, useReducer } from "react";
+import FocusTrap from "focus-trap-react";
 import "./Projects.css";
 import ProjectsList from "../../components/ProjectsList";
 import TerminalDropdown from "../../components/TerminalDropdown";
-import {
-  projectsData,
-  complexityOrder,
-  COMPLEXITY_LEVELS,
-  STATUSES,
-  CATEGORIES,
-} from "../../data/projects";
-
-// State interface for better type safety
-interface ProjectsState {
-  category: string;
-  complexity: string;
-  status: string;
-  sortBy: string;
-  showTechStack: boolean;
-}
-
-// Action types for useReducer
-type ProjectsAction =
-  | {
-      type: "SET_FILTER";
-      payload: {
-        filterName: keyof Pick<
-          ProjectsState,
-          "category" | "complexity" | "status"
-        >;
-        value: string;
-      };
-    }
-  | { type: "SET_SORT"; payload: string }
-  | { type: "TOGGLE_TECH_STACK" }
-  | { type: "RESET_FILTERS" }
-  | {
-      type: "APPLY_QUICK_FILTER";
-      payload: {
-        filterName: keyof Pick<
-          ProjectsState,
-          "category" | "complexity" | "status"
-        >;
-        value: string;
-      };
-    };
-
-// Initial state
-const initialState: ProjectsState = {
-  category: "All",
-  complexity: "All",
-  status: "All",
-  sortBy: "date",
-  showTechStack: false,
-};
-
-// Reducer function
-function projectsReducer(
-  state: ProjectsState,
-  action: ProjectsAction
-): ProjectsState {
-  switch (action.type) {
-    case "SET_FILTER":
-      return { ...state, [action.payload.filterName]: action.payload.value };
-    case "SET_SORT":
-      return { ...state, sortBy: action.payload };
-    case "TOGGLE_TECH_STACK":
-      return { ...state, showTechStack: !state.showTechStack };
-    case "RESET_FILTERS":
-      return { ...state, category: "All", complexity: "All", status: "All" };
-    case "APPLY_QUICK_FILTER":
-      // Reset all filters first, then apply the specific filter
-      return {
-        ...state,
-        category: "All",
-        complexity: "All",
-        status: "All",
-        [action.payload.filterName]: action.payload.value,
-      };
-    default:
-      throw new Error(`Unknown action type: ${(action as any).type}`);
-  }
-}
+import { useProjects } from "./useProjects";
 
 const Projects = () => {
-  const [state, dispatch] = useReducer(projectsReducer, initialState);
-  const { category, complexity, status, sortBy, showTechStack } = state;
-
-  // Get unique categories, complexities, and statuses
-  const categories = useMemo(() => {
-    const cats = [...new Set(projectsData.map((p) => p.category))];
-    return ["All", ...cats];
-  }, []);
-
-  const complexities = useMemo(() => {
-    return ["All", ...COMPLEXITY_LEVELS];
-  }, []);
-
-  const statuses = useMemo(() => {
-    return ["All", ...STATUSES];
-  }, []);
-
-  // Get all unique technologies
-  const allTechnologies = useMemo(() => {
-    const techSet = new Set<string>();
-    projectsData.forEach((project) => {
-      project.techStack.forEach((tech) => techSet.add(tech));
-    });
-    return Array.from(techSet).sort();
-  }, []);
-
-  // Filter and sort projects
-  const filteredAndSortedProjects = useMemo(() => {
-    let filtered = projectsData.filter((project) => {
-      const categoryMatch = category === "All" || project.category === category;
-      const complexityMatch =
-        complexity === "All" || project.complexity === complexity;
-      const statusMatch = status === "All" || project.status === status;
-      return categoryMatch && complexityMatch && statusMatch;
-    });
-
-    // Sort projects
-    filtered.sort((a, b) => {
-      switch (sortBy) {
-        case "date":
-          return new Date(b.date).getTime() - new Date(a.date).getTime();
-        case "complexity":
-          return complexityOrder[b.complexity] - complexityOrder[a.complexity];
-        case "name":
-          return a.title.localeCompare(b.title);
-        case "category":
-          return a.category.localeCompare(b.category);
-        default:
-          return 0;
-      }
-    });
-
-    return filtered;
-  }, [category, complexity, status, sortBy]);
-
-  // Event handlers using dispatch
-  const handleFilterChange = (
-    filterName: keyof Pick<ProjectsState, "category" | "complexity" | "status">,
-    value: string
-  ) => {
-    dispatch({ type: "SET_FILTER", payload: { filterName, value } });
-  };
-
-  const handleSortChange = (value: string) => {
-    dispatch({ type: "SET_SORT", payload: value });
-  };
-
-  const handleShowAllProjects = () => {
-    dispatch({ type: "RESET_FILTERS" });
-  };
-
-  const handleShowExpertProjects = () => {
-    dispatch({
-      type: "APPLY_QUICK_FILTER",
-      payload: { filterName: "complexity", value: "Expert" },
-    });
-  };
-
-  const handleShowLiveProjects = () => {
-    dispatch({
-      type: "APPLY_QUICK_FILTER",
-      payload: { filterName: "status", value: "Live" },
-    });
-  };
-
-  const handleShowTechStack = () => {
-    dispatch({ type: "TOGGLE_TECH_STACK" });
-  };
+  const {
+    category,
+    complexity,
+    status,
+    sortBy,
+    showTechStack,
+    filteredAndSortedProjects,
+    categories,
+    complexities,
+    statuses,
+    allTechnologies,
+    expertProjectCount,
+    liveProjectCount,
+    techProjectCounts,
+    projectsFoundMessage,
+    SORT_OPTIONS,
+    handleFilterChange,
+    handleSortChange,
+    handleShowAllProjects,
+    handleShowExpertProjects,
+    handleShowLiveProjects,
+    handleShowTechStack,
+  } = useProjects();
 
   return (
     <div className="page-content">
@@ -221,30 +78,17 @@ const Projects = () => {
 
           <div className="sort-section">
             <TerminalDropdown
-              options={[
-                { value: "date", label: "Date (Newest)" },
-                { value: "complexity", label: "Complexity" },
-                { value: "name", label: "Name" },
-                { value: "category", label: "Category" },
-              ].map((option) => option.label)}
+              options={SORT_OPTIONS.map((option) => option.label)}
               value={
-                [
-                  { value: "date", label: "Date (Newest)" },
-                  { value: "complexity", label: "Complexity" },
-                  { value: "name", label: "Name" },
-                  { value: "category", label: "Category" },
-                ].find((option) => option.value === sortBy)?.label ||
-                "Date (Newest)"
+                SORT_OPTIONS.find((option) => option.value === sortBy)?.label ||
+                SORT_OPTIONS[0].label
               }
               onChange={(label) => {
-                const option = [
-                  { value: "date", label: "Date (Newest)" },
-                  { value: "complexity", label: "Complexity" },
-                  { value: "name", label: "Name" },
-                  { value: "category", label: "Category" },
-                ].find((opt) => opt.label === label);
-                if (option) {
-                  handleSortChange(option.value);
+                const selectedValue = SORT_OPTIONS.find(
+                  (opt) => opt.label === label
+                )?.value;
+                if (selectedValue) {
+                  handleSortChange(selectedValue);
                 }
               }}
               label="sort --by:"
@@ -255,13 +99,16 @@ const Projects = () => {
 
         {/* Project Statistics - Clickable Filters */}
         <div className="projects-stats">
-          <div
+          <button
             className={`stat-card ${
               category === "All" && complexity === "All" && status === "All"
                 ? "active"
                 : ""
             }`}
             onClick={handleShowAllProjects}
+            aria-pressed={
+              category === "All" && complexity === "All" && status === "All"
+            }
             title="Click to show all projects"
           >
             <span className="stat-number">
@@ -270,83 +117,92 @@ const Projects = () => {
             <span className="stat-label">
               <span className="terminal-prompt">$</span> wc -l projects
             </span>
-          </div>
-          <div
+          </button>
+          <button
             className={`stat-card ${complexity === "Expert" ? "active" : ""}`}
             onClick={handleShowExpertProjects}
+            aria-pressed={complexity === "Expert"}
             title="Click to show Expert level projects"
           >
-            <span className="stat-number">
-              {projectsData.filter((p) => p.complexity === "Expert").length}
-            </span>
+            <span className="stat-number">{expertProjectCount}</span>
             <span className="stat-label">
               <span className="terminal-prompt">$</span> grep "Expert" projects
             </span>
-          </div>
-          <div
+          </button>
+          <button
             className={`stat-card ${status === "Live" ? "active" : ""}`}
             onClick={handleShowLiveProjects}
+            aria-pressed={status === "Live"}
             title="Click to show Live projects"
           >
-            <span className="stat-number">
-              {projectsData.filter((p) => p.status === "Live").length}
-            </span>
+            <span className="stat-number">{liveProjectCount}</span>
             <span className="stat-label">
               <span className="terminal-prompt">$</span> grep "Live" projects
             </span>
-          </div>
-          <div
+          </button>
+          <button
             className={`stat-card ${showTechStack ? "active" : ""}`}
             onClick={handleShowTechStack}
+            aria-pressed={showTechStack}
             title="Click to view all technologies"
           >
             <span className="stat-number">{allTechnologies.length}</span>
             <span className="stat-label">
               <span className="terminal-prompt">$</span> uniq tech-stack
             </span>
-          </div>
+          </button>
         </div>
 
         {/* Tech Stack Modal */}
         {showTechStack && (
-          <div className="tech-stack-modal" onClick={handleShowTechStack}>
-            <div
-              className="tech-stack-content"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="tech-stack-header">
-                <h3>
-                  <span className="terminal-prompt">$</span> cat tech-stack.txt
-                </h3>
-                <button
-                  className="close-tech-stack"
-                  onClick={handleShowTechStack}
-                  title="Close technology list"
-                >
-                  <span className="terminal-prompt">$</span> exit
-                </button>
-              </div>
-              <div className="tech-stack-grid">
-                {allTechnologies.map((tech, index) => (
-                  <div key={tech} className="tech-item">
-                    <span className="tech-name">{tech}</span>
-                    <span className="tech-count">
-                      (
-                      {
-                        projectsData.filter((p) => p.techStack.includes(tech))
-                          .length
-                      }{" "}
-                      projects)
-                    </span>
-                  </div>
-                ))}
+          <FocusTrap>
+            <div className="tech-stack-modal" onClick={handleShowTechStack}>
+              <div
+                className="tech-stack-content"
+                onClick={(e) => e.stopPropagation()}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="tech-stack-title"
+              >
+                <div className="tech-stack-header">
+                  <h3 id="tech-stack-title">
+                    <span className="terminal-prompt">$</span> cat
+                    tech-stack.txt
+                  </h3>
+                  <button
+                    className="close-tech-stack"
+                    onClick={handleShowTechStack}
+                    aria-label="Close technology list"
+                  >
+                    <span className="terminal-prompt">$</span> exit
+                  </button>
+                </div>
+                <div className="tech-stack-grid">
+                  {allTechnologies.map((tech) => (
+                    <div key={tech} className="tech-item">
+                      <span className="tech-name">{tech}</span>
+                      <span className="tech-count">
+                        ({techProjectCounts.get(tech) || 0} projects)
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
+          </FocusTrap>
         )}
 
         {/* Projects List */}
         <div className="projects-content">
+          {/* ARIA Live Region for announcing dynamic content changes */}
+          <div
+            className="visually-hidden"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            {projectsFoundMessage}
+          </div>
+
           {filteredAndSortedProjects.length > 0 ? (
             <div className="terminal-output">
               <div className="terminal-line">

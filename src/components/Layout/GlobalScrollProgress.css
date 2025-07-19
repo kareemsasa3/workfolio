@@ -1,0 +1,12 @@
+/* Global Scroll Progress Bar */
+.global-scroll-progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-color), #00ff00);
+    transform-origin: 0%;
+    z-index: 9999;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}

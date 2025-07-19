@@ -2,15 +2,15 @@
     background: linear-gradient(135deg, var(--primary-color-light), var(--primary-color-medium));
     border: 1px solid var(--primary-color);
     border-radius: var(--border-radius-md);
-    padding: var(--spacing-lg);
+    padding: var(--spacing-md);
     text-align: center;
     font-weight: 600;
     color: var(--text-color);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--spacing-sm);
-    min-height: 100px;
+    gap: var(--spacing-xs);
+    min-height: 70px;
     position: relative;
     overflow: hidden;
 
@@ -29,7 +29,7 @@
 
 .skill-item.is-visible:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(175, 42, 42, 0.3);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
     will-change: transform;
 }
 
@@ -51,7 +51,7 @@
 }
 
 .skill-icon {
-    font-size: 2rem;
+    font-size: 1.5rem;
     margin-bottom: var(--spacing-xs);
     opacity: 0.8;
     transition: transform 0.3s ease, opacity 0.3s ease;
@@ -85,12 +85,12 @@
 /* Responsive Design */
 @media (max-width: 768px) {
     .skill-item {
-        min-height: 80px;
-        padding: var(--spacing-md);
+        min-height: 60px;
+        padding: var(--spacing-sm);
     }
 
     .skill-icon {
-        font-size: 1.5rem;
+        font-size: 1.25rem;
     }
 }
 

@@ -1,1 +1,2 @@
-export { default } from './SnakeGame';
+export { default } from "./SnakeGame";
+export { useSnakeGame } from "./useSnakeGame";

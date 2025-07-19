@@ -25,8 +25,20 @@ FROM nginx:alpine AS production
 # Remove the default nginx website
 RUN rm -rf /usr/share/nginx/html/*
 
-# Copy your custom nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Create a simple nginx configuration for the SPA
+RUN echo 'server { \
+    listen 80; \
+    server_name localhost; \
+    root /usr/share/nginx/html; \
+    index index.html; \
+    location / { \
+        try_files $uri $uri/ /index.html; \
+    } \
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ { \
+        expires 1y; \
+        add_header Cache-Control "public, immutable"; \
+    } \
+}' > /etc/nginx/conf.d/default.conf
 
 # Copy the built application from the builder stage
 COPY --from=builder /app/build /usr/share/nginx/html

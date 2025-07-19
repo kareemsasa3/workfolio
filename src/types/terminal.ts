@@ -74,13 +74,7 @@ export interface TerminalState {
   aiChatHistory: ChatMessage[]; // AI conversation history
   isAiTyping: boolean; // Track if AI is currently typing
   aiInputValue: string; // Current input value in AI chat
-  // Vim editor functionality
-  isVimEditing: boolean; // Track if we're in vim editor mode
-  vimFileContent: string[]; // Current file content in vim
-  vimFilePath: string; // Path of the file being edited
-  vimCursorPosition: { line: number; column: number }; // Current cursor position
-  vimMode: "normal" | "insert" | "visual"; // Current vim mode
-  vimScrollPosition: number; // Scroll position in vim editor
+  // Vim editor functionality removed
   // Scrape results modal
   showScrapeResults: boolean; // Track if scrape results modal is shown
   scrapeResults: any[]; // Current scrape results to display
@@ -149,17 +143,7 @@ export type TerminalAction =
   | { type: "SET_AI_TYPING"; payload: boolean }
   | { type: "SET_AI_INPUT_VALUE"; payload: string }
   | { type: "CLEAR_AI_CHAT_HISTORY" }
-  // Vim editor actions
-  | {
-      type: "SHOW_VIM_EDITOR";
-      payload: { filePath: string; content: string[] };
-    }
-  | { type: "HIDE_VIM_EDITOR" }
-  | { type: "UPDATE_VIM_CONTENT"; payload: string[] }
-  | { type: "SET_VIM_CURSOR"; payload: { line: number; column: number } }
-  | { type: "SET_VIM_MODE"; payload: "normal" | "insert" | "visual" }
-  | { type: "SET_VIM_SCROLL"; payload: number }
-  | { type: "SAVE_VIM_FILE"; payload: { filePath: string; content: string[] } }
+  // Vim editor actions removed
   | { type: "SHOW_SCRAPE_RESULTS"; payload: { results: any[]; jobId: string } }
   | { type: "HIDE_SCRAPE_RESULTS" }
   | {

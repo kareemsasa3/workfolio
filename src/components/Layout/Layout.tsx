@@ -1,53 +1,79 @@
 import { Outlet, useLocation } from "react-router-dom";
-import { motion } from "framer-motion";
-import { useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Suspense, useMemo } from "react";
 import MatrixBackground from "../MatrixBackground/MatrixBackground";
 import Dock from "../Dock/Dock";
+import GlobalSectionNavigation from "./GlobalSectionNavigation";
+import GlobalScrollProgress from "./GlobalScrollProgress";
+import { PageLoader } from "../common";
+import ErrorBoundary from "../common/ErrorBoundary";
+import { useLayoutContext } from "../../contexts/LayoutContext";
 import "./Layout.css";
+
+const pageVariants = {
+  initial: {
+    opacity: 0,
+    y: 20,
+  },
+  in: {
+    opacity: 1,
+    y: 0,
+  },
+  out: {
+    opacity: 0,
+    y: -20,
+  },
+};
+
+const pageTransition = {
+  type: "tween",
+  ease: "anticipate",
+  duration: 0.3, // Reduced duration for snappier transitions
+};
 
 const Layout = () => {
   const location = useLocation();
-  const isTerminalPage = location.pathname === "/terminal";
+  const { mainContentAreaRef } = useLayoutContext();
 
-  // Add/remove body class to prevent horizontal scroll
-  useEffect(() => {
-    if (isTerminalPage) {
-      document.body.classList.add("terminal-page-active");
-    } else {
-      document.body.classList.remove("terminal-page-active");
-    }
-
-    // Cleanup on unmount
-    return () => {
-      document.body.classList.remove("terminal-page-active");
-    };
-  }, [isTerminalPage]);
+  // Memoize the key to prevent unnecessary re-renders
+  const pageKey = useMemo(() => location.pathname, [location.pathname]);
 
   return (
-    <div className="app-layout">
-      {/* These components are now ALWAYS present */}
+    // Use a simple fragment, or a div with NO positioning/transform styles
+    <>
       <MatrixBackground />
-      <Dock />
 
-      <main
-        id="main-content-area"
-        className={`app-content ${isTerminalPage ? "terminal-page" : ""}`}
-      >
-        {/* 
-          The Outlet is the placeholder where React Router will render 
-          the matched child route component (e.g., HomePage, AboutPage).
-          Using a simple motion.div for smooth transitions without AnimatePresence.
-        */}
-        <motion.div
-          key={location.pathname}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
+      {/* This is now the top-level container for all INTERACTIVE content */}
+      <div className="layout-foreground">
+        <GlobalScrollProgress />
+        <Dock />
+        <GlobalSectionNavigation />
+
+        <main
+          ref={mainContentAreaRef}
+          id="main-content-area"
+          className="app-content"
         >
-          <Outlet />
-        </motion.div>
-      </main>
-    </div>
+          <ErrorBoundary>
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={pageKey}
+                initial="initial"
+                animate="in"
+                exit="out"
+                variants={pageVariants}
+                transition={pageTransition}
+                style={{ width: "100%", minHeight: "100%" }}
+              >
+                <Suspense fallback={<PageLoader />}>
+                  <Outlet />
+                </Suspense>
+              </motion.div>
+            </AnimatePresence>
+          </ErrorBoundary>
+        </main>
+      </div>
+    </>
   );
 };
 

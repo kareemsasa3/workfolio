@@ -56,7 +56,7 @@ const TypeWriterText: React.FC<TypeWriterTextProps> = ({
   // Variants for the container to orchestrate the animation
   const containerVariants = {
     hidden: { opacity: 0 },
-    visible: (i = 1) => ({
+    visible: () => ({
       opacity: 1,
       transition: {
         staggerChildren: speed / 1000, // Convert speed (ms) to seconds for stagger
@@ -67,23 +67,6 @@ const TypeWriterText: React.FC<TypeWriterTextProps> = ({
 
   // Variants for each individual character
   const characterVariants = {
-    hidden: {
-      opacity: 0,
-      y: 20,
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        type: "spring",
-        damping: 12,
-        stiffness: 200,
-      },
-    },
-  };
-
-  // Variants for the cursor
-  const cursorVariants = {
     hidden: {
       opacity: 0,
       y: 20,
