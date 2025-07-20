@@ -10,7 +10,10 @@ const GlobalScrollProgress = () => {
 
   // Only show on certain pages (you can customize this)
   const shouldShow =
-    location.pathname === "/" || location.pathname === "/projects";
+    location.pathname === "/" ||
+    location.pathname === "/projects" ||
+    location.pathname === "/work" ||
+    location.pathname === "/journey";
 
   if (!shouldShow) {
     return null;

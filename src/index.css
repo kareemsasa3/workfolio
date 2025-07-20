@@ -239,9 +239,11 @@ template {
   --background-color-transparent: rgba(26, 26, 26, 0.7);
   --background-color-overlay: rgba(26, 26, 26, 0.95);
   --card-background: #2d2d2d;
+  --panel-bg-color: #2d2d2d;
   --text-color: #f8f9fa;
   --text-color-secondary: #adb5bd;
   --text-color-muted: #6c757d;
+  --text-muted-color: #6c757d;
   --border-color: #495057;
   --shadow-color: rgba(0, 0, 0, 0.3);
 

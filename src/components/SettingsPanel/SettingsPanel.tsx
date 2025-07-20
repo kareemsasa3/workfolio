@@ -3,6 +3,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { motion, AnimatePresence } from "framer-motion";
 import ThemeToggle from "../ThemeToggle";
+import {
+  DOCK_SIZE_CONFIG,
+  DOCK_STIFFNESS_CONFIG,
+  MAGNIFICATION_CONFIG,
+} from "./settingsConstants";
 import "./SettingsPanel.css";
 
 interface SettingsPanelProps {
@@ -27,22 +32,19 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
   onClose,
 }) => {
   const handleDockSizeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newSize = parseInt(event.target.value);
-    onDockSizeChange(newSize);
+    onDockSizeChange(Number(event.target.value));
   };
 
   const handleDockStiffnessChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    const newStiffness = parseInt(event.target.value);
-    onDockStiffnessChange(newStiffness);
+    onDockStiffnessChange(Number(event.target.value));
   };
 
   const handleMagnificationChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    const newMagnification = parseInt(event.target.value);
-    onMagnificationChange(newMagnification);
+    onMagnificationChange(Number(event.target.value));
   };
 
   return (
@@ -55,14 +57,13 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
-            transition={{
-              type: "spring",
-              damping: 25,
-              stiffness: 200,
-            }}
+            transition={{ type: "spring", damping: 30, stiffness: 220 }}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="settings-title"
           >
             <div className="settings-header">
-              <h3>Settings</h3>
+              <h3 id="settings-title">Settings</h3>
               <motion.button
                 className="settings-close"
                 onClick={onClose}
@@ -88,8 +89,9 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   <input
                     type="range"
                     id="dock-size"
-                    min="40"
-                    max="60"
+                    min={DOCK_SIZE_CONFIG.min}
+                    max={DOCK_SIZE_CONFIG.max}
+                    step={DOCK_SIZE_CONFIG.step}
                     value={currentDockSize}
                     onChange={handleDockSizeChange}
                     className="dock-size-slider"
@@ -97,7 +99,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   <div className="dock-size-value">{currentDockSize}px</div>
                 </div>
                 <div className="setting-description">
-                  Adjust the base size of navigation icons in the dock.
+                  Adjust the base size of the icons in the dock.
                 </div>
               </div>
 
@@ -109,9 +111,9 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   <input
                     type="range"
                     id="dock-stiffness"
-                    min="200"
-                    max="600"
-                    step="50"
+                    min={DOCK_STIFFNESS_CONFIG.min}
+                    max={DOCK_STIFFNESS_CONFIG.max}
+                    step={DOCK_STIFFNESS_CONFIG.step}
                     value={currentDockStiffness}
                     onChange={handleDockStiffnessChange}
                     className="dock-stiffness-slider"
@@ -121,8 +123,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   </div>
                 </div>
                 <div className="setting-description">
-                  Control how responsive the dock animations are. Higher values
-                  = snappier animations.
+                  Controls how snappy the dock animations feel.
                 </div>
               </div>
 
@@ -134,9 +135,9 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   <input
                     type="range"
                     id="magnification"
-                    min="20"
-                    max="100"
-                    step="10"
+                    min={MAGNIFICATION_CONFIG.min}
+                    max={MAGNIFICATION_CONFIG.max}
+                    step={MAGNIFICATION_CONFIG.step}
                     value={currentMagnification}
                     onChange={handleMagnificationChange}
                     className="magnification-slider"
@@ -146,8 +147,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   </div>
                 </div>
                 <div className="setting-description">
-                  Control how much icons magnify on hover. Higher values = more
-                  dramatic effect.
+                  Controls how large icons become on hover.
                 </div>
               </div>
 
@@ -157,8 +157,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   <ThemeToggle />
                 </div>
                 <div className="setting-description">
-                  Switch between light and dark themes for the entire
-                  application
+                  Switch between light and dark themes.
                 </div>
               </div>
 
@@ -183,6 +182,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
+            aria-hidden="true"
           />
         </>
       )}

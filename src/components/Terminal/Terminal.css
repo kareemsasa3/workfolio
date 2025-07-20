@@ -1,20 +1,33 @@
-/* Terminal.css - Simplified after refactoring */
+/* Terminal.css - Refactored for Theming and Maintainability */
 
-/* Basic CSS Variables */
+/* --- Dark Theme (Default) --- */
 :root {
-  --terminal-primary: #00ff00;
-  --terminal-background: #1a1a1a;
+  --terminal-text-primary: #00ff00;
+  /* Classic green on black */
+  --terminal-text-muted: #888;
+  --terminal-text-error: #ff6b6b;
+  --terminal-text-success: #50fa7b;
+  --terminal-text-info: #8be9fd;
+  --terminal-window-bg: rgba(26, 26, 26, 0.95);
   --terminal-header-bg: #2a2a2a;
-  --terminal-error: #ff6b6b;
-  --terminal-success: #00ff00;
-  --terminal-text-light: #ffffff;
-  --terminal-text-muted: #666;
-  --terminal-border: #00ff00;
-  --terminal-bg: #1a1a1a;
-  --terminal-text: #00ff00;
-  --terminal-highlight: #ff6b6b;
-  --terminal-selection: #2a2a2a;
-  --terminal-info: #4ecdc4;
+  --terminal-border: rgba(0, 255, 0, 0.4);
+  --terminal-selection-bg: var(--terminal-text-primary);
+  --terminal-selection-text: #1a1a1a;
+}
+
+/* --- Light Theme --- */
+[data-theme="light"] {
+  --terminal-text-primary: #000000;
+  /* Black text for readability */
+  --terminal-text-muted: #5c6773;
+  --terminal-text-error: #d73a49;
+  --terminal-text-success: #22863a;
+  --terminal-text-info: #000000;
+  --terminal-window-bg: rgba(250, 250, 250, 0.95);
+  --terminal-header-bg: #e1e4e8;
+  --terminal-border: rgba(30, 36, 51, 0.3);
+  --terminal-selection-bg: var(--terminal-text-primary);
+  --terminal-selection-text: #fafafa;
 }
 
 .terminal-screen {
@@ -22,7 +35,7 @@
   width: 100%;
   height: 100vh;
   background: transparent;
-  color: var(--terminal-primary);
+  color: var(--terminal-text-primary);
   font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
   overflow: hidden;
   display: flex;
@@ -42,8 +55,6 @@
   justify-content: center;
 }
 
-
-
 .terminal-screen.route-mode .terminal-container {
   /* Position is now handled by inline styles */
 }
@@ -54,12 +65,14 @@
   max-width: 800px;
   height: 70vh;
   max-height: 600px;
-  background: rgba(26, 26, 26, 0.95);
+  background: var(--terminal-window-bg);
   border-radius: 8px;
   border: 1px solid var(--terminal-border);
   overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  will-change: transform, opacity;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    background 0.3s ease,
+    border-color 0.3s ease;
+  will-change: transform, opacity, background, border-color;
   /* Allow text selection in terminal content */
   user-select: text;
   -webkit-user-select: text;
@@ -76,21 +89,27 @@
   border: none;
   left: 0;
   top: 0;
-  background: rgba(26, 26, 26, 0.95);
+  background: var(--terminal-window-bg);
 }
 
 /* Scrollbar styles for terminal body */
-.terminal-body::-webkit-scrollbar {
+.terminal-screen .terminal-body::-webkit-scrollbar {
   width: 8px;
 }
 
-.terminal-body::-webkit-scrollbar-track {
+.terminal-screen .terminal-body::-webkit-scrollbar-track {
   background: var(--terminal-header-bg);
+  border-radius: 4px;
 }
 
-.terminal-body::-webkit-scrollbar-thumb {
-  background: var(--terminal-primary);
+.terminal-screen .terminal-body::-webkit-scrollbar-thumb {
+  background: var(--terminal-text-primary);
   border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+.terminal-screen .terminal-body::-webkit-scrollbar-thumb:hover {
+  background: var(--terminal-text-muted);
 }
 
 /* Terminal Sidecar (minimized state indicator) */
@@ -101,7 +120,7 @@
   transform: translateY(-50%);
   width: 60px;
   height: 60px;
-  background: rgba(26, 26, 26, 0.95);
+  background: var(--terminal-window-bg);
   border: 2px solid var(--terminal-border);
   border-radius: 50%;
   display: flex;
@@ -109,8 +128,20 @@
   justify-content: center;
   cursor: pointer;
   z-index: 999;
-  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    background 0.3s ease,
+    border-color 0.3s ease;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  /* Button reset styles */
+  padding: 0;
+  margin: 0;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  background-color: var(--terminal-window-bg);
+  border: 2px solid var(--terminal-border);
+  outline: none;
 }
 
 .terminal-sidecar:hover {
@@ -120,8 +151,9 @@
 
 .sidecar-icon {
   font-size: 24px;
-  color: var(--terminal-primary);
+  color: var(--terminal-text-primary);
   animation: pulse 2s infinite;
+  transition: color 0.3s ease;
 }
 
 .sidecar-icon:hover {
@@ -166,8 +198,6 @@
   display: inline-block;
 }
 
-
-
 /* Selection styles */
 .terminal-screen,
 .terminal-screen * {
@@ -175,13 +205,13 @@
 }
 
 .terminal-screen ::selection {
-  background: var(--terminal-primary);
-  color: var(--terminal-background);
+  background: var(--terminal-selection-bg);
+  color: var(--terminal-selection-text);
 }
 
 .terminal-screen ::-moz-selection {
-  background: var(--terminal-primary);
-  color: var(--terminal-background);
+  background: var(--terminal-selection-bg);
+  color: var(--terminal-selection-text);
 }
 
 /* Prevent text selection in draggable areas */

@@ -30,10 +30,7 @@ const Home = () => {
   useEffect(() => {
     setSections(homeSections);
 
-    // Clean up when the component unmounts
-    return () => {
-      setSections([]);
-    };
+    return () => setSections([]);
   }, [setSections]);
 
   // Check if home intro has been shown before

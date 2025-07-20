@@ -1,0 +1,180 @@
+/* Each item on the timeline */
+.timeline-item {
+    position: relative;
+    width: 50%;
+    margin-bottom: 40px;
+    padding: 0 40px;
+    /* Changed from padding to allow for animation */
+}
+
+/* Position items on the left or right */
+.timeline-item.left {
+    left: 0;
+}
+
+.timeline-item.right {
+    left: 50%;
+}
+
+/* The icon on the central line */
+.timeline-icon-wrapper {
+    position: absolute;
+    top: 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--panel-bg-color);
+    border: 3px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    z-index: 1;
+    transition: all 0.3s ease;
+}
+
+.timeline-item.left .timeline-icon-wrapper {
+    right: -20px;
+}
+
+.timeline-item.right .timeline-icon-wrapper {
+    left: -20px;
+}
+
+/* Category-specific icon colors */
+.timeline-icon-wrapper.education {
+    color: #3498db;
+}
+
+.timeline-icon-wrapper.career {
+    color: #9b59b6;
+}
+
+.timeline-icon-wrapper.milestone {
+    color: #f1c40f;
+}
+
+.timeline-icon-wrapper.personal {
+    color: #e74c3c;
+}
+
+/* The content box */
+.timeline-content {
+    position: relative;
+    padding: 20px;
+    background-color: var(--panel-bg-color);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 15px var(--shadow-color);
+    transition: all 0.3s ease;
+}
+
+.timeline-item:hover .timeline-icon-wrapper {
+    transform: scale(1.1);
+    border-color: var(--primary-color);
+}
+
+.timeline-item:hover .timeline-content {
+    border-color: var(--primary-color);
+    box-shadow: 0 6px 20px var(--shadow-color);
+}
+
+/* --- REFINEMENT: Perfect Timeline Arrow --- */
+/* The fill of the arrow */
+.timeline-content::before {
+    content: "";
+    position: absolute;
+    top: 28px;
+    width: 0;
+    height: 0;
+    border: 10px solid transparent;
+    z-index: 1;
+}
+
+/* The border of the arrow */
+.timeline-content::after {
+    content: "";
+    position: absolute;
+    top: 27px;
+    /* 1px offset for border */
+    width: 0;
+    height: 0;
+    border: 11px solid transparent;
+    /* 1px larger for border */
+    z-index: 0;
+}
+
+.timeline-item.left .timeline-content::before {
+    right: -20px;
+    border-left-color: var(--panel-bg-color);
+}
+
+.timeline-item.left .timeline-content::after {
+    right: -22px;
+    border-left-color: var(--border-color);
+}
+
+.timeline-item.right .timeline-content::before {
+    left: -20px;
+    border-right-color: var(--panel-bg-color);
+}
+
+.timeline-item.right .timeline-content::after {
+    left: -22px;
+    border-right-color: var(--border-color);
+}
+
+.timeline-date {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 8px;
+    display: block;
+}
+
+.timeline-item-title {
+    font-size: 1.25rem;
+    margin: 0 0 10px 0;
+    color: var(--text-color);
+}
+
+.timeline-item-description {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--text-muted-color);
+    margin: 0;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+
+    /* Stack all items on the right side */
+    .timeline-item,
+    .timeline-item.right,
+    .timeline-item.left {
+        width: 100%;
+        left: 0;
+        padding-left: 60px;
+        padding-right: 15px;
+    }
+
+    .timeline-icon-wrapper,
+    .timeline-item.right .timeline-icon-wrapper,
+    .timeline-item.left .timeline-icon-wrapper {
+        left: 0;
+    }
+
+    .timeline-item.left .timeline-content::after,
+    .timeline-item.right .timeline-content::after {
+        left: -22px;
+        border-right-color: var(--border-color);
+        border-left-color: transparent;
+    }
+
+    .timeline-item.left .timeline-content::before,
+    .timeline-item.right .timeline-content::before {
+        left: -20px;
+        border-right-color: var(--panel-bg-color);
+        border-left-color: transparent;
+    }
+}

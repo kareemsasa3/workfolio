@@ -71,8 +71,11 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
       root.style.setProperty("--text-color", "#2c2c2c");
       root.style.setProperty("--text-color-secondary", "#5a5a5a");
       root.style.setProperty("--text-color-muted", "#8a8a8a");
+      root.style.setProperty("--text-muted-color", "#8a8a8a");
       root.style.setProperty("--border-color", "#d0d0d0");
       root.style.setProperty("--shadow-color", "rgba(0, 0, 0, 0.08)");
+      root.style.setProperty("--card-background", "#ffffff");
+      root.style.setProperty("--panel-bg-color", "#ffffff");
     } else {
       // Soft dark theme colors
       root.style.setProperty("--background-color", "#1a1a1a");
@@ -89,8 +92,11 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
       root.style.setProperty("--text-color", "#f8f9fa");
       root.style.setProperty("--text-color-secondary", "#adb5bd");
       root.style.setProperty("--text-color-muted", "#6c757d");
+      root.style.setProperty("--text-muted-color", "#6c757d");
       root.style.setProperty("--border-color", "#495057");
       root.style.setProperty("--shadow-color", "rgba(0, 0, 0, 0.3)");
+      root.style.setProperty("--card-background", "#2d2d2d");
+      root.style.setProperty("--panel-bg-color", "#2d2d2d");
     }
   }, [theme]);
 

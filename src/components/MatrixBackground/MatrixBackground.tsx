@@ -3,6 +3,19 @@ import { motion } from "framer-motion";
 import { useTheme } from "../../contexts/ThemeContext";
 import "./MatrixBackground.css";
 
+// Configuration object to manage the "magic numbers"
+const CONFIG = {
+  columnWidth: 20,
+  fontSize: 16,
+  characterSpacing: 20,
+  speedRange: { min: 0.1, max: 0.4 },
+  opacityRange: { min: 0.3, max: 0.8 },
+  lengthRange: { min: 10, max: 30 },
+  fadeRate: 0.1,
+  resetOffset: 20,
+  animationDuration: 0.5,
+} as const;
+
 interface MatrixColumn {
   x: number;
   y: number;
@@ -22,6 +35,23 @@ const MatrixBackground = () => {
 
   // Matrix characters (numbers and some symbols)
   const matrixChars = "0123456789ABCDEF";
+
+  // Theme-specific colors
+  const getThemeColors = useCallback(() => {
+    if (theme === "light") {
+      return {
+        background: "#f8f8f8", // Very light background
+        characters: "#2c2c2c", // Dark characters for light mode
+        glow: "rgba(44, 44, 44, 0.1)", // Subtle dark glow
+      };
+    } else {
+      return {
+        background: "#0f0f0f", // Dark background
+        characters: "#00ff00", // Classic Matrix green
+        glow: "rgba(0, 255, 0, 0.1)", // Green glow
+      };
+    }
+  }, [theme]);
 
   // Check for reduced motion preference
   useEffect(() => {
@@ -48,17 +78,23 @@ const MatrixBackground = () => {
   // Initialize matrix columns
   const initializeColumns = useCallback((canvas: HTMLCanvasElement) => {
     const columns: MatrixColumn[] = [];
-    const columnWidth = 20;
-    const numColumns = Math.floor(canvas.width / columnWidth);
+    const numColumns = Math.floor(canvas.width / CONFIG.columnWidth);
 
     for (let i = 0; i < numColumns; i++) {
       columns.push({
-        x: i * columnWidth,
+        x: i * CONFIG.columnWidth,
         y: Math.random() * canvas.height,
-        speed: Math.random() * 0.3 + 0.1,
+        speed:
+          Math.random() * (CONFIG.speedRange.max - CONFIG.speedRange.min) +
+          CONFIG.speedRange.min,
         characters: [],
-        opacity: Math.random() * 0.5 + 0.3,
-        length: Math.floor(Math.random() * 20) + 10,
+        opacity:
+          Math.random() * (CONFIG.opacityRange.max - CONFIG.opacityRange.min) +
+          CONFIG.opacityRange.min,
+        length:
+          Math.floor(
+            Math.random() * (CONFIG.lengthRange.max - CONFIG.lengthRange.min)
+          ) + CONFIG.lengthRange.min,
       });
 
       // Generate random characters for this column
@@ -75,8 +111,10 @@ const MatrixBackground = () => {
   // Draw matrix effect
   const drawMatrix = useCallback(
     (context: CanvasRenderingContext2D, canvas: HTMLCanvasElement) => {
-      // Clear with dark gray background
-      context.fillStyle = theme === "light" ? "#1f1f1f" : "#0f0f0f";
+      const colors = getThemeColors();
+
+      // Clear with theme-appropriate background
+      context.fillStyle = colors.background;
       context.fillRect(0, 0, canvas.width, canvas.height);
 
       const columns = columnsRef.current;
@@ -86,8 +124,11 @@ const MatrixBackground = () => {
         column.y += column.speed;
 
         // Reset column if it goes off screen
-        if (column.y > canvas.height + column.length * 20) {
-          column.y = -column.length * 20;
+        if (
+          column.y >
+          canvas.height + column.length * CONFIG.characterSpacing
+        ) {
+          column.y = -column.length * CONFIG.characterSpacing;
           // Regenerate characters
           column.characters = [];
           for (let j = 0; j < column.length; j++) {
@@ -98,25 +139,34 @@ const MatrixBackground = () => {
         }
 
         // Draw characters in this column
-        context.font = "16px 'Courier New', monospace";
+        context.font = `${CONFIG.fontSize}px 'Courier New', monospace`;
         context.textAlign = "center";
 
         column.characters.forEach((char, index) => {
-          const charY = column.y - index * 20;
+          const charY = column.y - index * CONFIG.characterSpacing;
 
           // Skip if character is off screen
-          if (charY < -20 || charY > canvas.height + 20) return;
+          if (
+            charY < -CONFIG.characterSpacing ||
+            charY > canvas.height + CONFIG.characterSpacing
+          )
+            return;
 
           // Calculate opacity based on position in column
-          const charOpacity = Math.max(0, 1 - index * 0.1) * column.opacity;
+          const charOpacity =
+            Math.max(0, 1 - index * CONFIG.fadeRate) * column.opacity;
 
-          // Matrix green color
-          context.fillStyle = `rgba(0, 255, 0, ${charOpacity})`;
-          context.fillText(char, column.x + 10, charY);
+          // Use theme-appropriate color with opacity
+          const colorWithOpacity =
+            theme === "light"
+              ? `rgba(44, 44, 44, ${charOpacity})`
+              : `rgba(0, 255, 0, ${charOpacity})`;
+          context.fillStyle = colorWithOpacity;
+          context.fillText(char, column.x + CONFIG.columnWidth / 2, charY);
         });
       });
     },
-    [theme]
+    [getThemeColors, theme]
   );
 
   // Main animation loop
@@ -182,10 +232,10 @@ const MatrixBackground = () => {
   return (
     <motion.canvas
       ref={canvasRef}
-      className="bionic-canvas"
+      className="matrix-background"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: CONFIG.animationDuration }}
     />
   );
 };

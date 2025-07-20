@@ -143,6 +143,7 @@ export type TerminalAction =
   | { type: "SET_AI_TYPING"; payload: boolean }
   | { type: "SET_AI_INPUT_VALUE"; payload: string }
   | { type: "CLEAR_AI_CHAT_HISTORY" }
+  | { type: "RESET_TERMINAL" }
   // Vim editor actions removed
   | { type: "SHOW_SCRAPE_RESULTS"; payload: { results: any[]; jobId: string } }
   | { type: "HIDE_SCRAPE_RESULTS" }

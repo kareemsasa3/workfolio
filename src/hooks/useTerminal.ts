@@ -162,6 +162,44 @@ const terminalReducer = (
         autocompleteIndex: 0,
       };
 
+    case "RESET_TERMINAL":
+      return {
+        ...state,
+        commandHistory: [],
+        currentCommand: "",
+        showPrompt: false,
+        targetRoute: "/",
+        autocompleteIndex: 0,
+        currentDirectory: "/",
+        isMinimized: false,
+        isMaximized: false,
+        showPreview: false,
+        activeTypewriter: false,
+        historyIndex: -1,
+        isReverseSearch: false,
+        reverseSearchTerm: "",
+        reverseSearchIndex: 0,
+        reverseSearchResults: [],
+        isManPage: false,
+        currentManPage: "",
+        manPageScrollPosition: 0,
+        isTopCommand: false,
+        topSelectedPid: null,
+        topProcesses: [],
+        topSortBy: "pid",
+        topSortOrder: "asc",
+        topRefreshRate: 1000,
+        activeScrapeJobs: {},
+        nextHistoryId: 1,
+        isAiChatting: false,
+        aiChatHistory: [],
+        isAiTyping: false,
+        aiInputValue: "",
+        showScrapeResults: false,
+        scrapeResults: [],
+        currentScrapeJobId: "",
+      };
+
     case "MINIMIZE_TERMINAL":
       return {
         ...state,
@@ -2495,8 +2533,49 @@ export const useTerminal = (
 
   // Load initial state from localStorage
   const getInitialState = (): TerminalState => {
+    // Check if terminal state exists in localStorage
+    const savedState = localStorage.getItem("terminal-state");
+
+    if (!savedState) {
+      // Return fresh state if no saved state exists
+      return {
+        commandHistory: [],
+        currentCommand: "",
+        showPrompt: false,
+        targetRoute: "/",
+        autocompleteIndex: 0,
+        currentDirectory: "/",
+        isMinimized: false,
+        isMaximized: false,
+        showPreview: false,
+        activeTypewriter: false,
+        historyIndex: -1,
+        isReverseSearch: false,
+        reverseSearchTerm: "",
+        reverseSearchIndex: 0,
+        reverseSearchResults: [],
+        isManPage: false,
+        currentManPage: "",
+        manPageScrollPosition: 0,
+        isTopCommand: false,
+        topSelectedPid: null,
+        topProcesses: [],
+        topSortBy: "pid",
+        topSortOrder: "asc",
+        topRefreshRate: 1000,
+        activeScrapeJobs: {},
+        nextHistoryId: 1,
+        isAiChatting: false,
+        aiChatHistory: [],
+        isAiTyping: false,
+        aiInputValue: "",
+        showScrapeResults: false,
+        scrapeResults: [],
+        currentScrapeJobId: "",
+      };
+    }
+
     try {
-      const savedState = localStorage.getItem("terminal-state");
       if (savedState) {
         const parsed = JSON.parse(savedState);
         // Ensure we have all required properties with fallbacks
@@ -3253,6 +3332,16 @@ export const useTerminal = (
     dispatchWithSave({ type: "CLEAR_COMMAND" });
   }, [dispatchWithSave]);
 
+  const resetTerminal = useCallback(() => {
+    // Clear localStorage completely instead of saving reset state
+    try {
+      localStorage.removeItem("terminal-state");
+    } catch (error) {
+      console.warn("Failed to clear terminal state from localStorage:", error);
+    }
+    dispatchWithSave({ type: "RESET_TERMINAL" });
+  }, [dispatchWithSave]);
+
   const minimizeTerminal = useCallback(() => {
     dispatchWithSave({ type: "MINIMIZE_TERMINAL" });
   }, [dispatchWithSave]);
@@ -3647,6 +3736,7 @@ export const useTerminal = (
     setShowPrompt,
     setAutocompleteIndex,
     clearCommand,
+    resetTerminal,
     minimizeTerminal,
     restoreTerminal,
     maximizeTerminal,

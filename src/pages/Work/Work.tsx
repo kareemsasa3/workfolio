@@ -2,59 +2,75 @@ import "./Work.css";
 import { motion } from "framer-motion";
 import { workExperienceData } from "../../data/workExperience";
 import WorkDetails from "../../components/WorkDetails";
-import React from "react";
+import React, { useEffect } from "react";
+import { useLayoutContext, PageSection } from "../../contexts/LayoutContext";
 
-// Animation variants
-const nodeVariants = {
-  hidden: { scale: 0 },
-  visible: { scale: 1, transition: { duration: 0.4, ease: "backOut" } },
-};
-
-const lineVariants = {
-  hidden: { height: 0 },
-  visible: { height: "100%", transition: { duration: 0.6, ease: "easeIn" } },
-};
+// Create sections outside the component to prevent recreation on every render
+const workSections: PageSection[] = workExperienceData.map((exp) => ({
+  id: `work-${exp.id}`,
+  label: exp.company,
+}));
 
 const Work = () => {
+  console.log(
+    "Work component rendering, data length:",
+    workExperienceData?.length
+  );
+
+  // Check if data is available
+  if (!workExperienceData || workExperienceData.length === 0) {
+    return (
+      <motion.div
+        className="page-content work-page"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <div>Loading work experience data...</div>
+      </motion.div>
+    );
+  }
+
+  // Get the section management from our context
+  const { setSections } = useLayoutContext();
+
+  // Announce our sections when the component mounts
+  useEffect(() => {
+    setSections(workSections);
+  }, [setSections, workSections]);
+
   return (
-    <div className="page-content">
-      <h1 className="work-title">Work Experience</h1>
+    <motion.div
+      className="page-content work-page"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <header className="work-header">
+        <h1 className="work-title">Work Experience</h1>
+      </header>
       <div className="work-timeline-container">
         {workExperienceData.map((exp, index) => (
           <React.Fragment key={exp.id}>
             <div className="timeline-item">
-              <motion.div
+              <div
                 className={`timeline-node ${exp.type
                   .toLowerCase()
                   .replace("/", "-")}`}
-                variants={nodeVariants}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, amount: 0.8 }}
-              ></motion.div>
+              ></div>
               {index < workExperienceData.length - 1 && (
-                <motion.div
-                  className="timeline-line"
-                  variants={lineVariants}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true, amount: 0.2 }}
-                ></motion.div>
+                <div className="timeline-line"></div>
               )}
             </div>
-            <motion.div
-              className="timeline-content"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.1 }}
-              transition={{ duration: 0.5 }}
-            >
+            <div id={`work-${exp.id}`} className="timeline-content">
               <WorkDetails {...exp} />
-            </motion.div>
+            </div>
           </React.Fragment>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 };
 

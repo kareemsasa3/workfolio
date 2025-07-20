@@ -4,6 +4,16 @@
     --terminal-font: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
+/* Light theme overrides for Projects page */
+[data-theme="light"] {
+    --terminal-primary: #000000;
+    --terminal-text-light: #000000;
+    --terminal-text-muted: #5c6773;
+    --terminal-error: #d73a49;
+    --terminal-background: #fafafa;
+    --terminal-header-bg: #e1e4e8;
+}
+
 /* Accessibility - Visually hidden but screen reader accessible */
 .visually-hidden {
     border: 0;
@@ -45,6 +55,7 @@
     line-height: 1.6;
     max-width: 600px;
     margin: 0 auto;
+    transition: color 0.3s ease;
 }
 
 /* Terminal Elements */
@@ -79,6 +90,7 @@
     padding: 0.5rem;
     background: rgba(0, 255, 0, 0.05);
     border-radius: 4px;
+    transition: color 0.3s ease, background 0.3s ease;
 }
 
 /* Controls Section - Terminal Style */
@@ -204,6 +216,7 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
     font-weight: 600;
+    transition: color 0.3s ease;
 }
 
 /* Projects Content */
@@ -230,6 +243,7 @@
     color: var(--terminal-text-light, #ffffff);
     font-size: 1rem;
     margin: 0;
+    transition: color 0.3s ease;
 }
 
 /* Terminal-style cursor animation */
@@ -273,6 +287,7 @@
     overflow: hidden;
     box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
     cursor: default;
+    transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 .tech-stack-header {
@@ -282,6 +297,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 .tech-stack-header h3 {
@@ -336,6 +352,7 @@
 .tech-stack-grid::-webkit-scrollbar-thumb {
     background: var(--terminal-primary, #2AAF2A);
     border-radius: 4px;
+    transition: background 0.3s ease;
 }
 
 .tech-item {
@@ -367,6 +384,7 @@
     color: var(--terminal-text-muted, #666);
     font-size: 0.8rem;
     font-style: italic;
+    transition: color 0.3s ease;
 }
 
 /* Responsive Design */

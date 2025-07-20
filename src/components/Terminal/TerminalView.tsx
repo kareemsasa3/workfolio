@@ -173,7 +173,6 @@ const TerminalView: React.FC<TerminalViewProps> = ({
                 placeholder="Type 'help' for available commands"
                 autoFocus
               />
-              <span className="cursor">|</span>
             </>
           )}
         </div>

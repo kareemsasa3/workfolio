@@ -1,0 +1,130 @@
+/* Journey.css - Fully Refactored */
+
+.journey-page {
+    padding: 40px 20px;
+    max-width: 900px;
+    margin: 0 auto;
+    color: var(--text-color);
+}
+
+.journey-header {
+    text-align: left;
+    margin-bottom: 60px;
+    max-width: 800px;
+}
+
+.journey-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--primary-color);
+    font-family: 'Courier New', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow:
+        0 0 10px var(--primary-color),
+        0 0 20px var(--primary-color),
+        0 0 30px var(--primary-color);
+    animation: terminal-glow 2s ease-in-out infinite alternate;
+}
+
+.journey-subtitle {
+    font-size: 1.1rem;
+    color: var(--terminal-text-light);
+    max-width: 600px;
+    margin: 0;
+    line-height: 1.6;
+    font-family: 'Courier New', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-weight: 400;
+    opacity: 0.8;
+    text-shadow: 0 0 5px var(--terminal-text-light);
+}
+
+@keyframes terminal-glow {
+    0% {
+        text-shadow:
+            0 0 10px var(--primary-color),
+            0 0 20px var(--primary-color),
+            0 0 30px var(--primary-color);
+    }
+
+    100% {
+        text-shadow:
+            0 0 15px var(--primary-color),
+            0 0 25px var(--primary-color),
+            0 0 35px var(--primary-color),
+            0 0 45px var(--primary-color);
+    }
+}
+
+.timeline-container {
+    position: relative;
+    width: 100%;
+}
+
+/* The central line of the timeline */
+.timeline-container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 3px;
+    background: var(--border-color);
+    transform: translateX(-50%);
+    border-radius: 3px;
+}
+
+/* A single era section container */
+.timeline-era {
+    padding: 40px 0;
+}
+
+.timeline-era:first-of-type {
+    padding-top: 0;
+}
+
+/* --- FIX for Issue #1: Era Header Styling --- */
+.timeline-era-header {
+    position: sticky;
+    top: 80px;
+    /* Adjust based on your header height */
+    display: inline-block;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px 20px;
+    background-color: var(--primary-color);
+    color: var(--primary-text-inverted);
+    border-radius: 20px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 40px;
+    z-index: 2;
+    /* Sits on top of the timeline line and items */
+    text-align: center;
+    box-shadow: 0 4px 10px var(--shadow-color);
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+    .journey-title {
+        font-size: 2rem;
+    }
+
+    .journey-subtitle {
+        font-size: 1rem;
+        margin-bottom: 40px;
+    }
+
+    .timeline-container::before {
+        left: 20px;
+    }
+
+    .timeline-era-header {
+        left: 20px;
+        /* Align with the line on mobile */
+        transform: translateX(0);
+        width: calc(100% - 40px);
+        margin-left: 40px;
+    }
+}

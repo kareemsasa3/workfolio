@@ -1,8 +1,8 @@
 /* TerminalView.css - Styles for the terminal content component */
 
 .terminal-body {
-    background: var(--terminal-bg);
-    color: var(--terminal-text);
+    background: var(--terminal-window-bg);
+    color: var(--terminal-text-primary);
     padding: 16px;
     height: calc(100% - 40px);
     /* Subtract header height */
@@ -13,9 +13,29 @@
     line-height: 1.4;
 }
 
+/* Scrollbar styles for terminal body */
+.terminal-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.terminal-body::-webkit-scrollbar-track {
+    background: var(--terminal-header-bg);
+    border-radius: 4px;
+}
+
+.terminal-body::-webkit-scrollbar-thumb {
+    background: var(--terminal-text-primary);
+    border-radius: 4px;
+    transition: background 0.3s ease;
+}
+
+.terminal-body::-webkit-scrollbar-thumb:hover {
+    background: var(--terminal-text-muted);
+}
+
 .terminal-message {
     margin-bottom: 16px;
-    color: var(--terminal-text-light);
+    color: var(--terminal-text-primary);
 }
 
 .command-history {
@@ -29,20 +49,20 @@
 }
 
 .history-line.error {
-    color: var(--terminal-error);
+    color: var(--terminal-text-error);
 }
 
 .history-line.success {
-    color: var(--terminal-success);
+    color: var(--terminal-text-success);
 }
 
 .history-line.info {
-    color: var(--terminal-info);
+    color: var(--terminal-text-info);
 }
 
 .grep-highlight {
-    background-color: var(--terminal-highlight);
-    color: var(--terminal-text);
+    background-color: var(--terminal-text-error);
+    color: var(--terminal-text-primary);
     padding: 1px 2px;
     border-radius: 2px;
 }
@@ -55,14 +75,14 @@
 }
 
 .prompt-symbol {
-    color: var(--terminal-text-light);
+    color: var(--terminal-text-primary);
     white-space: nowrap;
 }
 
 .command-input {
     background: transparent;
-    border: none;
-    color: var(--terminal-text);
+    border: none !important;
+    color: var(--terminal-text-primary);
     font-family: 'Courier New', monospace;
     font-size: 14px;
     outline: none;
@@ -75,7 +95,7 @@
 }
 
 .cursor {
-    color: var(--terminal-text);
+    color: var(--terminal-text-primary);
     animation: blink 1s infinite;
 }
 
@@ -99,13 +119,13 @@
 }
 
 .reverse-search-indicator {
-    color: var(--terminal-text-light);
+    color: var(--terminal-text-primary);
     white-space: nowrap;
 }
 
 .reverse-search-command {
-    color: var(--terminal-text);
-    background: var(--terminal-selection);
+    color: var(--terminal-text-primary);
+    background: var(--terminal-selection-bg);
     padding: 1px 4px;
     border-radius: 2px;
     white-space: nowrap;
@@ -114,7 +134,7 @@
 .reverse-search-input {
     background: transparent;
     border: none;
-    color: var(--terminal-text);
+    color: var(--terminal-text-primary);
     font-family: 'Courier New', monospace;
     font-size: 14px;
     outline: none;

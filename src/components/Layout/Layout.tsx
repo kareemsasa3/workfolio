@@ -1,6 +1,6 @@
 import { Outlet, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Suspense, useMemo } from "react";
+import { Suspense, useMemo, useState, useEffect } from "react";
 import MatrixBackground from "../MatrixBackground/MatrixBackground";
 import Dock from "../Dock/Dock";
 import GlobalSectionNavigation from "./GlobalSectionNavigation";
@@ -28,15 +28,26 @@ const pageVariants = {
 const pageTransition = {
   type: "tween",
   ease: "anticipate",
-  duration: 0.3, // Reduced duration for snappier transitions
+  duration: 0.4, // Slightly longer duration to allow sections to settle
 };
 
 const Layout = () => {
   const location = useLocation();
   const { mainContentAreaRef } = useLayoutContext();
+  const [isLoading, setIsLoading] = useState(false);
 
   // Memoize the key to prevent unnecessary re-renders
   const pageKey = useMemo(() => location.pathname, [location.pathname]);
+
+  // Show loading state on route change
+  useEffect(() => {
+    setIsLoading(true);
+    // Hide loading after at least 500ms to ensure consistent loading experience
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [location.pathname]);
 
   return (
     // Use a simple fragment, or a div with NO positioning/transform styles
@@ -55,21 +66,25 @@ const Layout = () => {
           className="app-content"
         >
           <ErrorBoundary>
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.div
-                key={pageKey}
-                initial="initial"
-                animate="in"
-                exit="out"
-                variants={pageVariants}
-                transition={pageTransition}
-                style={{ width: "100%", minHeight: "100%" }}
-              >
-                <Suspense fallback={<PageLoader />}>
-                  <Outlet />
-                </Suspense>
-              </motion.div>
-            </AnimatePresence>
+            {isLoading ? (
+              <PageLoader />
+            ) : (
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={pageKey}
+                  initial="initial"
+                  animate="in"
+                  exit="out"
+                  variants={pageVariants}
+                  transition={pageTransition}
+                  style={{ width: "100%", minHeight: "100%" }}
+                >
+                  <Suspense fallback={<PageLoader />}>
+                    <Outlet />
+                  </Suspense>
+                </motion.div>
+              </AnimatePresence>
+            )}
           </ErrorBoundary>
         </main>
       </div>

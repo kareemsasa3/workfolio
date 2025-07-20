@@ -1,7 +1,7 @@
 /* TerminalWindow.css - Styles for the window chrome component */
 
 .terminal-container {
-    background: var(--terminal-bg);
+    background: var(--terminal-window-bg);
     border: 1px solid var(--terminal-border);
     border-radius: 8px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
@@ -76,7 +76,7 @@
 }
 
 .terminal-title {
-    color: var(--terminal-text);
+    color: var(--terminal-text-primary);
     font-size: 12px;
     font-weight: 500;
     flex: 1;

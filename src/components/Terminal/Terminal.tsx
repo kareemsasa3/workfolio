@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Terminal.css";
 import { useTerminal } from "../../hooks/useTerminal";
@@ -37,19 +37,26 @@ const Terminal: React.FC<TerminalProps> = ({ isIntro }) => {
     navigate(route);
   };
 
+  // Use the terminal logic hook
+  const terminalApi = useTerminal(fileSystem, handleRouteNavigation, !isIntro);
+
+  // Handle terminal close
+  const handleTerminalClose = useCallback(() => {
+    // Reset terminal state when closing
+    terminalApi.resetTerminal();
+    navigate(isIntro ? "/home" : "/");
+  }, [terminalApi, navigate, isIntro]);
+
   // Use the new window management hook
   const windowManagement = useWindowManagement({
     initialWidth: getTerminalDimensions().width,
     initialHeight: getTerminalDimensions().height,
     isIntro,
-    onClose: () => navigate(isIntro ? "/home" : "/"),
+    onClose: handleTerminalClose,
   });
 
   // Use the body scroll lock hook
   useLockBodyScroll(isIntro);
-
-  // Use the terminal logic hook
-  const terminalApi = useTerminal(fileSystem, handleRouteNavigation, !isIntro);
 
   // Mark state as loaded after terminal state is initialized
   useEffect(() => {
@@ -59,6 +66,22 @@ const Terminal: React.FC<TerminalProps> = ({ isIntro }) => {
 
     return () => clearTimeout(timer);
   }, []);
+
+  // Show prompt when not in intro mode
+  useEffect(() => {
+    if (!isIntro && hasShownIntro && !terminalApi.showPrompt) {
+      // Show prompt after a short delay when not in intro mode
+      const timer = setTimeout(() => {
+        terminalApi.setShowPrompt(true);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [
+    isIntro,
+    hasShownIntro,
+    terminalApi.showPrompt,
+    terminalApi.setShowPrompt,
+  ]);
 
   // Handle intro completion
   const handleIntroComplete = () => {
@@ -128,14 +151,17 @@ const Terminal: React.FC<TerminalProps> = ({ isIntro }) => {
 
   return (
     <div className={`terminal-screen ${isIntro ? "intro-mode" : "route-mode"}`}>
-      {/* The sidecar for minimized state */}
+      {/* The sidecar for minimized state - NOW a BUTTON */}
       {isStateLoaded && windowManagement.showSidecar && (
-        <div
+        <button
           className="terminal-sidecar"
           onClick={windowManagement.handleMinimize}
+          aria-label="Restore terminal window"
         >
-          <div className="sidecar-icon">💻</div>
-        </div>
+          <span className="sidecar-icon" aria-hidden="true">
+            💻
+          </span>
+        </button>
       )}
 
       {/* Overlays */}
