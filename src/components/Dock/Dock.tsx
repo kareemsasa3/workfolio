@@ -4,6 +4,7 @@ import DockIcon from "./DockIcon";
 import DockSettingsButton from "./DockSettingsButton";
 import SettingsPanel from "../SettingsPanel";
 import { useDock } from "./useDock";
+import { useLayoutContext } from "../../contexts/LayoutContext";
 import "./Dock.css";
 
 const Dock = () => {
@@ -23,6 +24,8 @@ const Dock = () => {
     handleDockStiffnessChange,
     handleMagnificationChange,
   } = useDock();
+
+  const { isAnimationPaused, setIsAnimationPaused } = useLayoutContext();
 
   return (
     <>
@@ -71,6 +74,8 @@ const Dock = () => {
         currentDockStiffness={dockStiffness}
         onMagnificationChange={handleMagnificationChange}
         currentMagnification={magnification}
+        isAnimationPaused={isAnimationPaused}
+        onAnimationToggle={setIsAnimationPaused}
         isOpen={isSettingsOpen}
         onClose={closeSettings}
       />

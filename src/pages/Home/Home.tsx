@@ -1,7 +1,7 @@
 import "./Home.css";
 import { useNavigation } from "../../hooks/useNavigation";
 import { useState, useRef, useEffect } from "react";
-import { useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { useLayoutContext, PageSection } from "../../contexts/LayoutContext"; // Import the context hook and PageSection type
 import {
   HeroSection,
@@ -38,10 +38,12 @@ const Home = () => {
     return localStorage.getItem("home-intro-shown") === "true";
   });
 
-  // Loading states for navigation buttons
-  const [isNavigatingToProjects, setIsNavigatingToProjects] = useState(false);
-  const [isNavigatingToContact, setIsNavigatingToContact] = useState(false);
-  const [isOpeningResume, setIsOpeningResume] = useState(false);
+  // Consolidated loading states for navigation buttons
+  const [loadingStates, setLoadingStates] = useState({
+    projects: false,
+    contact: false,
+    resume: false,
+  });
 
   // Refs for sections
   const heroRef = useRef(null);
@@ -50,30 +52,46 @@ const Home = () => {
   const aboutRef = useRef(null);
   const ctaRef = useRef(null);
 
-  // Use window scroll since body is the scrolling container
-  const { scrollYProgress } = useScroll();
+  // Section-specific scroll progress for optimized performance
+  const { scrollYProgress: heroScrollY } = useScroll({
+    target: heroRef,
+    offset: ["start end", "end start"],
+  });
 
-  // Parallax transforms
-  const heroY = useTransform(scrollYProgress, [0, 0.5], [0, -100]);
-  const projectsY = useTransform(scrollYProgress, [0.2, 0.7], [0, -50]);
-  const skillsY = useTransform(scrollYProgress, [0.4, 0.9], [0, -50]);
+  const { scrollYProgress: projectsScrollY } = useScroll({
+    target: projectsRef,
+    offset: ["start end", "end start"],
+  });
+
+  const { scrollYProgress: skillsScrollY } = useScroll({
+    target: skillsRef,
+    offset: ["start end", "end start"],
+  });
+
+  // Optimized parallax transforms - only calculate when section is in viewport
+  const heroY = useTransform(heroScrollY, [0, 1], [0, -100]);
+  const projectsY = useTransform(projectsScrollY, [0, 1], [0, -50]);
+  const skillsY = useTransform(skillsScrollY, [0, 1], [0, -50]);
 
   // Navigation handlers - simplified without setTimeout
   const handleNavigateToProjects = () => {
-    setIsNavigatingToProjects(true);
+    setLoadingStates((prev) => ({ ...prev, projects: true }));
     navigateToProjects();
   };
 
   const handleNavigateToContact = () => {
-    setIsNavigatingToContact(true);
+    setLoadingStates((prev) => ({ ...prev, contact: true }));
     navigateToContact();
   };
 
   const handleOpenResume = () => {
-    setIsOpeningResume(true);
+    setLoadingStates((prev) => ({ ...prev, resume: true }));
     openResume();
     // Reset state after a short delay to prevent flash
-    setTimeout(() => setIsOpeningResume(false), 500);
+    setTimeout(
+      () => setLoadingStates((prev) => ({ ...prev, resume: false })),
+      500
+    );
   };
 
   const handleIntroComplete = () => {
@@ -85,45 +103,40 @@ const Home = () => {
     <div className="page-content home-page">
       <div className="home-container">
         {/* Hero Section */}
-        <div id="hero">
+        <motion.div id="hero" ref={heroRef} style={{ y: heroY }}>
           <HeroSection
-            ref={heroRef}
             hasShownHomeIntro={hasShownHomeIntro}
             onIntroComplete={handleIntroComplete}
             onNavigateToProjects={handleNavigateToProjects}
             onOpenResume={handleOpenResume}
-            isNavigatingToProjects={isNavigatingToProjects}
-            isOpeningResume={isOpeningResume}
-            style={{ y: heroY }}
+            isNavigatingToProjects={loadingStates.projects}
+            isOpeningResume={loadingStates.resume}
           />
-        </div>
+        </motion.div>
 
         {/* Featured Projects Section */}
-        <div id="projects">
+        <motion.div id="projects" ref={projectsRef} style={{ y: projectsY }}>
           <FeaturedProjectsSection
-            ref={projectsRef}
             onNavigateToProjects={handleNavigateToProjects}
-            isNavigating={isNavigatingToProjects}
-            style={{ y: projectsY }}
+            isNavigating={loadingStates.projects}
           />
-        </div>
+        </motion.div>
 
         {/* Skills Section */}
-        <div id="skills">
-          <SkillsSection ref={skillsRef} style={{ y: skillsY }} />
-        </div>
+        <motion.div id="skills" ref={skillsRef} style={{ y: skillsY }}>
+          <SkillsSection />
+        </motion.div>
 
         {/* About Section */}
-        <div id="about">
-          <AboutSection ref={aboutRef} />
+        <div id="about" ref={aboutRef}>
+          <AboutSection />
         </div>
 
         {/* CTA Section */}
-        <div id="contact">
+        <div id="contact" ref={ctaRef}>
           <CtaSection
-            ref={ctaRef}
             onNavigateToContact={handleNavigateToContact}
-            isNavigating={isNavigatingToContact}
+            isNavigating={loadingStates.contact}
           />
         </div>
       </div>

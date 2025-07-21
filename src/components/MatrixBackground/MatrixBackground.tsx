@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useTheme } from "../../contexts/ThemeContext";
+import { useLayoutContext } from "../../contexts/LayoutContext";
 import "./MatrixBackground.css";
 
 // Configuration object to manage the "magic numbers"
@@ -27,6 +28,7 @@ interface MatrixColumn {
 
 const MatrixBackground = () => {
   const { theme } = useTheme();
+  const { isAnimationPaused } = useLayoutContext();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const requestRef = useRef<number | null>(null);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
@@ -174,14 +176,14 @@ const MatrixBackground = () => {
     const canvas = canvasRef.current;
     const context = canvas?.getContext("2d");
 
-    if (!canvas || !context || !isVisible) {
+    if (!canvas || !context || !isVisible || isAnimationPaused) {
       requestRef.current = requestAnimationFrame(animate);
       return;
     }
 
     drawMatrix(context, canvas);
     requestRef.current = requestAnimationFrame(animate);
-  }, [drawMatrix, isVisible]);
+  }, [drawMatrix, isVisible, isAnimationPaused]);
 
   // Resize handler
   const resizeCanvas = useCallback(() => {
@@ -232,7 +234,9 @@ const MatrixBackground = () => {
   return (
     <motion.canvas
       ref={canvasRef}
-      className="matrix-background"
+      className={`matrix-background ${
+        isAnimationPaused ? "animation-paused" : ""
+      }`}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: CONFIG.animationDuration }}

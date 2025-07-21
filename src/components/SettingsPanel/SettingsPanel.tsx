@@ -1,6 +1,6 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faTimes, faPause, faPlay } from "@fortawesome/free-solid-svg-icons";
 import { motion, AnimatePresence } from "framer-motion";
 import ThemeToggle from "../ThemeToggle";
 import {
@@ -17,6 +17,8 @@ interface SettingsPanelProps {
   currentDockStiffness: number;
   onMagnificationChange: (magnification: number) => void;
   currentMagnification: number;
+  isAnimationPaused: boolean;
+  onAnimationToggle: (paused: boolean) => void;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -28,6 +30,8 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
   currentDockStiffness,
   onMagnificationChange,
   currentMagnification,
+  isAnimationPaused,
+  onAnimationToggle,
   isOpen,
   onClose,
 }) => {
@@ -45,6 +49,10 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     onMagnificationChange(Number(event.target.value));
+  };
+
+  const handleAnimationToggle = () => {
+    onAnimationToggle(!isAnimationPaused);
   };
 
   return (
@@ -81,6 +89,33 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
               animate={{ opacity: 1 }}
               transition={{ delay: 0.1, duration: 0.2 }}
             >
+              <div className="setting-group">
+                <label className="setting-label">Background Animation</label>
+                <div className="setting-control">
+                  <motion.button
+                    className={`animation-toggle ${
+                      isAnimationPaused ? "paused" : "playing"
+                    }`}
+                    onClick={handleAnimationToggle}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    aria-label={
+                      isAnimationPaused ? "Resume animation" : "Pause animation"
+                    }
+                  >
+                    <FontAwesomeIcon
+                      icon={isAnimationPaused ? faPlay : faPause}
+                    />
+                    <span>{isAnimationPaused ? "Resume" : "Pause"}</span>
+                  </motion.button>
+                </div>
+                <div className="setting-description">
+                  {isAnimationPaused
+                    ? "Background animation is currently paused."
+                    : "Background animation is currently running."}
+                </div>
+              </div>
+
               <div className="setting-group">
                 <label htmlFor="dock-size" className="setting-label">
                   Dock Size

@@ -18,17 +18,21 @@
 .page-content.home-page {
   margin-top: 0;
   min-height: 100vh;
+  min-height: 100svh;
+  /* Modern viewport height for mobile */
   /* Ensure proper spacing for dock */
   /* Space for dock */
 }
 
-/* Section Base Styles - All sections now use 80vh */
+/* Section Base Styles - All sections now use 100vh/100svh */
 .hero-section,
 .featured-projects-section,
 .skills-section,
 .about-section,
 .cta-section {
   min-height: 100vh;
+  min-height: 100svh;
+  /* Modern viewport height for mobile */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -41,8 +45,7 @@
 .hero-section {
   text-align: center;
   margin-bottom: 0;
-  /* Remove margin since we're using 80vh */
-  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+  /* Remove margin since we're using 100vh/100svh */
 }
 
 .hero-content {
@@ -57,7 +60,6 @@
   color: var(--text-color);
   margin: 0 0 1rem 0;
   line-height: 1.2;
-  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
   /* Add text shadow for depth */
   text-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
 }
@@ -67,7 +69,6 @@
   color: var(--primary-color);
   margin: 0 0 2rem 0;
   font-weight: 600;
-  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
   /* Add glow effect */
   text-shadow: 0 0 15px rgba(175, 42, 42, 0.5);
 }
@@ -80,7 +81,6 @@
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
-  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 .hero-buttons {
@@ -97,7 +97,6 @@
   border-radius: 12px;
   padding: 1.5rem;
   transition: all 0.3s ease;
-  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
   position: relative;
   overflow: hidden;
   transform: translateZ(0);
@@ -161,7 +160,6 @@
   font-weight: 700;
   color: var(--text-color);
   margin: 0;
-  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 .project-badges {
@@ -219,7 +217,6 @@
   color: var(--text-secondary);
   line-height: 1.6;
   margin: 0 0 1rem 0;
-  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 .project-tech {
@@ -236,7 +233,6 @@
   font-size: 0.8rem;
   font-weight: 500;
   border: 1px solid var(--primary-color-medium);
-  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
   transition: all 0.3s ease;
 }
 
@@ -259,7 +255,6 @@
   text-align: center;
   margin: 0 0 2rem 0;
   position: relative;
-  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
   /* Enhanced title styling */
   text-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
 }
@@ -315,7 +310,6 @@
   text-align: center;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 .skills-grid {
@@ -376,14 +370,12 @@
   font-weight: 600;
   color: var(--text-color);
   margin: 0 0 1rem 0;
-  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 .about-card p {
   color: var(--text-secondary);
   line-height: 1.6;
   margin: 0;
-  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 /* CTA Section */
@@ -406,7 +398,6 @@
   font-weight: 700;
   color: var(--text-color);
   margin: 0 0 1rem 0;
-  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
   /* Add glow effect */
   text-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
 }
@@ -416,7 +407,6 @@
   color: var(--text-secondary);
   line-height: 1.6;
   margin: 0 0 2rem 0;
-  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
 
 /* Buttons */
@@ -433,7 +423,6 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
   /* Enhanced button styling */
   position: relative;
   overflow: hidden;
@@ -476,8 +465,11 @@
 }
 
 .btn-secondary:hover {
-  border-color: var(--primary-color);
+  background-color: var(--border-color);
+  /* Fill with a subtle color on hover */
+  border-color: var(--border-color);
   color: var(--primary-color);
+  /* Make the text glow/change color */
   transform: translateY(-2px) scale(1.05);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
@@ -620,6 +612,8 @@
   .about-section,
   .cta-section {
     min-height: 70vh;
+    min-height: 70svh;
+    /* Modern viewport height for mobile */
     /* Slightly smaller on mobile */
     padding: 1rem 0;
   }
@@ -683,6 +677,8 @@
   .about-section,
   .cta-section {
     min-height: 60vh;
+    min-height: 60svh;
+    /* Modern viewport height for mobile */
     /* Even smaller on very small screens */
     padding: 0.5rem 0;
   }

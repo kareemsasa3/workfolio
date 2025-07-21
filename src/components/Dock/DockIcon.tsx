@@ -1,4 +1,4 @@
-import React, { useRef, useLayoutEffect, useEffect } from "react";
+import React, { useRef, useLayoutEffect, useEffect, useState } from "react";
 import { motion, useSpring, MotionValue } from "framer-motion";
 import { NavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -28,6 +28,8 @@ const DockIcon: React.FC<DockIconProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const iconRef = useRef<HTMLDivElement>(null);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
 
   // Ref to store the icon's static, viewport-relative center position
   const position = useRef({ center: 0 });
@@ -115,9 +117,28 @@ const DockIcon: React.FC<DockIconProps> = ({
     fontSize.set(baseSize * 0.6);
   }, [baseSize, size, fontSize]);
 
+  // Handle tooltip positioning
+  const handleMouseEnter = (e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setTooltipPosition({
+      x: rect.left + rect.width / 2,
+      y: rect.top - 10,
+    });
+    setShowTooltip(true);
+  };
+
+  const handleMouseLeave = () => {
+    setShowTooltip(false);
+  };
+
   return (
     <div ref={containerRef} className="dock-icon-container">
-      <NavLink to={path} className="dock-nav-link" title={label}>
+      <NavLink
+        to={path}
+        className="dock-nav-link"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
         <motion.div
           ref={iconRef}
           className="dock-icon"
@@ -130,6 +151,22 @@ const DockIcon: React.FC<DockIconProps> = ({
           <FontAwesomeIcon icon={icon} />
         </motion.div>
       </NavLink>
+
+      {/* Tooltip */}
+      {showTooltip && (
+        <motion.div
+          className="dock-tooltip"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 10 }}
+          style={{
+            left: tooltipPosition.x,
+            top: tooltipPosition.y,
+          }}
+        >
+          {label}
+        </motion.div>
+      )}
     </div>
   );
 };

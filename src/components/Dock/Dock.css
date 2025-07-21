@@ -55,13 +55,37 @@
     overflow: visible;
 }
 
+/* Dock Tooltip Styles */
+.dock-tooltip {
+    position: fixed;
+    background: var(--background-color);
+    color: var(--text-color);
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    white-space: nowrap;
+    z-index: 1000;
+    pointer-events: none;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateX(-50%);
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+}
+
+.dock-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: var(--background-color);
+}
+
+/* Ensure tooltip doesn't interfere with dock interactions */
 .dock-icon-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
     position: relative;
-    pointer-events: auto;
-    /* Let Framer Motion handle sizing */
 }
 
 .dock-nav-link {

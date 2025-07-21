@@ -17,8 +17,10 @@ interface LayoutContextType {
   mainContentAreaRef: React.RefObject<HTMLElement>;
   sections: PageSection[];
   activeSection: string;
+  isAnimationPaused: boolean;
   setSections: (sections: PageSection[]) => void;
   setActiveSection: (id: string) => void;
+  setIsAnimationPaused: (paused: boolean) => void;
 }
 
 // Create the context with a default value
@@ -26,8 +28,10 @@ const LayoutContext = createContext<LayoutContextType>({
   mainContentAreaRef: { current: null },
   sections: [],
   activeSection: "",
+  isAnimationPaused: false,
   setSections: () => {},
   setActiveSection: () => {},
+  setIsAnimationPaused: () => {},
 });
 
 // Create the provider component
@@ -38,14 +42,17 @@ export const LayoutContextProvider = ({
 }) => {
   const [sections, setSections] = useState<PageSection[]>([]);
   const [activeSection, setActiveSection] = useState<string>("");
+  const [isAnimationPaused, setIsAnimationPaused] = useState<boolean>(false);
   const mainContentAreaRef = useRef<HTMLElement>(null);
 
   const value = {
     mainContentAreaRef,
     sections,
     activeSection,
+    isAnimationPaused,
     setSections,
     setActiveSection,
+    setIsAnimationPaused,
   };
 
   return (

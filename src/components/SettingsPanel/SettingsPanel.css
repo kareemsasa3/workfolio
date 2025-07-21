@@ -258,6 +258,53 @@
     -webkit-backdrop-filter: blur(3px);
 }
 
+/* Animation Toggle Button */
+.animation-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--background-color);
+    color: var(--text-color);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+}
+
+.animation-toggle:hover {
+    border-color: var(--primary-color);
+    background: rgba(0, 255, 0, 0.05);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.animation-toggle.playing {
+    border-color: var(--primary-color);
+    background: rgba(0, 255, 0, 0.1);
+    color: var(--primary-color);
+}
+
+.animation-toggle.paused {
+    border-color: var(--text-secondary);
+    background: var(--background-color);
+    color: var(--text-secondary);
+}
+
+.animation-toggle.playing:hover {
+    background: rgba(0, 255, 0, 0.15);
+    box-shadow: 0 4px 12px rgba(0, 255, 0, 0.2);
+}
+
+.animation-toggle.paused:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background: rgba(0, 255, 0, 0.05);
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
     .settings-panel {
