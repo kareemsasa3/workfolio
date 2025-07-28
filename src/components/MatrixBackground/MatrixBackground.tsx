@@ -33,27 +33,11 @@ const MatrixBackground = () => {
   const requestRef = useRef<number | null>(null);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
+  const [canvasReady, setCanvasReady] = useState(false);
   const columnsRef = useRef<MatrixColumn[]>([]);
 
   // Matrix characters (numbers and some symbols)
   const matrixChars = "0123456789ABCDEF";
-
-  // Theme-specific colors
-  const getThemeColors = useCallback(() => {
-    if (theme === "light") {
-      return {
-        background: "#f8f8f8", // Very light background
-        characters: "#2c2c2c", // Dark characters for light mode
-        glow: "rgba(44, 44, 44, 0.1)", // Subtle dark glow
-      };
-    } else {
-      return {
-        background: "#0f0f0f", // Dark background
-        characters: "#00ff00", // Classic Matrix green
-        glow: "rgba(0, 255, 0, 0.1)", // Green glow
-      };
-    }
-  }, [theme]);
 
   // Check for reduced motion preference
   useEffect(() => {
@@ -110,121 +94,155 @@ const MatrixBackground = () => {
     columnsRef.current = columns;
   }, []);
 
-  // Draw matrix effect
-  const drawMatrix = useCallback(
-    (context: CanvasRenderingContext2D, canvas: HTMLCanvasElement) => {
-      const colors = getThemeColors();
-
-      // Clear with theme-appropriate background
-      context.fillStyle = colors.background;
-      context.fillRect(0, 0, canvas.width, canvas.height);
-
-      const columns = columnsRef.current;
-
-      columns.forEach((column) => {
-        // Update position
-        column.y += column.speed;
-
-        // Reset column if it goes off screen
-        if (
-          column.y >
-          canvas.height + column.length * CONFIG.characterSpacing
-        ) {
-          column.y = -column.length * CONFIG.characterSpacing;
-          // Regenerate characters
-          column.characters = [];
-          for (let j = 0; j < column.length; j++) {
-            column.characters.push(
-              matrixChars[Math.floor(Math.random() * matrixChars.length)]
-            );
-          }
-        }
-
-        // Draw characters in this column
-        context.font = `${CONFIG.fontSize}px 'Courier New', monospace`;
-        context.textAlign = "center";
-
-        column.characters.forEach((char, index) => {
-          const charY = column.y - index * CONFIG.characterSpacing;
-
-          // Skip if character is off screen
-          if (
-            charY < -CONFIG.characterSpacing ||
-            charY > canvas.height + CONFIG.characterSpacing
-          )
-            return;
-
-          // Calculate opacity based on position in column
-          const charOpacity =
-            Math.max(0, 1 - index * CONFIG.fadeRate) * column.opacity;
-
-          // Use theme-appropriate color with opacity
-          const colorWithOpacity =
-            theme === "light"
-              ? `rgba(44, 44, 44, ${charOpacity})`
-              : `rgba(0, 255, 0, ${charOpacity})`;
-          context.fillStyle = colorWithOpacity;
-          context.fillText(char, column.x + CONFIG.columnWidth / 2, charY);
-        });
-      });
-    },
-    [getThemeColors, theme]
-  );
-
-  // Main animation loop
-  const animate = useCallback(() => {
+  // **FIX 1**: The single source of truth for drawing logic.
+  // It reads `theme` directly, so it's always up-to-date.
+  const drawAndUpdateMatrix = useCallback(() => {
     const canvas = canvasRef.current;
     const context = canvas?.getContext("2d");
+    if (!canvas || !context) return;
 
-    if (!canvas || !context || !isVisible || isAnimationPaused) {
-      requestRef.current = requestAnimationFrame(animate);
-      return;
-    }
+    const backgroundColor = theme === "light" ? "#f8f8f8" : "#0f0f0f";
+    const charColor = theme === "light" ? "44, 44, 44" : "0, 255, 0";
 
-    drawMatrix(context, canvas);
+    // Clear with theme-appropriate background
+    context.fillStyle = backgroundColor;
+    context.fillRect(0, 0, canvas.width, canvas.height);
+
+    const columns = columnsRef.current;
+
+    columns.forEach((column) => {
+      // Always update positions when this function is called
+      column.y += column.speed;
+
+      // Reset column if it goes off screen
+      if (column.y > canvas.height + column.length * CONFIG.characterSpacing) {
+        column.y = -column.length * CONFIG.characterSpacing;
+        // Regenerate characters
+        column.characters = [];
+        for (let j = 0; j < column.length; j++) {
+          column.characters.push(
+            matrixChars[Math.floor(Math.random() * matrixChars.length)]
+          );
+        }
+      }
+
+      // Draw characters in this column
+      context.font = `${CONFIG.fontSize}px 'Courier New', monospace`;
+      context.textAlign = "center";
+
+      column.characters.forEach((char, index) => {
+        const charY = column.y - index * CONFIG.characterSpacing;
+
+        // Skip if character is off screen
+        if (
+          charY < -CONFIG.characterSpacing ||
+          charY > canvas.height + CONFIG.characterSpacing
+        )
+          return;
+
+        // Calculate opacity based on position in column
+        const charOpacity =
+          Math.max(0, 1 - index * CONFIG.fadeRate) * column.opacity;
+
+        // Use theme-appropriate color with opacity
+        context.fillStyle = `rgba(${charColor}, ${charOpacity})`;
+        context.fillText(char, column.x + CONFIG.columnWidth / 2, charY);
+      });
+    });
+  }, [theme]); // This function *should* change when the theme changes.
+
+  // **FIX 2**: The animation loop function.
+  // It is now stable and does not depend on `theme`.
+  const animate = useCallback(() => {
+    drawAndUpdateMatrix();
     requestRef.current = requestAnimationFrame(animate);
-  }, [drawMatrix, isVisible, isAnimationPaused]);
+  }, [drawAndUpdateMatrix]); // `animate` now only changes if `drawAndUpdateMatrix` changes.
 
-  // Resize handler
-  const resizeCanvas = useCallback(() => {
+  // Resize handler - This needs to draw a static frame
+  const redrawStaticFrame = useCallback(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    const context = canvas?.getContext("2d");
+    if (!canvas || !context) return;
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    initializeColumns(canvas);
-  }, [initializeColumns]);
+    const backgroundColor = theme === "light" ? "#f8f8f8" : "#0f0f0f";
+    const charColor = theme === "light" ? "44, 44, 44" : "0, 255, 0";
 
-  // Main effect for canvas setup and animation
+    context.fillStyle = backgroundColor;
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.font = `${CONFIG.fontSize}px 'Courier New', monospace`;
+    context.textAlign = "center";
+
+    columnsRef.current.forEach((column) => {
+      column.characters.forEach((char, index) => {
+        const charY = column.y - index * CONFIG.characterSpacing;
+        if (charY < 0 || charY > canvas.height) return;
+
+        const charOpacity =
+          Math.max(0, 1 - index * CONFIG.fadeRate) * column.opacity;
+        context.fillStyle = `rgba(${charColor}, ${charOpacity})`;
+        context.fillText(char, column.x + CONFIG.columnWidth / 2, charY);
+      });
+    });
+  }, [theme]);
+
+  // Main setup effect
   useEffect(() => {
-    if (prefersReducedMotion) {
-      return;
-    }
+    if (prefersReducedMotion) return;
 
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const context = canvas.getContext("2d");
-    if (!context) return;
+    const handleResize = () => {
+      if (!canvasRef.current) return;
+      canvasRef.current.width = window.innerWidth;
+      canvasRef.current.height = window.innerHeight;
+      initializeColumns(canvasRef.current);
+      // Redraw a static frame on resize, especially important if paused
+      redrawStaticFrame();
+    };
 
-    // Set canvas size and create initial columns
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    initializeColumns(canvas);
+    handleResize(); // Initial setup
 
-    // Start animation
-    animate();
-
-    // Add resize listener
-    window.addEventListener("resize", resizeCanvas);
-
+    window.addEventListener("resize", handleResize);
     return () => {
-      window.removeEventListener("resize", resizeCanvas);
+      window.removeEventListener("resize", handleResize);
+      if (requestRef.current) cancelAnimationFrame(requestRef.current);
+    };
+  }, [prefersReducedMotion, initializeColumns, redrawStaticFrame]);
+
+  // **FIX 3**: The animation control effect.
+  // The `animate` dependency is now stable across theme changes.
+  useEffect(() => {
+    if (isAnimationPaused || !isVisible || prefersReducedMotion) {
       if (requestRef.current) {
         cancelAnimationFrame(requestRef.current);
+        requestRef.current = null;
+      }
+    } else {
+      if (!requestRef.current) {
+        // When resuming, kick off the loop
+        requestRef.current = requestAnimationFrame(animate);
+      }
+    }
+
+    // This effect needs to re-evaluate when the theme changes to draw a new static frame
+    if (isAnimationPaused) {
+      redrawStaticFrame();
+    }
+
+    return () => {
+      if (requestRef.current) {
+        cancelAnimationFrame(requestRef.current);
+        requestRef.current = null;
       }
     };
-  }, [prefersReducedMotion, initializeColumns, animate, resizeCanvas]);
+  }, [
+    isAnimationPaused,
+    isVisible,
+    prefersReducedMotion,
+    animate,
+    redrawStaticFrame,
+  ]);
 
   // Hide the canvas entirely for reduced motion users
   if (prefersReducedMotion) {

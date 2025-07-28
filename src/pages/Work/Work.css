@@ -5,11 +5,19 @@
     max-width: 1200px;
     margin: 0 auto;
     color: var(--text-color);
+    background: transparent;
+    min-height: 100vh;
+    min-height: 100svh;
 }
 
 .work-header {
     text-align: center;
     margin-bottom: 60px;
+    padding: 2rem 0;
+    background: transparent;
+    border-radius: 12px;
+    border: none;
+    margin: 0 0 3rem 0;
 }
 
 .work-title {
@@ -17,9 +25,11 @@
     font-weight: 700;
     color: var(--text-color);
     margin: 0;
+    padding-left: 1rem;
     position: relative;
     font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
     white-space: nowrap;
+    text-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
 }
 
 .work-title::after {
@@ -30,8 +40,21 @@
     transform: translateX(-50%);
     width: 60px;
     height: 3px;
-    background: var(--primary-color);
+    background: linear-gradient(90deg, var(--primary-color), #000000);
     border-radius: 2px;
+    animation: titleUnderline 2s ease-in-out infinite alternate;
+}
+
+@keyframes titleUnderline {
+    0% {
+        width: 60px;
+        opacity: 0.7;
+    }
+
+    100% {
+        width: 80px;
+        opacity: 1;
+    }
 }
 
 /* Timeline Layout */
@@ -56,12 +79,18 @@
     width: 16px;
     height: 16px;
     background-color: var(--primary-color);
-    border: 3px solid var(--background-color);
+    border: 3px solid var(--card-background);
     border-radius: 50%;
     z-index: 1;
-    box-shadow: 0 0 10px var(--primary-color);
+    box-shadow: 0 0 10px var(--primary-color), 0 2px 8px var(--shadow-color);
     margin-top: 2rem;
     position: relative;
+    transition: all 0.3s ease;
+}
+
+.timeline-node:hover {
+    transform: scale(1.2);
+    box-shadow: 0 0 15px var(--primary-color), 0 4px 12px var(--shadow-color);
 }
 
 /* Style nodes based on experience type */
@@ -101,6 +130,7 @@
     background: linear-gradient(to bottom, var(--primary-color), transparent);
     margin-top: 1rem;
     position: relative;
+    box-shadow: 0 0 5px var(--primary-color);
 }
 
 .timeline-line::after {
@@ -113,12 +143,24 @@
     height: 6px;
     background-color: var(--primary-color);
     border-radius: 50%;
-    box-shadow: 0 0 5px var(--primary-color);
+    box-shadow: 0 0 5px var(--primary-color), 0 2px 4px var(--shadow-color);
 }
 
 /* The content card */
 .timeline-content {
     padding: 1rem 0;
+    position: relative;
+}
+
+.timeline-content::before {
+    content: '';
+    position: absolute;
+    left: -1rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, transparent, var(--primary-color), transparent);
+    opacity: 0.3;
 }
 
 /* Responsive adjustments */
@@ -126,6 +168,11 @@
     .work-title {
         font-size: 2rem;
         margin-bottom: 2rem;
+    }
+
+    .work-header {
+        padding: 1.5rem 0;
+        margin: 0 0 2rem 0;
     }
 
     .work-timeline-container {
@@ -137,6 +184,10 @@
         width: 12px;
         height: 12px;
         margin-top: 1.5rem;
+    }
+
+    .timeline-content::before {
+        left: -0.75rem;
     }
 }
 

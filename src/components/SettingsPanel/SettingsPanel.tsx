@@ -1,6 +1,13 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes, faPause, faPlay } from "@fortawesome/free-solid-svg-icons";
+import {
+  faTimes,
+  faPause,
+  faPlay,
+  faUndo,
+  faDownload,
+  faUpload,
+} from "@fortawesome/free-solid-svg-icons";
 import { motion, AnimatePresence } from "framer-motion";
 import ThemeToggle from "../ThemeToggle";
 import {
@@ -8,6 +15,13 @@ import {
   DOCK_STIFFNESS_CONFIG,
   MAGNIFICATION_CONFIG,
 } from "./settingsConstants";
+import {
+  resetAllSettings,
+  getAllSettings,
+  setDockSettings,
+  setTheme,
+  setAnimationPaused,
+} from "../../utils/settings";
 import "./SettingsPanel.css";
 
 interface SettingsPanelProps {
@@ -55,6 +69,104 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
     onAnimationToggle(!isAnimationPaused);
   };
 
+  const handleResetToDefaults = () => {
+    if (
+      window.confirm(
+        "Are you sure you want to reset all settings to their default values? This action cannot be undone."
+      )
+    ) {
+      resetAllSettings();
+
+      // Reset all settings to defaults
+      onDockSizeChange(40);
+      onDockStiffnessChange(400);
+      onMagnificationChange(40);
+      onAnimationToggle(false);
+
+      // Note: Theme will be reset on next page reload since it's managed by ThemeContext
+
+      // Show a brief success message
+      alert(
+        "Settings have been reset to defaults. The page will refresh to apply all changes."
+      );
+      window.location.reload();
+    }
+  };
+
+  const handleExportSettings = () => {
+    try {
+      const settings = getAllSettings();
+      const settingsBlob = new Blob([JSON.stringify(settings, null, 2)], {
+        type: "application/json",
+      });
+      const url = URL.createObjectURL(settingsBlob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `workfolio-settings-${
+        new Date().toISOString().split("T")[0]
+      }.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Failed to export settings:", error);
+      alert("Failed to export settings. Please try again.");
+    }
+  };
+
+  const handleImportSettings = () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".json";
+    input.onchange = (event) => {
+      const file = (event.target as HTMLInputElement).files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            const settings = JSON.parse(e.target?.result as string);
+
+            // Validate and apply settings
+            if (
+              settings.dockSize &&
+              settings.dockStiffness &&
+              settings.magnification
+            ) {
+              setDockSettings({
+                dockSize: settings.dockSize,
+                dockStiffness: settings.dockStiffness,
+                magnification: settings.magnification,
+              });
+              onDockSizeChange(settings.dockSize);
+              onDockStiffnessChange(settings.dockStiffness);
+              onMagnificationChange(settings.magnification);
+            }
+
+            if (settings.theme) {
+              setTheme(settings.theme);
+            }
+
+            if (typeof settings.isAnimationPaused === "boolean") {
+              setAnimationPaused(settings.isAnimationPaused);
+              onAnimationToggle(settings.isAnimationPaused);
+            }
+
+            alert(
+              "Settings imported successfully! The page will refresh to apply all changes."
+            );
+            window.location.reload();
+          } catch (error) {
+            console.error("Failed to import settings:", error);
+            alert("Failed to import settings. Please check the file format.");
+          }
+        };
+        reader.readAsText(file);
+      }
+    };
+    input.click();
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -89,30 +201,44 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
               animate={{ opacity: 1 }}
               transition={{ delay: 0.1, duration: 0.2 }}
             >
-              <div className="setting-group">
-                <label className="setting-label">Background Animation</label>
-                <div className="setting-control">
-                  <motion.button
-                    className={`animation-toggle ${
-                      isAnimationPaused ? "paused" : "playing"
-                    }`}
-                    onClick={handleAnimationToggle}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    aria-label={
-                      isAnimationPaused ? "Resume animation" : "Pause animation"
-                    }
-                  >
-                    <FontAwesomeIcon
-                      icon={isAnimationPaused ? faPlay : faPause}
-                    />
-                    <span>{isAnimationPaused ? "Resume" : "Pause"}</span>
-                  </motion.button>
+              <div className="settings-row">
+                <div className="setting-group">
+                  <label className="setting-label">Background Animation</label>
+                  <div className="setting-control">
+                    <motion.button
+                      className={`animation-toggle ${
+                        isAnimationPaused ? "paused" : "playing"
+                      }`}
+                      onClick={handleAnimationToggle}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      aria-label={
+                        isAnimationPaused
+                          ? "Resume animation"
+                          : "Pause animation"
+                      }
+                    >
+                      <FontAwesomeIcon
+                        icon={isAnimationPaused ? faPlay : faPause}
+                      />
+                      <span>{isAnimationPaused ? "Resume" : "Pause"}</span>
+                    </motion.button>
+                  </div>
+                  <div className="setting-description">
+                    {isAnimationPaused
+                      ? "Background animation is currently paused."
+                      : "Background animation is currently running."}
+                  </div>
                 </div>
-                <div className="setting-description">
-                  {isAnimationPaused
-                    ? "Background animation is currently paused."
-                    : "Background animation is currently running."}
+
+                <div className="setting-group">
+                  <label className="setting-label">Theme</label>
+                  <div className="setting-control">
+                    <ThemeToggle />
+                  </div>
+                  <div className="setting-description">
+                    Switch between light and dark themes.
+                  </div>
                 </div>
               </div>
 
@@ -187,12 +313,32 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
               </div>
 
               <div className="setting-group">
-                <label className="setting-label">Theme</label>
+                <label className="setting-label">Backup & Restore</label>
                 <div className="setting-control">
-                  <ThemeToggle />
+                  <motion.button
+                    className="export-button"
+                    onClick={handleExportSettings}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    aria-label="Export settings"
+                  >
+                    <FontAwesomeIcon icon={faDownload} />
+                    <span>Export Settings</span>
+                  </motion.button>
+                  <motion.button
+                    className="import-button"
+                    onClick={handleImportSettings}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    aria-label="Import settings"
+                  >
+                    <FontAwesomeIcon icon={faUpload} />
+                    <span>Import Settings</span>
+                  </motion.button>
                 </div>
                 <div className="setting-description">
-                  Switch between light and dark themes.
+                  Export your current settings to a file or import previously
+                  saved settings.
                 </div>
               </div>
 
@@ -206,19 +352,28 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   Built with React, TypeScript, and Framer Motion.
                 </div>
               </div>
+
+              <div className="setting-group">
+                <label className="setting-label">Reset Settings</label>
+                <div className="setting-control">
+                  <motion.button
+                    className="reset-button"
+                    onClick={handleResetToDefaults}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    aria-label="Reset all settings to defaults"
+                  >
+                    <FontAwesomeIcon icon={faUndo} />
+                    <span>Reset to Defaults</span>
+                  </motion.button>
+                </div>
+                <div className="setting-description">
+                  Reset all settings to their default values. This will refresh
+                  the page.
+                </div>
+              </div>
             </motion.div>
           </motion.div>
-
-          {/* Overlay */}
-          <motion.div
-            className="settings-overlay"
-            onClick={onClose}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            aria-hidden="true"
-          />
         </>
       )}
     </AnimatePresence>

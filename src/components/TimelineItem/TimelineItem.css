@@ -1,10 +1,10 @@
 /* Each item on the timeline */
 .timeline-item {
     position: relative;
-    width: 50%;
-    margin-bottom: 40px;
-    padding: 0 40px;
-    /* Changed from padding to allow for animation */
+    width: 60%;
+    margin-bottom: 50px;
+    padding: 0 50px;
+    /* Increased padding for more breathing room */
 }
 
 /* Position items on the left or right */
@@ -13,7 +13,24 @@
 }
 
 .timeline-item.right {
-    left: 50%;
+    left: 40%;
+}
+
+/* Flip container */
+.timeline-flip-container {
+    perspective: 1000px;
+    cursor: pointer;
+}
+
+.timeline-flip-container.has-image:hover {
+    cursor: pointer;
+}
+
+.timeline-flip-card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
 }
 
 /* The icon on the central line */
@@ -61,12 +78,58 @@
 /* The content box */
 .timeline-content {
     position: relative;
-    padding: 20px;
+    padding: 30px;
     background-color: var(--panel-bg-color);
     border-radius: 8px;
     border: 1px solid var(--border-color);
     box-shadow: 0 4px 15px var(--shadow-color);
     transition: all 0.3s ease;
+    min-height: 200px;
+}
+
+.timeline-front {
+    position: relative;
+}
+
+.timeline-back {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.timeline-back-content {
+    text-align: center;
+    padding: 20px;
+}
+
+.timeline-back-content h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.5rem;
+}
+
+.timeline-back-content p {
+    margin: 0;
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+.timeline-flip-hint {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: var(--primary-color);
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.timeline-flip-container:hover .timeline-flip-hint {
+    opacity: 1;
 }
 
 .timeline-item:hover .timeline-icon-wrapper {
@@ -154,8 +217,9 @@
     .timeline-item.left {
         width: 100%;
         left: 0;
-        padding-left: 60px;
-        padding-right: 15px;
+        padding-left: 70px;
+        padding-right: 20px;
+        margin-bottom: 40px;
     }
 
     .timeline-icon-wrapper,

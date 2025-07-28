@@ -6,12 +6,12 @@
 
 /* Light theme overrides for Projects page */
 [data-theme="light"] {
-    --terminal-primary: #000000;
-    --terminal-text-light: #000000;
-    --terminal-text-muted: #5c6773;
+    --terminal-primary: #007a00;
+    --terminal-text-light: #2c2c2c;
+    --terminal-text-muted: #6a6a6a;
     --terminal-error: #d73a49;
-    --terminal-background: #fafafa;
-    --terminal-header-bg: #e1e4e8;
+    --terminal-background: #ffffff;
+    --terminal-header-bg: #f5f5f5;
 }
 
 /* Accessibility - Visually hidden but screen reader accessible */
@@ -139,8 +139,9 @@
 }
 
 .stat-card {
-    background: transparent;
-    border: none;
+    background: var(--card-background);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
     padding: 1.5rem;
     text-align: center;
     transition: all 0.3s ease;
@@ -152,6 +153,7 @@
     font-size: inherit;
     color: inherit;
     outline: none;
+    box-shadow: 0 2px 8px var(--shadow-color);
 }
 
 .stat-card::before {
@@ -173,14 +175,15 @@
     border-radius: 12px;
     transform: translateY(-2px);
     border-color: var(--terminal-primary, #2AAF2A);
-    background: rgba(0, 255, 0, 0.05);
+    background: var(--primary-color-light);
+    box-shadow: 0 8px 25px var(--shadow-color), 0 0 20px rgba(0, 255, 0, 0.3);
 }
 
 .stat-card.active {
     border-radius: 12px;
-    background: rgba(0, 255, 0, 0.1);
+    background: var(--primary-color-light);
     border-color: var(--terminal-primary, #2AAF2A);
-    box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
+    box-shadow: 0 0 30px rgba(0, 255, 0, 0.5), 0 8px 25px var(--shadow-color);
     transform: translateY(-1px);
 }
 
@@ -227,9 +230,10 @@
 .no-projects {
     text-align: center;
     padding: 4rem 2rem;
-    background: var(--terminal-background, #1a1a1a);
+    background: var(--card-background);
     border-radius: 8px;
-    border: 1px solid var(--terminal-primary, #2AAF2A);
+    border: 2px solid var(--terminal-primary, #2AAF2A);
+    box-shadow: 0 2px 8px var(--shadow-color);
 }
 
 .no-projects h3 {
@@ -278,14 +282,14 @@
 }
 
 .tech-stack-content {
-    background: var(--terminal-background, #1a1a1a);
+    background: var(--card-background);
     border: 2px solid var(--terminal-primary, #2AAF2A);
     border-radius: 8px;
     max-width: 800px;
     width: 90%;
     max-height: 80vh;
     overflow: hidden;
-    box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
+    box-shadow: 0 0 30px rgba(0, 255, 0, 0.5), 0 8px 25px var(--shadow-color);
     cursor: default;
     transition: background 0.3s ease, border-color 0.3s ease;
 }
@@ -308,10 +312,10 @@
 }
 
 .close-tech-stack {
-    background: var(--terminal-background, #1a1a1a);
+    background: var(--card-background);
     color: var(--terminal-primary, #2AAF2A);
-    border: 1px solid var(--terminal-primary, #2AAF2A);
-    border-radius: 4px;
+    border: 2px solid var(--terminal-primary, #2AAF2A);
+    border-radius: 6px;
     padding: 0.5rem 1rem;
     cursor: pointer;
     font-size: 0.9rem;
@@ -319,6 +323,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    box-shadow: 0 2px 4px var(--shadow-color);
 }
 
 .close-tech-stack::after {
@@ -328,8 +333,9 @@
 }
 
 .close-tech-stack:hover {
-    background: rgba(0, 255, 0, 0.1);
-    box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
+    background: var(--primary-color-light);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.4), 0 4px 12px var(--shadow-color);
+    transform: translateY(-1px);
 }
 
 .tech-stack-grid {
@@ -356,20 +362,21 @@
 }
 
 .tech-item {
-    background: rgba(0, 255, 0, 0.05);
-    border: 1px solid rgba(0, 255, 0, 0.3);
-    border-radius: 4px;
+    background: var(--card-background);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
     padding: 0.75rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     transition: all 0.3s ease;
+    box-shadow: 0 2px 4px var(--shadow-color);
 }
 
 .tech-item:hover {
-    background: rgba(0, 255, 0, 0.1);
+    background: var(--primary-color-light);
     border-color: var(--terminal-primary, #2AAF2A);
-    box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.3), 0 4px 12px var(--shadow-color);
     transform: translateY(-1px);
 }
 

@@ -8,6 +8,7 @@ import GlobalScrollProgress from "./GlobalScrollProgress";
 import { PageLoader } from "../common";
 import ErrorBoundary from "../common/ErrorBoundary";
 import { useLayoutContext } from "../../contexts/LayoutContext";
+import { useSettings } from "../../contexts/SettingsContext";
 import "./Layout.css";
 
 const pageVariants = {
@@ -34,6 +35,7 @@ const pageTransition = {
 const Layout = () => {
   const location = useLocation();
   const { mainContentAreaRef } = useLayoutContext();
+  const { isSettingsOpen } = useSettings();
   const [isLoading, setIsLoading] = useState(false);
 
   // Memoize the key to prevent unnecessary re-renders
@@ -58,7 +60,7 @@ const Layout = () => {
       <div className="layout-foreground">
         <GlobalScrollProgress />
         <Dock />
-        <GlobalSectionNavigation />
+        <GlobalSectionNavigation isSettingsOpen={isSettingsOpen} />
 
         <main
           ref={mainContentAreaRef}

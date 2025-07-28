@@ -1,10 +1,17 @@
 import { motion } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLayoutContext } from "../../contexts/LayoutContext";
 import "./GlobalSectionNavigation.css";
 
-const GlobalSectionNavigation = () => {
+interface GlobalSectionNavigationProps {
+  isSettingsOpen: boolean;
+}
+
+const GlobalSectionNavigation = ({
+  isSettingsOpen,
+}: GlobalSectionNavigationProps) => {
   const { sections, activeSection, setActiveSection } = useLayoutContext();
+  const [shiftAmount, setShiftAmount] = useState(0);
 
   // Use a ref to track the active section without causing re-renders
   const activeSectionRef = useRef(activeSection);
@@ -112,6 +119,29 @@ const GlobalSectionNavigation = () => {
     }
   };
 
+  // Handle responsive shift amount for settings panel
+  useEffect(() => {
+    const calculateShift = () => {
+      if (!isSettingsOpen) return 0;
+      if (window.innerWidth > 1200) return -385; // Increased to account for 400px panel + margin
+      if (window.innerWidth > 768) return -250; // Increased for better clearance
+      return 0;
+    };
+
+    // Set initial value
+    const newShiftAmount = calculateShift();
+    setShiftAmount(newShiftAmount);
+
+    // Handle resize events
+    const handleResize = () => {
+      const newShiftAmount = calculateShift();
+      setShiftAmount(newShiftAmount);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [isSettingsOpen]);
+
   // No longer need to check isHomePage here, it's implicit
   if (sections.length === 0) {
     return null;
@@ -119,10 +149,15 @@ const GlobalSectionNavigation = () => {
 
   return (
     <motion.nav
-      className="global-section-navigation"
+      className={`global-section-navigation ${
+        isSettingsOpen ? "settings-open" : ""
+      }`}
       initial={{ opacity: 0, x: 50 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.5, delay: 0.8 }}
+      animate={{
+        opacity: 1,
+        x: shiftAmount,
+      }}
+      transition={{ duration: 0.3, ease: "easeInOut" }}
     >
       <ul className="nav-dots">
         {sections.map((section) => (

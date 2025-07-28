@@ -14,16 +14,13 @@ interface DockState {
   dockSize: number;
   dockStiffness: number;
   magnification: number;
-  isSettingsOpen: boolean;
 }
 
 type DockAction =
-  | { type: "SET_ALL_SETTINGS"; payload: Omit<DockState, "isSettingsOpen"> }
+  | { type: "SET_ALL_SETTINGS"; payload: DockState }
   | { type: "SET_DOCK_SIZE"; payload: number }
   | { type: "SET_STIFFNESS"; payload: number }
-  | { type: "SET_MAGNIFICATION"; payload: number }
-  | { type: "TOGGLE_SETTINGS" }
-  | { type: "CLOSE_SETTINGS" };
+  | { type: "SET_MAGNIFICATION"; payload: number };
 
 // Unified reducer for all dock state
 function dockReducer(state: DockState, action: DockAction): DockState {
@@ -36,10 +33,6 @@ function dockReducer(state: DockState, action: DockAction): DockState {
       return { ...state, dockStiffness: action.payload };
     case "SET_MAGNIFICATION":
       return { ...state, magnification: action.payload };
-    case "TOGGLE_SETTINGS":
-      return { ...state, isSettingsOpen: !state.isSettingsOpen };
-    case "CLOSE_SETTINGS":
-      return { ...state, isSettingsOpen: false };
     default:
       return state;
   }
@@ -54,7 +47,6 @@ export const useDock = () => {
     dockSize: 40,
     dockStiffness: 400,
     magnification: 40,
-    isSettingsOpen: false,
   });
 
   // Load saved settings from localStorage with schema validation
@@ -100,9 +92,7 @@ export const useDock = () => {
   // Streamlined responsive logic with debouncing
   useEffect(() => {
     const calculateShift = () => {
-      if (!state.isSettingsOpen) return 0;
-      if (window.innerWidth > 1200) return -420;
-      if (window.innerWidth > 768) return -200;
+      // This will be handled by the SettingsContext now
       return 0;
     };
 
@@ -125,11 +115,9 @@ export const useDock = () => {
       window.removeEventListener("resize", debouncedHandler);
       clearTimeout(timeoutId);
     };
-  }, [state.isSettingsOpen]); // Now depends on state.isSettingsOpen
+  }, []); // No longer depends on settings state
 
   // Simplified action handlers
-  const toggleSettings = () => dispatch({ type: "TOGGLE_SETTINGS" });
-  const closeSettings = () => dispatch({ type: "CLOSE_SETTINGS" });
   const handleDockSizeChange = (newSize: number) =>
     dispatch({ type: "SET_DOCK_SIZE", payload: newSize });
   const handleDockStiffnessChange = (newStiffness: number) =>
@@ -139,7 +127,6 @@ export const useDock = () => {
 
   return {
     // State
-    isSettingsOpen: state.isSettingsOpen,
     dockSize: state.dockSize,
     dockStiffness: state.dockStiffness,
     magnification: state.magnification,
@@ -147,8 +134,6 @@ export const useDock = () => {
     mouseX,
 
     // Actions
-    toggleSettings,
-    closeSettings,
     handleDockSizeChange,
     handleDockStiffnessChange,
     handleMagnificationChange,

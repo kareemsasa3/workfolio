@@ -1,11 +1,17 @@
-import React, { useRef, useLayoutEffect, useEffect, useState } from "react";
-import { motion, useSpring, MotionValue } from "framer-motion";
+import React, { useRef, useLayoutEffect, useState } from "react";
+import {
+  motion,
+  useSpring,
+  useTransform,
+  MotionValue,
+  AnimatePresence,
+} from "framer-motion";
 import { NavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import "./Dock.css";
 
-const MAGNIFICATION_RANGE = 150;
+const MAGNIFICATION_RANGE = 100; // How far from the center the magnification extends
 
 interface DockIconProps {
   path: string;
@@ -13,8 +19,8 @@ interface DockIconProps {
   label: string;
   mouseX: MotionValue<number | null>;
   stiffness: number;
-  magnification: number; // percentage (20-100)
-  baseSize?: number; // Add base size prop
+  magnification: number; // percentage (0-100)
+  baseSize: number;
 }
 
 const DockIcon: React.FC<DockIconProps> = ({
@@ -24,128 +30,77 @@ const DockIcon: React.FC<DockIconProps> = ({
   mouseX,
   stiffness,
   magnification,
-  baseSize = 40,
+  baseSize,
 }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const iconRef = useRef<HTMLDivElement>(null);
-  const [showTooltip, setShowTooltip] = useState(false);
-  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+  const ref = useRef<HTMLAnchorElement>(null);
 
-  // Ref to store the icon's static, viewport-relative center position
-  const position = useRef({ center: 0 });
+  // State to hold the measured position of the icon's center
+  const [iconCenter, setIconCenter] = useState<number | null>(null);
 
-  // Calculate the maximum size based on magnification percentage
-  const maxSize = baseSize + baseSize * (magnification / 100);
+  // Tooltip visibility state
+  const [isHovered, setIsHovered] = useState(false);
 
-  const size = useSpring(baseSize, {
-    stiffness: stiffness,
-    damping: 15,
-    mass: 0.1,
-  });
-
-  // Derive font size from the size motion value
-  const fontSize = useSpring(baseSize * 0.6, {
-    stiffness: stiffness,
-    damping: 15,
-    mass: 0.1,
-  });
-
-  // Measure the element's viewport position with proper timing
+  // Re-measure the icon's position whenever its size or the window layout changes
   useLayoutEffect(() => {
-    const iconEl = iconRef.current;
-    if (!iconEl) return;
-
-    const measurePosition = () => {
-      const rect = iconEl.getBoundingClientRect();
-      position.current.center = rect.left + rect.width / 2;
-    };
-
-    // Use requestAnimationFrame to ensure DOM is ready
-    const frameId = requestAnimationFrame(() => {
-      measurePosition();
-
-      // Also measure after the dock animation completes (500ms)
-      setTimeout(measurePosition, 500);
-    });
-
-    // Listen for window resize to update positions
-    const handleResize = () => {
-      requestAnimationFrame(measurePosition);
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      cancelAnimationFrame(frameId);
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []); // Run only once
-
-  // The animation logic now uses perfectly matched coordinates
-  useEffect(() => {
-    const unsubscribe = mouseX.on("change", (latestMouseX) => {
-      if (latestMouseX === null) {
-        size.set(baseSize);
-        fontSize.set(baseSize * 0.6);
-        return;
+    const measure = () => {
+      if (ref.current) {
+        const rect = ref.current.getBoundingClientRect();
+        setIconCenter(rect.left + rect.width / 2);
       }
+    };
+    measure(); // Measure on mount and on deps change
 
-      const distance = Math.abs(position.current.center - latestMouseX);
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [baseSize]); // Re-measure if baseSize changes
 
-      if (distance > MAGNIFICATION_RANGE) {
-        size.set(baseSize);
-        fontSize.set(baseSize * 0.6);
-        return;
-      }
+  // Calculate distance from mouse to icon center using a transform
+  const distance = useTransform(mouseX, (val) => {
+    if (val === null || iconCenter === null) {
+      return Infinity; // No magnification if mouse is not over dock or position not measured
+    }
+    return Math.abs(val - iconCenter);
+  });
 
-      const scaleFactor = maxSize - baseSize;
-      const normalizedDistance = distance / MAGNIFICATION_RANGE;
-      const newSize =
-        (scaleFactor * (Math.cos(normalizedDistance * Math.PI) + 1)) / 2 +
-        baseSize;
+  // Calculate the new size based on the distance.
+  // We use a cosine wave for a smooth falloff.
+  const size = useTransform(
+    distance,
+    [0, MAGNIFICATION_RANGE],
+    [baseSize * (1 + magnification / 100), baseSize]
+  );
 
-      size.set(newSize);
-      fontSize.set(newSize * 0.6);
-    });
+  // Use a spring to make the size animation smooth
+  const sizeSpring = useSpring(size, {
+    stiffness,
+    damping: 15,
+    mass: 0.1,
+  });
 
-    return () => unsubscribe();
-  }, [mouseX, size, maxSize, baseSize]);
+  // Derive font size from the animated size for scalability
+  const fontSizeSpring = useTransform(sizeSpring, (s) => s * 0.6);
 
-  // Update size when baseSize changes
-  useEffect(() => {
-    size.set(baseSize);
-    fontSize.set(baseSize * 0.6);
-  }, [baseSize, size, fontSize]);
-
-  // Handle tooltip positioning
-  const handleMouseEnter = (e: React.MouseEvent) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    setTooltipPosition({
-      x: rect.left + rect.width / 2,
-      y: rect.top - 10,
-    });
-    setShowTooltip(true);
-  };
-
-  const handleMouseLeave = () => {
-    setShowTooltip(false);
-  };
+  // Tooltip position
+  const tooltipX = iconCenter ?? 0;
+  const tooltipY = ref.current
+    ? ref.current.getBoundingClientRect().top - 10
+    : 0;
 
   return (
-    <div ref={containerRef} className="dock-icon-container">
+    <div className="dock-icon-container">
       <NavLink
+        ref={ref}
         to={path}
         className="dock-nav-link"
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
         <motion.div
-          ref={iconRef}
           className="dock-icon"
           style={{
-            width: size,
-            height: size,
-            fontSize: fontSize,
+            width: sizeSpring,
+            height: sizeSpring,
+            fontSize: fontSizeSpring,
           }}
         >
           <FontAwesomeIcon icon={icon} />
@@ -153,20 +108,23 @@ const DockIcon: React.FC<DockIconProps> = ({
       </NavLink>
 
       {/* Tooltip */}
-      {showTooltip && (
-        <motion.div
-          className="dock-tooltip"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 10 }}
-          style={{
-            left: tooltipPosition.x,
-            top: tooltipPosition.y,
-          }}
-        >
-          {label}
-        </motion.div>
-      )}
+      <AnimatePresence>
+        {isHovered && (
+          <motion.div
+            className="dock-tooltip"
+            initial={{ opacity: 0, y: 10, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.9 }}
+            transition={{ duration: 0.15, ease: "easeOut" }}
+            style={{
+              left: tooltipX,
+              top: tooltipY,
+            }}
+          >
+            {label}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

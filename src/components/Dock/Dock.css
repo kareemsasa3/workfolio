@@ -43,7 +43,8 @@
 
     will-change: transform;
     /* Performance optimization */
-    z-index: 9999;
+    z-index: 10001;
+    /* Higher than settings overlay (9999) and panel (10000) */
 
     /* Terminal-inspired styling */
     font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
@@ -51,8 +52,13 @@
     /* Ensure dock stays within viewport bounds */
     transform-origin: bottom right;
 
-    /* Prevent any overflow issues */
+    /* Allow icons to overflow for magnification effect */
     overflow: visible;
+
+    /* Prevent container from growing when icons magnify */
+    min-height: calc(var(--dock-icon-size) + 16px);
+    /* Base icon size + padding */
+    max-height: calc(var(--dock-icon-size) + 16px);
 }
 
 /* Dock Tooltip Styles */
@@ -65,7 +71,8 @@
     font-size: 0.875rem;
     font-weight: 500;
     white-space: nowrap;
-    z-index: 1000;
+    z-index: 10002;
+    /* Higher than dock container */
     pointer-events: none;
     border: 1px solid var(--border-color);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -86,6 +93,14 @@
 /* Ensure tooltip doesn't interfere with dock interactions */
 .dock-icon-container {
     position: relative;
+    /* Allow individual icons to overflow their containers */
+    overflow: visible;
+    /* Center the icon within its container */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Set a fixed height to prevent container growth */
+    height: var(--dock-icon-size);
 }
 
 .dock-nav-link {
@@ -94,6 +109,8 @@
     transition: color 0.2s ease-in-out;
     text-decoration: none;
     pointer-events: auto;
+    /* Allow the link to overflow for magnification */
+    overflow: visible;
 }
 
 .dock-nav-link.active {
@@ -115,6 +132,9 @@
     user-select: none;
     transition: border-color 0.2s ease-in-out;
     /* Let Framer Motion handle width and height */
+    /* Ensure icons can overflow their containers for magnification */
+    position: relative;
+    z-index: 1;
 }
 
 .dock-icon:hover,
@@ -147,6 +167,10 @@
     justify-content: center;
     align-items: center;
     position: relative;
+    /* Allow settings button to overflow for consistency */
+    overflow: visible;
+    /* Set a fixed height to prevent container growth */
+    height: var(--dock-icon-size);
 }
 
 .dock-settings-button .dock-icon {
@@ -162,6 +186,9 @@
     border: 1px solid transparent;
     border-radius: 6px;
     transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+    /* Ensure settings icon can overflow for consistency */
+    position: relative;
+    z-index: 1;
 }
 
 .dock-settings-button:hover .dock-icon {
@@ -192,6 +219,9 @@
         right: 10px;
         gap: 8px;
         padding: 6px 8px;
+        /* Maintain fixed height on mobile */
+        min-height: calc(var(--dock-icon-size) + 12px);
+        max-height: calc(var(--dock-icon-size) + 12px);
     }
 }
 
