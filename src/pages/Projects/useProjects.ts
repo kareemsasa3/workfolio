@@ -1,4 +1,4 @@
-import { useMemo, useReducer, useCallback, useEffect } from "react";
+import { useMemo, useReducer, useCallback } from "react";
 import {
   projectsData,
   complexityOrder,
@@ -16,7 +16,6 @@ interface ProjectsState {
   complexity: string;
   status: string;
   sortBy: SortByType;
-  showTechStack: boolean;
 }
 
 // Action types for useReducer
@@ -29,7 +28,6 @@ type ProjectsAction =
       };
     }
   | { type: "SET_SORT"; payload: SortByType }
-  | { type: "TOGGLE_TECH_STACK" }
   | { type: "RESET_FILTERS" }
   | {
       type: "APPLY_QUICK_FILTER";
@@ -50,7 +48,6 @@ const initialFilterState = {
 const initialState: ProjectsState = {
   ...initialFilterState,
   sortBy: "date",
-  showTechStack: false,
 };
 
 // Sort options constant to avoid repetition
@@ -71,8 +68,6 @@ function projectsReducer(
       return { ...state, [action.payload.filterName]: action.payload.value };
     case "SET_SORT":
       return { ...state, sortBy: action.payload };
-    case "TOGGLE_TECH_STACK":
-      return { ...state, showTechStack: !state.showTechStack };
     case "RESET_FILTERS":
       return { ...state, ...initialFilterState };
     case "APPLY_QUICK_FILTER":
@@ -91,7 +86,7 @@ function projectsReducer(
 
 export function useProjects() {
   const [state, dispatch] = useReducer(projectsReducer, initialState);
-  const { category, complexity, status, sortBy, showTechStack } = state;
+  const { category, complexity, status, sortBy } = state;
 
   // Get unique categories, complexities, and statuses
   const categories = useMemo(() => {
@@ -196,28 +191,6 @@ export function useProjects() {
     });
   }, []);
 
-  const handleShowTechStack = useCallback(() => {
-    dispatch({ type: "TOGGLE_TECH_STACK" });
-  }, []);
-
-  // Handle Escape key for modal accessibility
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        handleShowTechStack();
-      }
-    };
-
-    if (showTechStack) {
-      document.addEventListener("keydown", handleKeyDown);
-    }
-
-    // Cleanup function to remove the event listener
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [showTechStack, handleShowTechStack]);
-
   // Perfecting the accessibility experience with more descriptive announcements
   const projectCount = filteredAndSortedProjects.length;
   const projectsFoundMessage =
@@ -226,33 +199,36 @@ export function useProjects() {
       : "No projects found matching your criteria.";
 
   return {
-    // State
-    category,
-    complexity,
-    status,
-    sortBy,
-    showTechStack,
+    // Grouped state for better organization
+    state: { category, complexity, status, sortBy },
 
-    // Derived data
-    filteredAndSortedProjects,
-    categories,
-    complexities,
-    statuses,
-    allTechnologies,
-    expertProjectCount,
-    liveProjectCount,
-    techProjectCounts,
+    // Grouped data for derived values
+    data: {
+      filteredAndSortedProjects,
+      categories,
+      complexities,
+      statuses,
+      allTechnologies,
+    },
+
+    // Grouped statistics
+    stats: {
+      expertProjectCount,
+      liveProjectCount,
+      techProjectCounts,
+    },
+
+    // Grouped event handlers
+    handlers: {
+      handleFilterChange,
+      handleSortChange,
+      handleShowAllProjects,
+      handleShowExpertProjects,
+      handleShowLiveProjects,
+    },
+
+    // Accessibility and constants
     projectsFoundMessage,
-
-    // Constants
     SORT_OPTIONS,
-
-    // Event handlers
-    handleFilterChange,
-    handleSortChange,
-    handleShowAllProjects,
-    handleShowExpertProjects,
-    handleShowLiveProjects,
-    handleShowTechStack,
   };
 }

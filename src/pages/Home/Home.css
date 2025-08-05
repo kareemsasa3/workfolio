@@ -12,6 +12,9 @@
   font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
   /* Ensure smooth scrolling for the entire container */
   scroll-behavior: smooth;
+  /* Container queries for future-proofing */
+  container-type: inline-size;
+  container-name: home;
 }
 
 /* Override page-content margin for home page */
@@ -101,6 +104,8 @@
   overflow: hidden;
   transform: translateZ(0);
   backface-visibility: hidden;
+  /* Performance optimization for animations */
+  will-change: transform, box-shadow;
 }
 
 .interactive-card::before {
@@ -136,12 +141,25 @@
 
 .featured-projects-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-columns: 1fr;
   gap: 2rem;
   margin: 2rem 0;
   width: 100%;
   max-width: 1200px;
   padding: 0 2rem;
+}
+
+/* Container queries for responsive grid */
+@container home (min-width: 700px) {
+  .featured-projects-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@container home (min-width: 1100px) {
+  .featured-projects-grid {
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  }
 }
 
 .featured-project-card {
@@ -233,7 +251,9 @@
   font-size: 0.8rem;
   font-weight: 500;
   border: 1px solid var(--primary-color-medium);
-  transition: all 0.3s ease;
+  transition: background-color 0.3s ease,
+    color 0.3s ease,
+    transform 0.3s ease;
 }
 
 .tech-tag:hover {
@@ -264,23 +284,23 @@
   position: absolute;
   bottom: -10px;
   left: 50%;
-  transform: translateX(-50%);
-  width: 60px;
+  width: 80px;
   height: 3px;
   background: linear-gradient(90deg, var(--primary-color), #000000);
   border-radius: 2px;
-  /* Add animation */
-  animation: titleUnderline 2s ease-in-out infinite alternate;
+  transform-origin: center;
+  /* More performant animation using transform instead of width */
+  animation: titleUnderlineScale 2s ease-in-out infinite alternate;
 }
 
-@keyframes titleUnderline {
-  0% {
-    width: 60px;
+@keyframes titleUnderlineScale {
+  from {
+    transform: translateX(-50%) scaleX(0.75);
     opacity: 0.7;
   }
 
-  100% {
-    width: 80px;
+  to {
+    transform: translateX(-50%) scaleX(1);
     opacity: 1;
   }
 }
@@ -290,12 +310,25 @@
 
 .skills-categories {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: 1fr;
   gap: 2rem;
   margin-top: 2rem;
   width: 100%;
   max-width: 1200px;
   padding: 0 2rem;
+}
+
+/* Container queries for skills grid */
+@container home (min-width: 700px) {
+  .skills-categories {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@container home (min-width: 1100px) {
+  .skills-categories {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
 }
 
 .skill-category {
@@ -333,11 +366,24 @@
 
 .about-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: 1fr;
   gap: 2rem;
   list-style: none;
   padding: 0;
   margin: 2rem 0 0 0;
+}
+
+/* Container queries for about grid */
+@container home (min-width: 700px) {
+  .about-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@container home (min-width: 1100px) {
+  .about-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
 }
 
 .about-card {
@@ -353,6 +399,8 @@
   text-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
   /* Add floating animation */
   animation: float 3s ease-in-out infinite;
+  /* Performance optimization */
+  will-change: transform;
 }
 
 @keyframes float {
@@ -376,6 +424,61 @@
   color: var(--text-secondary);
   line-height: 1.6;
   margin: 0;
+}
+
+/* Social Links Section */
+.social-links-section {}
+
+.social-content {
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 2rem;
+}
+
+.social-links-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0 0 0;
+}
+
+.social-link {
+  /* Uses shared .interactive-card styles */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem 1.5rem;
+  text-decoration: none;
+  color: var(--text-color);
+  text-align: center;
+  transition: transform 0.3s ease,
+    box-shadow 0.3s ease,
+    border-color 0.3s ease,
+    background-color 0.3s ease;
+}
+
+.social-icon {
+  font-size: 2.5rem;
+  display: block;
+  text-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
+  /* Add floating animation */
+  animation: float 3s ease-in-out infinite;
+  /* Performance optimization */
+  will-change: transform;
+}
+
+.social-name {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-color);
+  transition: color 0.3s ease;
+}
+
+.social-link:hover .social-name {
+  color: var(--primary-color);
+  text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
 }
 
 /* CTA Section */
@@ -418,7 +521,11 @@
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease,
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -428,6 +535,8 @@
   overflow: hidden;
   transform: translateZ(0);
   backface-visibility: hidden;
+  /* Performance optimization */
+  will-change: transform, box-shadow;
 }
 
 .btn::before {
@@ -446,7 +555,7 @@
 }
 
 .btn-primary {
-  background: var(--primary-color);
+  background: var(--primary-color-dark);
   color: white;
 }
 
@@ -506,8 +615,11 @@
   font-size: 1.5rem;
   cursor: pointer;
   box-shadow: 0 4px 20px rgba(175, 42, 42, 0.4);
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease,
+    box-shadow 0.3s ease;
   z-index: 1000;
+  /* Performance optimization */
+  will-change: transform;
 }
 
 .floating-action-btn:hover {
@@ -584,10 +696,6 @@
     font-size: 3rem;
   }
 
-  .featured-projects-grid {
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  }
-
   /* Adjust navigation position for medium screens */
   .section-navigation {
     right: 1.5rem;
@@ -610,6 +718,7 @@
   .featured-projects-section,
   .skills-section,
   .about-section,
+  .social-links-section,
   .cta-section {
     min-height: 70vh;
     min-height: 70svh;
@@ -636,20 +745,34 @@
   }
 
   .featured-projects-grid {
-    grid-template-columns: 1fr;
     gap: 1.5rem;
     padding: 0 1rem;
   }
 
   .skills-categories {
-    grid-template-columns: 1fr;
     gap: 1.5rem;
     padding: 0 1rem;
   }
 
   .about-grid {
-    grid-template-columns: 1fr;
     gap: 1.5rem;
+  }
+
+  .social-links-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+  }
+
+  .social-link {
+    padding: 1.5rem 1rem;
+  }
+
+  .social-icon {
+    font-size: 2rem;
+  }
+
+  .social-name {
+    font-size: 1rem;
   }
 
   .cta-content h2 {
@@ -675,6 +798,7 @@
   .featured-projects-section,
   .skills-section,
   .about-section,
+  .social-links-section,
   .cta-section {
     min-height: 60vh;
     min-height: 60svh;

@@ -1,8 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./TerminalDropdown.css";
 
+// Support both string arrays and {label, value} objects
+type OptionType = string | { label: string; value: string };
+
 interface TerminalDropdownProps {
-  options: string[];
+  options: readonly OptionType[] | OptionType[];
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
@@ -10,6 +13,22 @@ interface TerminalDropdownProps {
   disabled?: boolean;
   className?: string;
 }
+
+// Helper functions to work with both option types
+const getOptionLabel = (option: OptionType): string => {
+  return typeof option === "string" ? option : option.label;
+};
+
+const getOptionValue = (option: OptionType): string => {
+  return typeof option === "string" ? option : option.value;
+};
+
+const findOptionByValue = (
+  options: OptionType[],
+  value: string
+): OptionType | undefined => {
+  return options.find((option) => getOptionValue(option) === value);
+};
 
 const TerminalDropdown: React.FC<TerminalDropdownProps> = ({
   options,
@@ -61,7 +80,7 @@ const TerminalDropdown: React.FC<TerminalDropdownProps> = ({
         case "Enter":
           event.preventDefault();
           if (highlightedIndex >= 0 && highlightedIndex < options.length) {
-            onChange(options[highlightedIndex]);
+            onChange(getOptionValue(options[highlightedIndex]));
             setIsOpen(false);
             setHighlightedIndex(-1);
           }
@@ -85,14 +104,17 @@ const TerminalDropdown: React.FC<TerminalDropdownProps> = ({
     }
   };
 
-  const handleOptionClick = (option: string) => {
-    onChange(option);
+  const handleOptionClick = (option: OptionType) => {
+    onChange(getOptionValue(option));
     setIsOpen(false);
     setHighlightedIndex(-1);
   };
 
-  const selectedOption =
-    options.find((option) => option === value) || placeholder;
+  // Fix: Ensure options is mutable for findOptionByValue
+  const selectedOption = findOptionByValue([...options], value);
+  const displayValue = selectedOption
+    ? getOptionLabel(selectedOption)
+    : placeholder;
 
   return (
     <div className={`terminal-dropdown ${className}`} ref={dropdownRef}>
@@ -114,7 +136,7 @@ const TerminalDropdown: React.FC<TerminalDropdownProps> = ({
         >
           <span className="terminal-dropdown-value">
             <span className="terminal-prompt">{isOpen ? "∨" : ">"}</span>{" "}
-            {selectedOption}
+            {displayValue}
           </span>
           <span className="terminal-dropdown-arrow">{isOpen ? "▲" : "▼"}</span>
         </button>
@@ -127,18 +149,20 @@ const TerminalDropdown: React.FC<TerminalDropdownProps> = ({
             <div className="terminal-dropdown-options">
               {options.map((option, index) => (
                 <button
-                  key={option}
+                  key={getOptionValue(option)}
                   type="button"
                   className={`terminal-dropdown-option ${
                     index === highlightedIndex ? "highlighted" : ""
-                  } ${option === value ? "selected" : ""}`}
+                  } ${getOptionValue(option) === value ? "selected" : ""}`}
                   onClick={() => handleOptionClick(option)}
                   onMouseEnter={() => setHighlightedIndex(index)}
                 >
                   <span className="terminal-option-prefix">
-                    {option === value ? "●" : "○"}
+                    {getOptionValue(option) === value ? "●" : "○"}
                   </span>
-                  <span className="terminal-option-text">{option}</span>
+                  <span className="terminal-option-text">
+                    {getOptionLabel(option)}
+                  </span>
                 </button>
               ))}
             </div>

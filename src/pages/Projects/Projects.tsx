@@ -1,33 +1,37 @@
 import FocusTrap from "focus-trap-react";
+import { useState, useEffect } from "react";
 import "./Projects.css";
 import ProjectsList from "../../components/ProjectsList";
 import TerminalDropdown from "../../components/TerminalDropdown";
 import { useProjects } from "./useProjects";
 
+// Import the type for proper type safety
+type SortByType = "date" | "complexity" | "name" | "category";
+
 const Projects = () => {
-  const {
-    category,
-    complexity,
-    status,
-    sortBy,
-    showTechStack,
-    filteredAndSortedProjects,
-    categories,
-    complexities,
-    statuses,
-    allTechnologies,
-    expertProjectCount,
-    liveProjectCount,
-    techProjectCounts,
-    projectsFoundMessage,
-    SORT_OPTIONS,
-    handleFilterChange,
-    handleSortChange,
-    handleShowAllProjects,
-    handleShowExpertProjects,
-    handleShowLiveProjects,
-    handleShowTechStack,
-  } = useProjects();
+  const { state, data, stats, handlers, projectsFoundMessage, SORT_OPTIONS } =
+    useProjects();
+
+  // Local UI state for modal management
+  const [isTechStackVisible, setIsTechStackVisible] = useState(false);
+
+  // Handle Escape key for modal accessibility
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsTechStackVisible(false);
+      }
+    };
+
+    if (isTechStackVisible) {
+      document.addEventListener("keydown", handleKeyDown);
+    }
+
+    // Cleanup function to remove the event listener
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isTechStackVisible]);
 
   return (
     <div className="page-content">
@@ -47,9 +51,11 @@ const Projects = () => {
           <div className="filters-section">
             <div className="filter-group">
               <TerminalDropdown
-                options={categories}
-                value={category}
-                onChange={(value) => handleFilterChange("category", value)}
+                options={data.categories}
+                value={state.category}
+                onChange={(value) =>
+                  handlers.handleFilterChange("category", value)
+                }
                 label="filter --category:"
                 placeholder="Select category"
               />
@@ -57,9 +63,11 @@ const Projects = () => {
 
             <div className="filter-group">
               <TerminalDropdown
-                options={complexities}
-                value={complexity}
-                onChange={(value) => handleFilterChange("complexity", value)}
+                options={data.complexities}
+                value={state.complexity}
+                onChange={(value) =>
+                  handlers.handleFilterChange("complexity", value)
+                }
                 label="filter --complexity:"
                 placeholder="Select complexity"
               />
@@ -67,9 +75,11 @@ const Projects = () => {
 
             <div className="filter-group">
               <TerminalDropdown
-                options={statuses}
-                value={status}
-                onChange={(value) => handleFilterChange("status", value)}
+                options={data.statuses}
+                value={state.status}
+                onChange={(value) =>
+                  handlers.handleFilterChange("status", value)
+                }
                 label="filter --status:"
                 placeholder="Select status"
               />
@@ -78,19 +88,11 @@ const Projects = () => {
 
           <div className="sort-section">
             <TerminalDropdown
-              options={SORT_OPTIONS.map((option) => option.label)}
-              value={
-                SORT_OPTIONS.find((option) => option.value === sortBy)?.label ||
-                SORT_OPTIONS[0].label
+              options={SORT_OPTIONS}
+              value={state.sortBy}
+              onChange={(value) =>
+                handlers.handleSortChange(value as SortByType)
               }
-              onChange={(label) => {
-                const selectedValue = SORT_OPTIONS.find(
-                  (opt) => opt.label === label
-                )?.value;
-                if (selectedValue) {
-                  handleSortChange(selectedValue);
-                }
-              }}
               label="sort --by:"
               placeholder="Select sort option"
             />
@@ -100,53 +102,51 @@ const Projects = () => {
         {/* Project Statistics - Clickable Filters */}
         <div className="projects-stats">
           <button
-            className={`stat-card ${
-              category === "All" && complexity === "All" && status === "All"
-                ? "active"
-                : ""
-            }`}
-            onClick={handleShowAllProjects}
+            className="stat-card"
+            onClick={handlers.handleShowAllProjects}
             aria-pressed={
-              category === "All" && complexity === "All" && status === "All"
+              state.category === "All" &&
+              state.complexity === "All" &&
+              state.status === "All"
             }
             title="Click to show all projects"
           >
             <span className="stat-number">
-              {filteredAndSortedProjects.length}
+              {data.filteredAndSortedProjects.length}
             </span>
             <span className="stat-label">
               <span className="terminal-prompt">$</span> wc -l projects
             </span>
           </button>
           <button
-            className={`stat-card ${complexity === "Expert" ? "active" : ""}`}
-            onClick={handleShowExpertProjects}
-            aria-pressed={complexity === "Expert"}
+            className="stat-card"
+            onClick={handlers.handleShowExpertProjects}
+            aria-pressed={state.complexity === "Expert"}
             title="Click to show Expert level projects"
           >
-            <span className="stat-number">{expertProjectCount}</span>
+            <span className="stat-number">{stats.expertProjectCount}</span>
             <span className="stat-label">
               <span className="terminal-prompt">$</span> grep "Expert" projects
             </span>
           </button>
           <button
-            className={`stat-card ${status === "Live" ? "active" : ""}`}
-            onClick={handleShowLiveProjects}
-            aria-pressed={status === "Live"}
+            className="stat-card"
+            onClick={handlers.handleShowLiveProjects}
+            aria-pressed={state.status === "Live"}
             title="Click to show Live projects"
           >
-            <span className="stat-number">{liveProjectCount}</span>
+            <span className="stat-number">{stats.liveProjectCount}</span>
             <span className="stat-label">
               <span className="terminal-prompt">$</span> grep "Live" projects
             </span>
           </button>
           <button
-            className={`stat-card ${showTechStack ? "active" : ""}`}
-            onClick={handleShowTechStack}
-            aria-pressed={showTechStack}
+            className="stat-card"
+            onClick={() => setIsTechStackVisible(true)}
+            aria-pressed={isTechStackVisible}
             title="Click to view all technologies"
           >
-            <span className="stat-number">{allTechnologies.length}</span>
+            <span className="stat-number">{data.allTechnologies.length}</span>
             <span className="stat-label">
               <span className="terminal-prompt">$</span> uniq tech-stack
             </span>
@@ -154,9 +154,12 @@ const Projects = () => {
         </div>
 
         {/* Tech Stack Modal */}
-        {showTechStack && (
+        {isTechStackVisible && (
           <FocusTrap>
-            <div className="tech-stack-modal" onClick={handleShowTechStack}>
+            <div
+              className="tech-stack-modal"
+              onClick={() => setIsTechStackVisible(false)}
+            >
               <div
                 className="tech-stack-content"
                 onClick={(e) => e.stopPropagation()}
@@ -171,18 +174,18 @@ const Projects = () => {
                   </h3>
                   <button
                     className="close-tech-stack"
-                    onClick={handleShowTechStack}
+                    onClick={() => setIsTechStackVisible(false)}
                     aria-label="Close technology list"
                   >
                     <span className="terminal-prompt">$</span> exit
                   </button>
                 </div>
                 <div className="tech-stack-grid">
-                  {allTechnologies.map((tech) => (
+                  {data.allTechnologies.map((tech) => (
                     <div key={tech} className="tech-item">
                       <span className="tech-name">{tech}</span>
                       <span className="tech-count">
-                        ({techProjectCounts.get(tech) || 0} projects)
+                        ({stats.techProjectCounts.get(tech) || 0} projects)
                       </span>
                     </div>
                   ))}
@@ -203,13 +206,13 @@ const Projects = () => {
             {projectsFoundMessage}
           </div>
 
-          {filteredAndSortedProjects.length > 0 ? (
+          {data.filteredAndSortedProjects.length > 0 ? (
             <div className="terminal-output">
               <div className="terminal-line">
                 <span className="terminal-prompt">$</span> cat projects/*.json |
                 jq '.title'
               </div>
-              <ProjectsList projects={filteredAndSortedProjects} />
+              <ProjectsList projects={data.filteredAndSortedProjects} />
             </div>
           ) : (
             <div className="no-projects">

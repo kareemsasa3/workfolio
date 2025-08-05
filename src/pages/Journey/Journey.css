@@ -38,6 +38,8 @@
 .timeline-container {
     position: relative;
     width: 100%;
+    /* Performance optimization: hint to browser about potential position changes */
+    will-change: transform;
 }
 
 /* The central line of the timeline */
@@ -65,8 +67,7 @@
 /* --- FIX for Issue #1: Era Header Styling --- */
 .timeline-era-header {
     position: sticky;
-    top: 80px;
-    /* Adjust based on your header height */
+    top: var(--header-height);
     display: inline-block;
     left: 50%;
     transform: translateX(-50%);
@@ -105,5 +106,7 @@
         transform: translateX(0);
         width: calc(100% - 40px);
         margin-left: 40px;
+        /* Use a smaller top offset for mobile to account for smaller header */
+        top: calc(var(--header-height) - 20px);
     }
 }

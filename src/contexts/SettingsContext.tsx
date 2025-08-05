@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+} from "react";
 
 interface SettingsContextType {
   isSettingsOpen: boolean;
@@ -27,8 +33,8 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({
 }) => {
   // Initialize state from localStorage if available
   const [isSettingsOpen, setIsSettingsOpen] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('workfolio-settings-open');
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("workfolio-settings-open");
       return saved ? JSON.parse(saved) : false;
     }
     return false;
@@ -36,12 +42,15 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({
 
   // Save to localStorage whenever the state changes
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('workfolio-settings-open', JSON.stringify(isSettingsOpen));
+    if (typeof window !== "undefined") {
+      localStorage.setItem(
+        "workfolio-settings-open",
+        JSON.stringify(isSettingsOpen)
+      );
     }
   }, [isSettingsOpen]);
 
-  const toggleSettings = () => setIsSettingsOpen((prev) => !prev);
+  const toggleSettings = () => setIsSettingsOpen((prev: boolean) => !prev);
   const closeSettings = () => setIsSettingsOpen(false);
 
   return (

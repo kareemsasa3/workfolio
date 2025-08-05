@@ -14,12 +14,9 @@ const Home = lazyWithMinTime(() => import("../pages/Home"));
 const Projects = lazyWithMinTime(() => import("../pages/Projects"));
 const Games = lazyWithMinTime(() => import("../pages/Games"));
 const SnakeGame = lazyWithMinTime(() => import("../pages/SnakeGame"));
-const Info = lazyWithMinTime(() => import("../pages/Info"));
 const Work = lazyWithMinTime(() => import("../pages/Work"));
 const Journey = lazyWithMinTime(() => import("../pages/Journey"));
-const Certifications = lazyWithMinTime(() => import("../pages/Certifications"));
 const Resume = lazyWithMinTime(() => import("../pages/Resume"));
-const Contact = lazyWithMinTime(() => import("../pages/Contact"));
 const AiConversations = lazyWithMinTime(
   () => import("../pages/AiConversations")
 );
@@ -32,11 +29,8 @@ export const mainRoutes: AppRoute[] = [
   { path: "games/snake", element: React.createElement(SnakeGame) },
   { path: "work", element: React.createElement(Work) },
   { path: "journey", element: React.createElement(Journey) },
-  { path: "certifications", element: React.createElement(Certifications) },
   { path: "resume", element: React.createElement(Resume) },
-  { path: "contact", element: React.createElement(Contact) },
   { path: "ai-conversations", element: React.createElement(AiConversations) },
-  { path: "info", element: React.createElement(Info) },
   {
     path: "terminal",
     element: React.createElement(Terminal, { isIntro: false }),

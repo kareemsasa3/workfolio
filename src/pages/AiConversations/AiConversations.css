@@ -1,13 +1,13 @@
 /* AI Conversations - Terminal Style */
 :root {
-    --terminal-primary: #00ff00;
+    --terminal-primary: #4CAF50;
     --terminal-background: #1a1a1a;
     --terminal-header-bg: #2a2a2a;
     --terminal-error: #ff6b6b;
     --terminal-success: #4ecdc4;
     --terminal-text-light: #ffffff;
     --terminal-text-muted: #666;
-    --terminal-border: #00ff00;
+    --terminal-border: #4CAF50;
 }
 
 .ai-conversations {

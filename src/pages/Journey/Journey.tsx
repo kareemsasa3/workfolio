@@ -25,6 +25,12 @@ const Journey = () => {
   const eras = useMemo(() => groupEventsByEra(timelineData), []);
   const eraNames = useMemo(() => Object.keys(eras), [eras]);
 
+  // Create a flat list of all events with their global index.
+  // Memoize this as well, as it's a derived calculation.
+  const flatEvents = useMemo(() => {
+    return eraNames.flatMap((eraName) => eras[eraName]);
+  }, [eras, eraNames]);
+
   useEffect(() => {
     // Dynamically generate sections from our era names (excluding intro)
     const journeySections: PageSection[] = eraNames.map((name) => ({
@@ -35,9 +41,7 @@ const Journey = () => {
     setSections(journeySections);
 
     return () => setSections([]);
-  }, [setSections, eraNames]);
-
-  let eventCounter = 0; // To keep track of the global index for `isLeft`
+  }, [eraNames]); // Only depends on eraNames - setSections is stable
 
   return (
     <motion.div
@@ -69,8 +73,10 @@ const Journey = () => {
           >
             <h2 className="timeline-era-header">{eraName}</h2>
             {eras[eraName].map((item) => {
-              const isLeft = eventCounter % 2 === 0;
-              eventCounter++;
+              // Find the global index of the current item in the flat list.
+              // This is a pure calculation based on props and state.
+              const globalIndex = flatEvents.findIndex((e) => e.id === item.id);
+              const isLeft = globalIndex % 2 === 0;
               return <TimelineItem key={item.id} data={item} isLeft={isLeft} />;
             })}
           </section>

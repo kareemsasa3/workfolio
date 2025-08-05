@@ -2,7 +2,7 @@
 
 /* --- Dark Theme (Default) --- */
 :root {
-  --terminal-text-primary: #00ff00;
+  --terminal-text-primary: #4CAF50;
   /* Classic green on black */
   --terminal-text-muted: #888;
   --terminal-text-error: #ff6b6b;
@@ -10,7 +10,7 @@
   --terminal-text-info: #8be9fd;
   --terminal-window-bg: rgba(26, 26, 26, 0.95);
   --terminal-header-bg: #2a2a2a;
-  --terminal-border: rgba(0, 255, 0, 0.4);
+  --terminal-border: rgba(76, 175, 80, 0.4);
   --terminal-selection-bg: var(--terminal-text-primary);
   --terminal-selection-text: #1a1a1a;
 }

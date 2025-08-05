@@ -19,14 +19,14 @@
 
 .item {
     background: var(--terminal-background, #1a1a1a);
-    border: 1px solid var(--terminal-primary, #00ff00);
+    border: 1px solid var(--terminal-primary, #4CAF50);
     border-radius: 8px;
     padding: var(--spacing-lg);
     transition: all var(--transition-normal);
     cursor: pointer;
     min-height: 200px;
     font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
-    box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.2);
     color: var(--terminal-text-light, #ffffff);
     position: relative;
     overflow: hidden;
@@ -39,7 +39,7 @@
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.1), transparent);
+    background: linear-gradient(90deg, transparent, rgba(76, 175, 80, 0.1), transparent);
     transition: left 0.5s ease;
 }
 
@@ -49,14 +49,14 @@
 
 .item:hover {
     transform: translateY(-4px);
-    border-color: var(--terminal-primary, #00ff00);
-    box-shadow: 0 0 25px rgba(0, 255, 0, 0.4);
+    border-color: var(--terminal-primary, #4CAF50);
+    box-shadow: 0 0 25px rgba(76, 175, 80, 0.4);
     background: transparent;
 }
 
 .item h3 {
-    color: var(--terminal-primary, #00ff00);
-    text-shadow: 0 0 10px var(--terminal-primary, #00ff00);
+    color: var(--terminal-primary, #4CAF50);
+    text-shadow: 0 0 10px var(--terminal-primary, #4CAF50);
     font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
     margin-bottom: 0.5rem;
 }

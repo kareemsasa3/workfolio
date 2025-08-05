@@ -147,3 +147,48 @@
     font-size: 12px;
     white-space: nowrap;
 }
+
+/* Autocomplete suggestions styles */
+.autocomplete-suggestions {
+    margin-top: 8px;
+    border: 1px solid var(--terminal-text-muted);
+    border-radius: 4px;
+    background: var(--terminal-window-bg);
+    max-width: 100%;
+}
+
+.suggestions-header {
+    background: var(--terminal-header-bg);
+    color: var(--terminal-text-primary);
+    padding: 4px 8px;
+    font-size: 12px;
+    border-bottom: 1px solid var(--terminal-text-muted);
+    font-weight: bold;
+}
+
+.suggestions-list {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.suggestion-item {
+    padding: 4px 8px;
+    color: var(--terminal-text-primary);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.suggestion-item:hover {
+    background: var(--terminal-selection-bg);
+}
+
+.suggestion-item.selected {
+    background: var(--terminal-selection-bg);
+    color: var(--terminal-text-primary);
+    font-weight: bold;
+}

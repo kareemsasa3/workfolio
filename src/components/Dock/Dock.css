@@ -3,9 +3,9 @@
     /* Default size variable */
 
     /* Terminal-inspired theme variables */
-    --dock-primary: #00ff00;
+    --dock-primary: #4CAF50;
     --dock-background: rgba(26, 26, 26, 0.85);
-    --dock-border: #00ff00;
+    --dock-border: #4CAF50;
     --dock-text: #ffffff;
     --dock-text-muted: #666;
     --dock-shadow: rgba(0, 0, 0, 0.3);
@@ -13,9 +13,9 @@
 
 /* Light theme overrides */
 [data-theme="light"] {
-    --dock-primary: #00aa00;
+    --dock-primary: #388E3C;
     --dock-background: rgba(245, 245, 245, 0.85);
-    --dock-border: #00aa00;
+    --dock-border: #388E3C;
     --dock-text: #2c2c2c;
     --dock-text-muted: #5a5a5a;
     --dock-shadow: rgba(0, 0, 0, 0.1);

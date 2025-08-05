@@ -226,10 +226,12 @@ template {
 /* Custom Properties */
 :root {
   /* Color Palette */
-  --primary-color: #2AAF2A;
+  --primary-color: #4CAF50;
+  --primary-color-light: #81C784;
+  --primary-color-medium: #66BB6A;
   --overlay-color-light: rgba(0, 0, 0, 0.8);
   --overlay-color-medium: rgba(0, 0, 0, 0.9);
-  --primary-color-dark: #1A8B1A;
+  --primary-color-dark: #388E3C;
   --accent-color: #FFD700;
 
   /* Theme colors - will be overridden by ThemeContext */

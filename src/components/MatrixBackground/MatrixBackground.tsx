@@ -33,7 +33,6 @@ const MatrixBackground = () => {
   const requestRef = useRef<number | null>(null);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
-  const [canvasReady, setCanvasReady] = useState(false);
   const columnsRef = useRef<MatrixColumn[]>([]);
 
   // Matrix characters (numbers and some symbols)

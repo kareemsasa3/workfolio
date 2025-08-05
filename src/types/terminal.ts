@@ -33,6 +33,7 @@ export type CommandResult = HistoryEntry[] | TypewriterEffect | PipeResult;
 
 export interface ActiveScrapeJob {
   jobId: string;
+  command: string; // The command that was executed
   status: "submitted" | "running" | "completed" | "failed";
   progress?: number;
   historyEntryId: number; // The ID of the history line to update
@@ -42,52 +43,125 @@ export interface ActiveScrapeJob {
   error?: string; // Error message if failed
 }
 
-export interface TerminalState {
+export interface ProcessInfo {
+  pid: number;
+  name: string;
+  cpu: number; // CPU usage percentage
+  memory: number; // Memory usage in MB
+  virtualMemory: number; // Virtual memory in MB
+  state: "R" | "S" | "D" | "Z" | "T"; // Process state (Running, Sleeping, etc.)
+  startTime: string; // Process start time
+  command: string; // Full command
+  user: string; // Process owner
+  priority: number; // Process priority
+  nice: number; // Nice value
+  threads: number; // Number of threads
+  lastUpdate: number; // Timestamp of last update
+}
+
+// TopCommand Feature State
+export interface TopState {
+  isTopCommand: boolean;
+  topProcesses: ProcessInfo[];
+  topSortBy: "cpu" | "memory" | "pid" | "name";
+  topSortOrder: "asc" | "desc";
+  topRefreshRate: number;
+  topSelectedPid: number | null;
+}
+
+// TopCommand Feature Actions
+export type TopAction =
+  | { type: "SHOW_TOP_COMMAND" }
+  | { type: "HIDE_TOP_COMMAND" }
+  | { type: "UPDATE_TOP_PROCESSES"; payload: ProcessInfo[] }
+  | {
+      type: "SET_TOP_SORT";
+      payload: {
+        field: "cpu" | "memory" | "pid" | "name";
+        order: "asc" | "desc";
+      };
+    }
+  | { type: "SET_TOP_REFRESH_RATE"; payload: number }
+  | { type: "SET_TOP_SELECTED_PID"; payload: number | null }
+  | { type: "KILL_TOP_PROCESS"; payload: number };
+
+// Scraping Feature State
+export interface ScrapingState {
+  activeScrapeJobs: Record<string, ActiveScrapeJob>;
+  showScrapeResults: boolean;
+  scrapeResults: any[];
+  currentScrapeJobId: string;
+}
+
+// Scraping Feature Actions
+export type ScrapingAction =
+  | { type: "ADD_SCRAPE_JOB"; payload: ActiveScrapeJob }
+  | {
+      type: "UPDATE_SCRAPE_JOB";
+      payload: { jobId: string; updates: Partial<ActiveScrapeJob> };
+    }
+  | { type: "REMOVE_SCRAPE_JOB"; payload: string }
+  | { type: "SHOW_SCRAPE_RESULTS"; payload: { results: any[]; jobId: string } }
+  | { type: "HIDE_SCRAPE_RESULTS" };
+
+// AI Chat Feature State
+export interface AiChatState {
+  isAiChatting: boolean;
+  aiChatHistory: ChatMessage[];
+  isAiTyping: boolean;
+  aiInputValue: string;
+}
+
+// AI Chat Feature Actions
+export type AiChatAction =
+  | { type: "START_AI_CHAT" }
+  | { type: "EXIT_AI_CHAT" }
+  | { type: "ADD_AI_MESSAGE"; payload: ChatMessage }
+  | { type: "SET_AI_TYPING"; payload: boolean }
+  | { type: "SET_AI_INPUT_VALUE"; payload: string }
+  | { type: "CLEAR_AI_CHAT_HISTORY" }
+  | {
+      type: "SET_AI_CHAT_STATE";
+      payload: {
+        isChatting: boolean;
+        history?: ChatMessage[];
+        isTyping?: boolean;
+        inputValue?: string;
+      };
+    };
+
+// Core Terminal State (without feature-specific state)
+export interface CoreTerminalState {
   commandHistory: HistoryEntry[];
   currentCommand: string;
   showPrompt: boolean;
   targetRoute: string;
   autocompleteIndex: number;
-  currentDirectory: string; // Track current directory path
-  isMinimized: boolean; // Track if terminal is minimized
-  isMaximized: boolean; // Track if terminal is maximized
-  showPreview: boolean; // Track if preview is shown on hover
-  activeTypewriter: boolean; // Track if typewriter animation is active
-  historyIndex: number; // Track current position in command history for navigation
-  isReverseSearch: boolean; // Track if we're in reverse search mode
-  reverseSearchTerm: string; // Current search term in reverse search
-  reverseSearchIndex: number; // Current match index in reverse search results
-  reverseSearchResults: string[]; // Filtered commands matching search term
-  isManPage: boolean; // Track if we're viewing a man page
-  currentManPage: string; // Current man page being displayed
-  manPageScrollPosition: number; // Scroll position in man page
-  isTopCommand: boolean; // Track if we're viewing the top command
-  topProcesses: ProcessInfo[]; // Current process list for top command
-  topSortBy: "cpu" | "memory" | "pid" | "name"; // Sort field for top command
-  topSortOrder: "asc" | "desc"; // Sort order for top command
-  topRefreshRate: number; // Refresh rate in milliseconds
-  topSelectedPid: number | null; // Currently selected process PID
-  activeScrapeJobs: Record<string, ActiveScrapeJob>; // Track active scraping jobs
-  nextHistoryId: number; // Auto-incrementing ID for history entries
-  // AI Chat functionality
-  isAiChatting: boolean; // Track if we're in AI chat mode
-  aiChatHistory: ChatMessage[]; // AI conversation history
-  isAiTyping: boolean; // Track if AI is currently typing
-  aiInputValue: string; // Current input value in AI chat
-  // Vim editor functionality removed
-  // Scrape results modal
-  showScrapeResults: boolean; // Track if scrape results modal is shown
-  scrapeResults: any[]; // Current scrape results to display
-  currentScrapeJobId: string; // ID of the job whose results are being shown
+  autocompleteSuggestions: string[];
+  currentDirectory: string;
+  isMinimized: boolean;
+  isMaximized: boolean;
+  showPreview: boolean;
+  activeTypewriter: boolean;
+  historyIndex: number;
+  isReverseSearch: boolean;
+  reverseSearchTerm: string;
+  reverseSearchIndex: number;
+  reverseSearchResults: string[];
+  isManPage: boolean;
+  currentManPage: string;
+  manPageScrollPosition: number;
+  nextHistoryId: number;
 }
 
-// Action types for the terminal reducer
-export type TerminalAction =
+// Core Terminal Actions (without feature-specific actions)
+export type CoreTerminalAction =
   | { type: "SET_COMMAND_HISTORY"; payload: HistoryEntry[] }
   | { type: "SET_CURRENT_COMMAND"; payload: string }
   | { type: "SET_SHOW_PROMPT"; payload: boolean }
   | { type: "SET_TARGET_ROUTE"; payload: string }
   | { type: "SET_AUTOCOMPLETE_INDEX"; payload: number }
+  | { type: "SET_AUTOCOMPLETE_SUGGESTIONS"; payload: string[] }
   | { type: "SET_CURRENT_DIRECTORY"; payload: string }
   | { type: "SET_IS_MINIMIZED"; payload: boolean }
   | { type: "SET_IS_MAXIMIZED"; payload: boolean }
@@ -116,41 +190,27 @@ export type TerminalAction =
   | { type: "MAXIMIZE_TERMINAL" }
   | { type: "SHOW_PREVIEW" }
   | { type: "HIDE_PREVIEW" }
-  | { type: "SHOW_TOP_COMMAND" }
-  | { type: "HIDE_TOP_COMMAND" }
-  | { type: "UPDATE_TOP_PROCESSES"; payload: ProcessInfo[] }
-  | {
-      type: "SET_TOP_SORT";
-      payload: {
-        field: "cpu" | "memory" | "pid" | "name";
-        order: "asc" | "desc";
-      };
-    }
-  | { type: "SET_TOP_REFRESH_RATE"; payload: number }
-  | { type: "SET_TOP_SELECTED_PID"; payload: number | null }
-  | { type: "ADD_SCRAPE_JOB"; payload: ActiveScrapeJob }
-  | {
-      type: "UPDATE_SCRAPE_JOB";
-      payload: { jobId: string; updates: Partial<ActiveScrapeJob> };
-    }
-  | { type: "REMOVE_SCRAPE_JOB"; payload: string }
   | { type: "CREATE_VIRTUAL_FILE"; payload: { path: string; content: string } }
   | { type: "SET_NEXT_HISTORY_ID"; payload: number }
-  // AI Chat actions
-  | { type: "START_AI_CHAT" }
-  | { type: "EXIT_AI_CHAT" }
-  | { type: "ADD_AI_MESSAGE"; payload: ChatMessage }
-  | { type: "SET_AI_TYPING"; payload: boolean }
-  | { type: "SET_AI_INPUT_VALUE"; payload: string }
-  | { type: "CLEAR_AI_CHAT_HISTORY" }
   | { type: "RESET_TERMINAL" }
-  // Vim editor actions removed
-  | { type: "SHOW_SCRAPE_RESULTS"; payload: { results: any[]; jobId: string } }
-  | { type: "HIDE_SCRAPE_RESULTS" }
   | {
       type: "ADD_FILE_TO_FILESYSTEM";
       payload: { path: string; content: string; filename: string };
     };
+
+// Combined state for backward compatibility (will be removed after refactor)
+export interface TerminalState
+  extends CoreTerminalState,
+    TopState,
+    ScrapingState,
+    AiChatState {}
+
+// Combined action for backward compatibility (will be removed after refactor)
+export type TerminalAction =
+  | CoreTerminalAction
+  | TopAction
+  | ScrapingAction
+  | AiChatAction;
 
 export interface Command {
   name: string;
@@ -158,10 +218,10 @@ export interface Command {
     args: string[],
     history: HistoryEntry[],
     fileSystem: FileSystemItem[],
-    dispatch: React.Dispatch<TerminalAction>,
+    dispatch: React.Dispatch<CoreTerminalAction>,
     currentDirectory: string,
     onNavigate?: (route: string) => void,
-    state?: TerminalState,
+    state?: CoreTerminalState, // This is the KEY CHANGE - only core state
     stdin?: string[], // New stdin parameter for piping
     getFileContent?: (path: string) => { content: string[] } | null // File content function
   ) => CommandResult | Promise<CommandResult>;
@@ -175,20 +235,5 @@ export interface Command {
 export interface TabCompleteResult {
   currentCommand: string;
   autocompleteIndex: number;
-}
-
-export interface ProcessInfo {
-  pid: number;
-  name: string;
-  cpu: number; // CPU usage percentage
-  memory: number; // Memory usage in MB
-  virtualMemory: number; // Virtual memory in MB
-  state: "R" | "S" | "D" | "Z" | "T"; // Process state (Running, Sleeping, etc.)
-  startTime: string; // Process start time
-  command: string; // Full command
-  user: string; // Process owner
-  priority: number; // Process priority
-  nice: number; // Nice value
-  threads: number; // Number of threads
-  lastUpdate: number; // Timestamp of last update
+  suggestions?: string[];
 }

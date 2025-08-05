@@ -19,16 +19,11 @@ export const useNavigation = () => {
     () => navigateTo("/projects"),
     [navigateTo]
   );
-  const navigateToContact = useCallback(
-    () => navigateTo("/contact"),
-    [navigateTo]
-  );
   const openResume = useCallback(() => openInNewTab("/resume"), [openInNewTab]);
 
   return {
     navigateTo,
     navigateToProjects,
-    navigateToContact,
     openResume,
   };
 };

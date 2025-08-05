@@ -105,10 +105,10 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
       root.style.setProperty("--panel-bg-color", "#2d2d2d");
 
       // Dark theme primary colors
-      root.style.setProperty("--primary-color", "#00ff00"); // Classic Matrix green
-      root.style.setProperty("--primary-color-light", "rgba(0, 255, 0, 0.1)");
-      root.style.setProperty("--primary-color-medium", "#00cc00");
-      root.style.setProperty("--primary-color-dark", "#00aa00");
+      root.style.setProperty("--primary-color", "#4CAF50"); // Softer green
+      root.style.setProperty("--primary-color-light", "#81C784");
+      root.style.setProperty("--primary-color-medium", "#66BB6A");
+      root.style.setProperty("--primary-color-dark", "#388E3C");
     }
   }, [theme]);
 

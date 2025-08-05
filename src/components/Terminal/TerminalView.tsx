@@ -19,6 +19,8 @@ interface TerminalViewProps {
   reverseSearchTerm: string;
   reverseSearchResults: string[];
   reverseSearchIndex: number;
+  autocompleteSuggestions: string[];
+  autocompleteIndex: number;
   onCommandChange: (value: string) => void;
   onCommandSubmit: () => void;
   onKeyDown: (e: React.KeyboardEvent) => void;
@@ -36,6 +38,8 @@ const TerminalView: React.FC<TerminalViewProps> = ({
   reverseSearchTerm,
   reverseSearchResults,
   reverseSearchIndex,
+  autocompleteSuggestions,
+  autocompleteIndex,
   onCommandChange,
   onCommandSubmit,
   onKeyDown,
@@ -175,6 +179,25 @@ const TerminalView: React.FC<TerminalViewProps> = ({
               />
             </>
           )}
+        </div>
+      )}
+
+      {/* Autocomplete Suggestions */}
+      {autocompleteSuggestions.length > 1 && showPrompt && !isReverseSearch && (
+        <div className="autocomplete-suggestions">
+          <div className="suggestions-header">Multiple matches:</div>
+          <div className="suggestions-list">
+            {autocompleteSuggestions.map((suggestion, index) => (
+              <div
+                key={index}
+                className={`suggestion-item ${
+                  index === autocompleteIndex ? "selected" : ""
+                }`}
+              >
+                {suggestion}
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>

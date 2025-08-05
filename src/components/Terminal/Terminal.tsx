@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Terminal.css";
+import "./TerminalErrorBoundary.css";
 import { useTerminal } from "../../hooks/useTerminal";
 import { fileSystem } from "../../data/fileSystem";
 import { useWindowManagement } from "../../hooks/useWindowManagement";
@@ -8,6 +9,7 @@ import { useLockBodyScroll } from "../../hooks/useLockBodyScroll";
 import TerminalWindow from "./TerminalWindow";
 import TerminalView from "./TerminalView";
 import TerminalOverlays from "./TerminalOverlays";
+import TerminalErrorBoundary from "./TerminalErrorBoundary";
 
 interface TerminalProps {
   isIntro: boolean;
@@ -18,7 +20,12 @@ const Terminal: React.FC<TerminalProps> = ({ isIntro }) => {
 
   // State initialization
   const [hasShownIntro, setHasShownIntro] = useState(() => {
-    return localStorage.getItem("terminal-intro-shown") === "true";
+    try {
+      return localStorage.getItem("terminal-intro-shown") === "true";
+    } catch (error) {
+      console.error("Failed to load terminal intro state:", error);
+      return false;
+    }
   });
 
   // Track when terminal state is loaded
@@ -38,14 +45,22 @@ const Terminal: React.FC<TerminalProps> = ({ isIntro }) => {
   };
 
   // Use the terminal logic hook
-  const terminalApi = useTerminal(fileSystem, handleRouteNavigation, !isIntro);
+  const {
+    coreState,
+    coreHandlers,
+    topState,
+    topHandlers,
+    scrapingState,
+    scrapingHandlers,
+    executeCommand,
+  } = useTerminal(fileSystem, handleRouteNavigation, !isIntro);
 
   // Handle terminal close
   const handleTerminalClose = useCallback(() => {
     // Reset terminal state when closing
-    terminalApi.resetTerminal();
+    coreHandlers.resetTerminal();
     navigate(isIntro ? "/home" : "/");
-  }, [terminalApi, navigate, isIntro]);
+  }, [coreHandlers, navigate, isIntro]);
 
   // Use the new window management hook
   const windowManagement = useWindowManagement({
@@ -69,50 +84,60 @@ const Terminal: React.FC<TerminalProps> = ({ isIntro }) => {
 
   // Show prompt when not in intro mode
   useEffect(() => {
-    if (!isIntro && hasShownIntro && !terminalApi.showPrompt) {
+    if (!isIntro && hasShownIntro && !coreState.showPrompt) {
       // Show prompt after a short delay when not in intro mode
       const timer = setTimeout(() => {
-        terminalApi.setShowPrompt(true);
+        coreHandlers.setShowPrompt(true);
       }, 100);
       return () => clearTimeout(timer);
     }
   }, [
     isIntro,
     hasShownIntro,
-    terminalApi.showPrompt,
-    terminalApi.setShowPrompt,
+    coreState.showPrompt,
+    coreHandlers.setShowPrompt,
   ]);
 
   // Handle intro completion
   const handleIntroComplete = () => {
     setHasShownIntro(true);
-    localStorage.setItem("terminal-intro-shown", "true");
-    setTimeout(() => terminalApi.setShowPrompt(true), 200);
+    try {
+      localStorage.setItem("terminal-intro-shown", "true");
+    } catch (error) {
+      console.error("Failed to save terminal intro state:", error);
+    }
+    setTimeout(() => coreHandlers.setShowPrompt(true), 200);
   };
 
   // Handle command submission
   const handleCommandSubmit = () => {
-    if (terminalApi.isReverseSearch) {
-      if (terminalApi.reverseSearchResults.length > 0) {
+    if (coreState.isReverseSearch) {
+      if (coreState.reverseSearchResults.length > 0) {
         const selectedCommand =
-          terminalApi.reverseSearchResults[terminalApi.reverseSearchIndex];
-        terminalApi.setCurrentCommand(selectedCommand);
-        terminalApi.exitReverseSearch();
-        terminalApi.executeCommand(selectedCommand);
-        terminalApi.clearCommand();
+          coreState.reverseSearchResults[coreState.reverseSearchIndex];
+        coreHandlers.setCurrentCommand(selectedCommand);
+        coreHandlers.exitReverseSearch();
+        executeCommand(selectedCommand);
+        coreHandlers.clearCommand();
       }
-    } else if (terminalApi.currentCommand.trim()) {
-      terminalApi.executeCommand(terminalApi.currentCommand.trim());
-      terminalApi.clearCommand();
+    } else if (coreState.currentCommand.trim()) {
+      executeCommand(coreState.currentCommand.trim());
+      coreHandlers.clearCommand();
     }
   };
 
   // Handle command change
   const handleCommandChange = (value: string) => {
-    if (terminalApi.isReverseSearch) {
-      terminalApi.updateReverseSearch(value);
+    if (coreState.isReverseSearch) {
+      // For reverse search, we need to filter command history
+      const results = coreState.commandHistory
+        .filter((entry) =>
+          entry.text.toLowerCase().includes(value.toLowerCase())
+        )
+        .map((entry) => entry.text);
+      coreHandlers.updateReverseSearch(value, results);
     } else {
-      terminalApi.setCurrentCommand(value);
+      coreHandlers.setCurrentCommand(value);
     }
   };
 
@@ -120,106 +145,129 @@ const Terminal: React.FC<TerminalProps> = ({ isIntro }) => {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Tab") {
       e.preventDefault();
-      const result = terminalApi.handleTabComplete(
-        terminalApi.currentCommand,
-        terminalApi.autocompleteIndex
-      );
-      terminalApi.setCurrentCommand(result.currentCommand);
-      terminalApi.setAutocompleteIndex(result.autocompleteIndex);
+      const result = coreHandlers.handleTabComplete(coreState.currentCommand);
+      coreHandlers.setCurrentCommand(result.currentCommand);
+      coreHandlers.setAutocompleteIndex(result.autocompleteIndex);
+      if (result.suggestions) {
+        coreHandlers.dispatch({
+          type: "SET_AUTOCOMPLETE_SUGGESTIONS",
+          payload: result.suggestions,
+        });
+      }
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
-      if (terminalApi.isReverseSearch) {
-        terminalApi.navigateReverseSearchResults("up");
+      if (coreState.isReverseSearch) {
+        // Navigate reverse search results up
+        const newIndex = Math.max(0, coreState.reverseSearchIndex - 1);
+        coreHandlers.setReverseSearchIndex(newIndex);
       } else {
-        terminalApi.navigateHistoryUp();
+        // Navigate history up
+        const currentIndex = coreState.historyIndex;
+        const newIndex = Math.min(
+          coreState.commandHistory.length - 1,
+          currentIndex + 1
+        );
+        coreHandlers.setHistoryIndex(newIndex);
       }
     } else if (e.key === "ArrowDown") {
       e.preventDefault();
-      if (terminalApi.isReverseSearch) {
-        terminalApi.navigateReverseSearchResults("down");
+      if (coreState.isReverseSearch) {
+        // Navigate reverse search results down
+        const newIndex = Math.min(
+          coreState.reverseSearchResults.length - 1,
+          coreState.reverseSearchIndex + 1
+        );
+        coreHandlers.setReverseSearchIndex(newIndex);
       } else {
-        terminalApi.navigateHistoryDown();
+        // Navigate history down
+        const currentIndex = coreState.historyIndex;
+        const newIndex = Math.max(-1, currentIndex - 1);
+        coreHandlers.setHistoryIndex(newIndex);
       }
     } else if (e.ctrlKey && e.key === "r") {
       e.preventDefault();
-      terminalApi.startReverseSearch();
+      coreHandlers.startReverseSearch();
     } else if (e.key === "Escape") {
       e.preventDefault();
-      terminalApi.exitReverseSearch();
+      coreHandlers.exitReverseSearch();
     }
   };
 
   return (
-    <div className={`terminal-screen ${isIntro ? "intro-mode" : "route-mode"}`}>
-      {/* The sidecar for minimized state - NOW a BUTTON */}
-      {isStateLoaded && windowManagement.showSidecar && (
-        <button
-          className="terminal-sidecar"
-          onClick={windowManagement.handleMinimize}
-          aria-label="Restore terminal window"
-        >
-          <span className="sidecar-icon" aria-hidden="true">
-            💻
-          </span>
-        </button>
-      )}
-
-      {/* Overlays */}
-      <TerminalOverlays
-        // Man page props
-        isManPage={terminalApi.isManPage}
-        currentManPage={terminalApi.currentManPage}
-        manPageScrollPosition={terminalApi.manPageScrollPosition}
-        onHideManPage={terminalApi.hideManPage}
-        onSetManPageScroll={terminalApi.setManPageScroll}
-        // Top command props
-        isTopCommand={terminalApi.isTopCommand}
-        topProcesses={terminalApi.topProcesses}
-        topSortBy={terminalApi.topSortBy}
-        topSortOrder={terminalApi.topSortOrder}
-        topRefreshRate={terminalApi.topRefreshRate}
-        topSelectedPid={terminalApi.topSelectedPid}
-        onHideTopCommand={terminalApi.hideTopCommand}
-        onSetTopSort={terminalApi.setTopSort}
-        onKillTopProcess={terminalApi.killTopProcess}
-        onSetTopSelectedPid={terminalApi.setTopSelectedPid}
-        // Scrape results props
-        showScrapeResults={terminalApi.showScrapeResults}
-        scrapeResults={terminalApi.scrapeResults}
-        onHideScrapeResults={() =>
-          terminalApi.dispatch({ type: "HIDE_SCRAPE_RESULTS" })
-        }
-      />
-
-      {/* Main terminal window */}
-      <TerminalWindow
-        containerStyles={windowManagement.containerStyles}
-        isMaximized={windowManagement.isMaximized}
-        isDragging={windowManagement.isDragging}
-        currentDirectory={terminalApi.currentDirectory}
-        onMouseDown={windowManagement.handleMouseDown}
-        onClose={windowManagement.handleClose}
-        onMinimize={windowManagement.handleMinimize}
-        onMaximize={windowManagement.handleMaximize}
+    <TerminalErrorBoundary>
+      <div
+        className={`terminal-screen ${isIntro ? "intro-mode" : "route-mode"}`}
       >
-        <TerminalView
-          commandHistory={terminalApi.commandHistory}
-          currentCommand={terminalApi.currentCommand}
-          showPrompt={terminalApi.showPrompt}
-          currentDirectory={terminalApi.currentDirectory}
-          hasShownIntro={hasShownIntro}
-          isReverseSearch={terminalApi.isReverseSearch}
-          reverseSearchTerm={terminalApi.reverseSearchTerm}
-          reverseSearchResults={terminalApi.reverseSearchResults}
-          reverseSearchIndex={terminalApi.reverseSearchIndex}
-          onCommandChange={handleCommandChange}
-          onCommandSubmit={handleCommandSubmit}
-          onKeyDown={handleKeyDown}
-          onIntroComplete={handleIntroComplete}
-          terminalRef={terminalApi.terminalRef}
+        {/* The sidecar for minimized state - NOW a BUTTON */}
+        {isStateLoaded && windowManagement.showSidecar && (
+          <button
+            className="terminal-sidecar"
+            onClick={windowManagement.handleMinimize}
+            aria-label="Restore terminal window"
+          >
+            <span className="sidecar-icon" aria-hidden="true">
+              💻
+            </span>
+          </button>
+        )}
+
+        {/* Overlays */}
+        <TerminalOverlays
+          // Man page props
+          isManPage={coreState.isManPage}
+          currentManPage={coreState.currentManPage}
+          manPageScrollPosition={coreState.manPageScrollPosition}
+          onHideManPage={coreHandlers.hideManPage}
+          onSetManPageScroll={coreHandlers.setManPageScroll}
+          // Top command props
+          isTopCommand={topState.isTopCommand}
+          topProcesses={topState.topProcesses}
+          topSortBy={topState.topSortBy}
+          topSortOrder={topState.topSortOrder}
+          topRefreshRate={topState.topRefreshRate}
+          topSelectedPid={topState.topSelectedPid}
+          onHideTopCommand={topHandlers.hideTopCommand}
+          onSetTopSort={topHandlers.setTopSort}
+          onKillTopProcess={topHandlers.killTopProcess}
+          onSetTopSelectedPid={topHandlers.setTopSelectedPid}
+          // Scrape results props
+          showScrapeResults={scrapingState.showScrapeResults}
+          scrapeResults={scrapingState.scrapeResults}
+          onHideScrapeResults={scrapingHandlers.hideScrapeResults}
         />
-      </TerminalWindow>
-    </div>
+
+        {/* Main terminal window */}
+        <TerminalWindow
+          containerStyles={windowManagement.containerStyles}
+          isMaximized={windowManagement.isMaximized}
+          isDragging={windowManagement.isDragging}
+          currentDirectory={coreState.currentDirectory}
+          onMouseDown={windowManagement.handleMouseDown}
+          onClose={windowManagement.handleClose}
+          onMinimize={windowManagement.handleMinimize}
+          onMaximize={windowManagement.handleMaximize}
+        >
+          <TerminalView
+            commandHistory={coreState.commandHistory}
+            currentCommand={coreState.currentCommand}
+            showPrompt={coreState.showPrompt}
+            currentDirectory={coreState.currentDirectory}
+            hasShownIntro={hasShownIntro}
+            isReverseSearch={coreState.isReverseSearch}
+            reverseSearchTerm={coreState.reverseSearchTerm}
+            reverseSearchResults={coreState.reverseSearchResults}
+            reverseSearchIndex={coreState.reverseSearchIndex}
+            autocompleteSuggestions={coreState.autocompleteSuggestions}
+            autocompleteIndex={coreState.autocompleteIndex}
+            onCommandChange={handleCommandChange}
+            onCommandSubmit={handleCommandSubmit}
+            onKeyDown={handleKeyDown}
+            onIntroComplete={handleIntroComplete}
+            terminalRef={coreHandlers.terminalRef}
+          />
+        </TerminalWindow>
+      </div>
+    </TerminalErrorBoundary>
   );
 };
 
