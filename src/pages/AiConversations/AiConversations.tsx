@@ -314,7 +314,7 @@ const AiConversations: React.FC = () => {
   }, [state.conversations]);
 
   // Migrate old conversation format to new format
-  const migrateOldFormat = (data: any[]): Conversation[] => {
+  const migrateOldFormat = (data: unknown[]): Conversation[] => {
     if (!Array.isArray(data)) return [];
 
     return data

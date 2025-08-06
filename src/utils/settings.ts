@@ -35,7 +35,7 @@ const STORAGE_KEYS = {
 } as const;
 
 // Settings validation schema
-const validateDockSettings = (settings: any) => {
+const validateDockSettings = (settings: unknown) => {
   if (!settings || typeof settings !== "object") return false;
 
   const { dockSize, dockStiffness, magnification } = settings;
@@ -53,11 +53,11 @@ const validateDockSettings = (settings: any) => {
   );
 };
 
-const validateTheme = (theme: any): theme is "light" | "dark" => {
+const validateTheme = (theme: unknown): theme is "light" | "dark" => {
   return theme === "light" || theme === "dark";
 };
 
-const validateBoolean = (value: any): boolean => {
+const validateBoolean = (value: unknown): boolean => {
   return typeof value === "boolean";
 };
 

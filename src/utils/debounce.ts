@@ -6,7 +6,7 @@
  * @param wait - The number of milliseconds to delay
  * @returns A debounced version of the function with a cancel method
  */
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends (...args: unknown[]) => unknown>(
   func: T,
   wait: number
 ): ((...args: Parameters<T>) => void) & { cancel: () => void } {
@@ -32,7 +32,7 @@ export function debounce<T extends (...args: any[]) => any>(
  * @param wait - The number of milliseconds to throttle by
  * @returns A throttled version of the function
  */
-export function throttle<T extends (...args: any[]) => any>(
+export function throttle<T extends (...args: unknown[]) => unknown>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {

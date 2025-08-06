@@ -12,19 +12,19 @@ export interface ScrapeJobResponse {
 export interface ScrapeStatusResponse {
   status: "submitted" | "running" | "completed" | "failed";
   progress?: number;
-  results?: any;
+  results?: unknown;
   error?: string;
   job?: {
     id: string;
     status: string;
-    request: any;
+    request: unknown;
     created_at: string;
     started_at?: string;
     completed_at?: string;
     progress: number;
-    results?: any;
+    results?: unknown;
   };
-  metrics?: any;
+  metrics?: unknown;
 }
 
 // Configuration - Arachne service proxied through nginx
