@@ -4,6 +4,7 @@ import {
   ScrapingAction,
   ActiveScrapeJob,
 } from "../types/terminal";
+import { ScrapedData } from "../components/ScrapeResults";
 
 // Scraping reducer
 const scrapingReducer = (
@@ -149,7 +150,7 @@ export const useScraping = () => {
     dispatch({ type: "REMOVE_SCRAPE_JOB", payload: jobId });
   }, []);
 
-  const showScrapeResults = useCallback((results: any[], jobId: string) => {
+  const showScrapeResults = useCallback((results: ScrapedData[], jobId: string) => {
     dispatch({ type: "SHOW_SCRAPE_RESULTS", payload: { results, jobId } });
   }, []);
 

@@ -91,12 +91,7 @@ const Terminal: React.FC<TerminalProps> = ({ isIntro }) => {
       }, 100);
       return () => clearTimeout(timer);
     }
-  }, [
-    isIntro,
-    hasShownIntro,
-    coreState.showPrompt,
-    coreHandlers,
-  ]);
+  }, [isIntro, hasShownIntro, coreState.showPrompt, coreHandlers]);
 
   // Handle intro completion
   const handleIntroComplete = () => {

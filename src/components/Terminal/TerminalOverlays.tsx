@@ -1,8 +1,9 @@
 import React from "react";
 import ManPageUI from "./ManPageUI";
 import TopUI from "./TopUI";
-import { ScrapeResults } from "../ScrapeResults";
+import { ScrapeResults, ScrapedData } from "../ScrapeResults";
 import { manPages } from "../../data/manPages";
+import { ProcessInfo } from "../../types/terminal";
 
 interface TerminalOverlaysProps {
   // Man page overlay
@@ -14,7 +15,7 @@ interface TerminalOverlaysProps {
 
   // Top command overlay
   isTopCommand: boolean;
-  topProcesses: any[];
+  topProcesses: ProcessInfo[];
   topSortBy: "cpu" | "memory" | "pid" | "name";
   topSortOrder: "asc" | "desc";
   topRefreshRate: number;
@@ -29,7 +30,7 @@ interface TerminalOverlaysProps {
 
   // Scrape results overlay
   showScrapeResults: boolean;
-  scrapeResults: any[];
+  scrapeResults: ScrapedData[];
   onHideScrapeResults: () => void;
 }
 

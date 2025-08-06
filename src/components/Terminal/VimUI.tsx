@@ -71,6 +71,32 @@ const VimUI: React.FC<VimUIProps> = ({
     }
   }, [editedContent, language]);
 
+  const handleCommand = useCallback(
+    (cmd: string) => {
+      const trimmedCmd = cmd.trim();
+
+      if (trimmedCmd === "q" || trimmedCmd === "quit") {
+        onClose();
+      } else if (trimmedCmd === "w" || trimmedCmd === "write") {
+        if (onSave) {
+          onSave(editedContent);
+        }
+      } else if (trimmedCmd === "wq" || trimmedCmd === "x") {
+        if (onSave) {
+          onSave(editedContent);
+        }
+        onClose();
+      } else if (trimmedCmd.startsWith("set ")) {
+        // Handle vim settings
+        const setting = trimmedCmd.substring(4);
+        if (setting === "readonly") {
+          // Could implement readonly mode
+        }
+      }
+    },
+    [onClose, onSave, editedContent]
+  );
+
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       if (showCommandLine) {
@@ -166,29 +192,6 @@ const VimUI: React.FC<VimUIProps> = ({
       handleCommand,
     ]
   );
-
-  const handleCommand = useCallback((cmd: string) => {
-    const trimmedCmd = cmd.trim();
-
-    if (trimmedCmd === "q" || trimmedCmd === "quit") {
-      onClose();
-    } else if (trimmedCmd === "w" || trimmedCmd === "write") {
-      if (onSave) {
-        onSave(editedContent);
-      }
-    } else if (trimmedCmd === "wq" || trimmedCmd === "x") {
-      if (onSave) {
-        onSave(editedContent);
-      }
-      onClose();
-    } else if (trimmedCmd.startsWith("set ")) {
-      // Handle vim settings
-      const setting = trimmedCmd.substring(4);
-      if (setting === "readonly") {
-        // Could implement readonly mode
-      }
-    }
-  }, [onClose, onSave, editedContent]);
 
   const handleContentChange = (lineIndex: number, newLine: string) => {
     if (isReadOnly) return;

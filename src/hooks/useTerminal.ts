@@ -4,6 +4,8 @@ import {
   HistoryEntry,
   Command,
   CommandResult,
+  CoreTerminalAction,
+  CoreTerminalState,
 } from "../types/terminal";
 import { useTerminalCore } from "./useTerminalCore";
 import { useTopCommand } from "./useTopCommand";
@@ -59,7 +61,7 @@ class TopCommand implements Command {
     _args: string[],
     history: HistoryEntry[],
     _fileSystem: FileSystemItem[],
-    dispatch: React.Dispatch<any>,
+    dispatch: React.Dispatch<CoreTerminalAction>,
     _currentDirectory: string,
     _onNavigate?: (route: string) => void
   ): HistoryEntry[] {
@@ -79,13 +81,13 @@ class CatCommand implements Command {
     args: string[],
     history: HistoryEntry[],
     _fileSystem: FileSystemItem[],
-    _dispatch: React.Dispatch<any>,
+    _dispatch: React.Dispatch<CoreTerminalAction>,
     currentDirectory: string,
     _onNavigate?: (route: string) => void,
-    _state?: any,
+    _state?: CoreTerminalState,
     _stdin?: string[],
     getFileContent?: (path: string) => { content: string[] } | null
-  ): any {
+  ): CommandResult {
     if (args.length === 0) {
       return [
         ...history,
@@ -144,13 +146,13 @@ class GrepCommand implements Command {
     args: string[],
     history: HistoryEntry[],
     _fileSystem: FileSystemItem[],
-    _dispatch: React.Dispatch<any>,
+    _dispatch: React.Dispatch<CoreTerminalAction>,
     currentDirectory: string,
     _onNavigate?: (route: string) => void,
-    _state?: any,
+    _state?: CoreTerminalState,
     stdin?: string[],
     getFileContent?: (path: string) => { content: string[] } | null
-  ): any {
+  ): CommandResult {
     if (args.length === 0) {
       return [...history, createHistoryEntry("grep: missing pattern", "error")];
     }
@@ -237,13 +239,13 @@ class WcCommand implements Command {
     args: string[],
     history: HistoryEntry[],
     _fileSystem: FileSystemItem[],
-    _dispatch: React.Dispatch<any>,
+    _dispatch: React.Dispatch<CoreTerminalAction>,
     currentDirectory: string,
     _onNavigate?: (route: string) => void,
-    _state?: any,
+    _state?: CoreTerminalState,
     stdin?: string[],
     getFileContent?: (path: string) => { content: string[] } | null
-  ): any {
+  ): CommandResult {
     let lines: string[] = [];
 
     if (stdin && stdin.length > 0) {
@@ -313,10 +315,10 @@ class CurlCommand implements Command {
     args: string[],
     history: HistoryEntry[],
     _fileSystem: FileSystemItem[],
-    dispatch: React.Dispatch<any>,
+    dispatch: React.Dispatch<CoreTerminalAction>,
     _currentDirectory: string,
     _onNavigate?: (route: string) => void,
-    _state?: any
+    _state?: CoreTerminalState
   ): Promise<HistoryEntry[]> {
     if (args.length === 0) {
       return [...history, createHistoryEntry("curl: missing URL", "error")];
@@ -400,10 +402,10 @@ class ArachneCommand implements Command {
     args: string[],
     history: HistoryEntry[],
     _fileSystem: FileSystemItem[],
-    dispatch: React.Dispatch<any>,
+    dispatch: React.Dispatch<CoreTerminalAction>,
     _currentDirectory: string,
     _onNavigate?: (route: string) => void,
-    _state?: any
+    _state?: CoreTerminalState
   ): Promise<HistoryEntry[]> {
     if (args.length === 0) {
       return [...history, createHistoryEntry("arachne: missing URL", "error")];
@@ -483,7 +485,7 @@ class AiCommand implements Command {
     args: string[],
     _history: HistoryEntry[],
     _fileSystem: FileSystemItem[],
-    dispatch: React.Dispatch<any>,
+    dispatch: React.Dispatch<CoreTerminalAction>,
     _currentDirectory: string,
     _onNavigate?: (route: string) => void
   ): Promise<CommandResult> {

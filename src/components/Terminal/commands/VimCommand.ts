@@ -1,4 +1,4 @@
-import { Command, CommandResult, HistoryEntry } from "../../../types/terminal";
+import { Command, CommandResult, HistoryEntry, FileSystemItem, CoreTerminalAction, CoreTerminalState } from "../../../types/terminal";
 
 export class VimCommand implements Command {
   name = "vim";
@@ -6,11 +6,11 @@ export class VimCommand implements Command {
   async execute(
     _args: string[],
     _history: HistoryEntry[],
-    _fileSystem: any[],
-    _dispatch: React.Dispatch<any>,
+    _fileSystem: FileSystemItem[],
+    _dispatch: React.Dispatch<CoreTerminalAction>,
     _currentDirectory: string,
     _onNavigate?: (route: string) => void,
-    state?: any
+    state?: CoreTerminalState
   ): Promise<CommandResult> {
     return [
       {
@@ -23,7 +23,7 @@ export class VimCommand implements Command {
 
   getSuggestions(
     _input: string,
-    _fileSystem: any[],
+    _fileSystem: FileSystemItem[],
     _currentDirectory: string
   ): string[] {
     return [];
