@@ -8,7 +8,7 @@
     "@fortawesome/free-solid-svg-icons": "^6.5.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@types/prismjs": "^1.26.5",
-    "axios": "^1.10.0",
+    "axios": "^1.11.0",
     "focus-trap-react": "^11.0.4",
     "framer-motion": "^11.3.0",
     "prismjs": "^1.30.0",
