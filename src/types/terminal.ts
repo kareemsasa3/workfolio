@@ -1,4 +1,5 @@
 import { ChatMessage } from "../services/aiApi";
+import { ScrapedData } from "../components/ScrapeResults";
 
 export interface FileSystemItem {
   name: string;
@@ -39,7 +40,7 @@ export interface ActiveScrapeJob {
   historyEntryId: number; // The ID of the history line to update
   urls: string[];
   startTime: number; // Timestamp when job was started
-  results?: unknown; // Final results when completed
+  results?: ScrapedData[]; // Final results when completed
   error?: string; // Error message if failed
 }
 
@@ -89,7 +90,7 @@ export type TopAction =
 export interface ScrapingState {
   activeScrapeJobs: Record<string, ActiveScrapeJob>;
   showScrapeResults: boolean;
-  scrapeResults: unknown[];
+  scrapeResults: ScrapedData[];
   currentScrapeJobId: string;
 }
 
@@ -103,7 +104,7 @@ export type ScrapingAction =
   | { type: "REMOVE_SCRAPE_JOB"; payload: string }
   | {
       type: "SHOW_SCRAPE_RESULTS";
-      payload: { results: unknown[]; jobId: string };
+      payload: { results: ScrapedData[]; jobId: string };
     }
   | { type: "HIDE_SCRAPE_RESULTS" };
 
