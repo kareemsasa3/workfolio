@@ -179,17 +179,17 @@ class GrepCommand implements Command {
       if (!fileContent) {
         return [
           ...history,
-          {
-            text: `grep: ${fileName}: No such file or directory`,
-            type: "error",
-          },
+          createHistoryEntry(
+            `grep: ${fileName}: No such file or directory`,
+            "error"
+          ),
         ];
       }
       lines = fileContent.content;
     } else {
       return [
         ...history,
-        { text: "grep: missing file operand", type: "error" },
+        createHistoryEntry("grep: missing file operand", "error"),
       ];
     }
 
@@ -201,18 +201,18 @@ class GrepCommand implements Command {
       .map(({ line, lineNumber }) => `${lineNumber}:${line}`);
 
     if (matches.length === 0) {
-      return [...history, { text: "No matches found", type: "info" }];
+      return [...history, createHistoryEntry("No matches found", "info")];
     }
 
     return [
       ...history,
-      {
-        text: matches.join("\n"),
-        highlightedText: matches
-          .map((match) => `\x1b[1;31m${match}\x1b[0m`)
-          .join("\n"),
-        type: "success",
-      },
+      createHistoryEntry(
+        matches.join("\n"),
+        "success",
+        false,
+        undefined,
+        matches.map((match) => `\x1b[1;31m${match}\x1b[0m`).join("\n")
+      ),
     ];
   }
 
@@ -315,7 +315,7 @@ class CurlCommand implements Command {
     args: string[],
     history: HistoryEntry[],
     _fileSystem: FileSystemItem[],
-    dispatch: React.Dispatch<CoreTerminalAction>,
+    _dispatch: React.Dispatch<CoreTerminalAction>,
     _currentDirectory: string,
     _onNavigate?: (route: string) => void,
     _state?: CoreTerminalState
@@ -325,38 +325,10 @@ class CurlCommand implements Command {
     }
 
     const url = args[0];
-    const jobId = `curl_${Date.now()}`;
-
-    // Add job to active jobs
-    dispatch({
-      type: "ADD_SCRAPE_JOB",
-      payload: {
-        jobId,
-        command: `curl ${url}`,
-        status: "running",
-        progress: 0,
-        historyEntryId: 0,
-        urls: [url],
-        startTime: Date.now(),
-      },
-    });
 
     try {
       const response = await fetch(url);
       const data = await response.text();
-
-      // Update job status
-      dispatch({
-        type: "UPDATE_SCRAPE_JOB",
-        payload: {
-          jobId,
-          updates: {
-            status: "completed",
-            progress: 100,
-            results: data,
-          },
-        },
-      });
 
       return [
         ...history,
@@ -367,18 +339,6 @@ class CurlCommand implements Command {
         createHistoryEntry(data, "success"),
       ];
     } catch (error) {
-      // Update job status
-      dispatch({
-        type: "UPDATE_SCRAPE_JOB",
-        payload: {
-          jobId,
-          updates: {
-            status: "failed",
-            error: error instanceof Error ? error.message : String(error),
-          },
-        },
-      });
-
       return [
         ...history,
         createHistoryEntry(
@@ -606,10 +566,32 @@ export const useTerminal = (
           undefined,
           getFileContentByPath
         );
-        core.dispatch({
-          type: "SET_COMMAND_HISTORY",
-          payload: result,
-        });
+
+        // Handle different result types
+        if (Array.isArray(result)) {
+          // HistoryEntry array
+          core.dispatch({
+            type: "SET_COMMAND_HISTORY",
+            payload: result,
+          });
+        } else if (
+          result &&
+          typeof result === "object" &&
+          "_effect" in result
+        ) {
+          // TypewriterEffect - handle differently
+          console.log("Typewriter effect result:", result);
+        } else if (
+          result &&
+          typeof result === "object" &&
+          "history" in result
+        ) {
+          // PipeResult - use the history
+          core.dispatch({
+            type: "SET_COMMAND_HISTORY",
+            payload: result.history,
+          });
+        }
         return;
       }
 

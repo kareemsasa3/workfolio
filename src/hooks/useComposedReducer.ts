@@ -217,10 +217,12 @@ const scrapingReducer = (
           },
         },
       };
-    case "REMOVE_SCRAPE_JOB":
+    case "REMOVE_SCRAPE_JOB": {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { [action.payload]: removed, ...remainingJobs } =
         state.activeScrapeJobs;
       return { ...state, activeScrapeJobs: remainingJobs };
+    }
     case "SHOW_SCRAPE_RESULTS":
       return {
         ...state,

@@ -1,4 +1,11 @@
-import { Command, CommandResult, HistoryEntry, FileSystemItem, CoreTerminalAction, CoreTerminalState } from "../../../types/terminal";
+import {
+  Command,
+  CommandResult,
+  HistoryEntry,
+  FileSystemItem,
+  CoreTerminalAction,
+  CoreTerminalState,
+} from "../../../types/terminal";
 
 export class VimCommand implements Command {
   name = "vim";

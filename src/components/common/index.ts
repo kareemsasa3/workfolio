@@ -4,4 +4,5 @@ export { default as AppErrorBoundary } from "./AppErrorBoundary";
 export { default as ErrorTestComponent } from "./ErrorTestComponent";
 export { default as Modal } from "./Modal";
 export { default as Toast } from "./Toast";
-export { ToastContainer, useToast } from "./ToastContainer";
+export { ToastContainer } from "./ToastContainer";
+export { useToast } from "./useToast";

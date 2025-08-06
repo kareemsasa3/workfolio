@@ -119,7 +119,7 @@ const TerminalView: React.FC<TerminalViewProps> = ({
               <span
                 dangerouslySetInnerHTML={{
                   __html: line.highlightedText.replace(
-                    /\x1b\[1;31m(.*?)\x1b\[0m/g,
+                    /\\x1b\[1;31m(.*?)\\x1b\[0m/g,
                     '<span class="grep-highlight">$1</span>'
                   ),
                 }}
@@ -136,7 +136,7 @@ const TerminalView: React.FC<TerminalViewProps> = ({
           {isReverseSearch ? (
             <div className="reverse-search-prompt">
               <span className="reverse-search-indicator">
-                (reverse-i-search)`{reverseSearchTerm}':
+                (reverse-i-search)`{reverseSearchTerm}&apos;:
               </span>
               <span className="reverse-search-command">
                 {reverseSearchResults.length > 0

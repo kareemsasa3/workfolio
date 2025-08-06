@@ -77,10 +77,11 @@ function projectsReducer(
         ...initialFilterState, // Reset all filters...
         [action.payload.filterName]: action.payload.value, // ...then apply the new one
       };
-    default:
+    default: {
       // Exhaustive type checking
       const _exhaustiveCheck: never = action;
       throw new Error(`Unhandled action type: ${_exhaustiveCheck}`);
+    }
   }
 }
 
@@ -136,7 +137,7 @@ export function useProjects() {
 
   // Filter and sort projects - fixed array mutation issue
   const filteredAndSortedProjects = useMemo(() => {
-    let filtered = projectsData.filter((project) => {
+    const filtered = projectsData.filter((project) => {
       const categoryMatch = category === "All" || project.category === category;
       const complexityMatch =
         complexity === "All" || project.complexity === complexity;

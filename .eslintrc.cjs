@@ -23,7 +23,7 @@ module.exports = {
     "react/prop-types": "off",
     "@typescript-eslint/no-explicit-any": "warn",
     "react/no-unescaped-entities": "warn",
-    "@typescript-eslint/no-unused-vars": "warn",
+    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }],
     "react-hooks/exhaustive-deps": "warn",
     "no-control-regex": "warn",
     "no-case-declarations": "warn",

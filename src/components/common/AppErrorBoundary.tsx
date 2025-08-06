@@ -47,8 +47,8 @@ class AppErrorBoundary extends Component<Props, State> {
           <div className="error-content">
             <h1>🚨 Critical Error</h1>
             <p>
-              We're sorry, but the application has encountered a critical error.
-              This has been logged and our team will investigate.
+              We&apos;re sorry, but the application has encountered a critical
+              error. This has been logged and our team will investigate.
             </p>
 
             <div className="error-actions">

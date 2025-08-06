@@ -38,7 +38,8 @@ const STORAGE_KEYS = {
 const validateDockSettings = (settings: unknown) => {
   if (!settings || typeof settings !== "object") return false;
 
-  const { dockSize, dockStiffness, magnification } = settings;
+  const settingsObj = settings as Record<string, unknown>;
+  const { dockSize, dockStiffness, magnification } = settingsObj;
 
   return (
     typeof dockSize === "number" &&

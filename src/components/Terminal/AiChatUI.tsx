@@ -120,7 +120,7 @@ export const AiChatUI: React.FC<AiChatUIProps> = ({
           <div className="ai-chat-welcome">
             <div className="ai-chat-welcome-icon">🤖</div>
             <div className="ai-chat-welcome-title">
-              Hello! I'm your AI assistant.
+              Hello! I&apos;m your AI assistant.
             </div>
             <div className="ai-chat-welcome-message">
               I can help you explore this portfolio, answer questions about the

@@ -1,6 +1,6 @@
-import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { useLayoutContext } from "../../contexts/LayoutContext";
+import { motion } from "framer-motion";
+import { useLayoutContext, PageSection } from "../../contexts/LayoutContext";
 import { useWindowSize } from "../../hooks/useWindowSize";
 import "./GlobalSectionNavigation.css";
 
@@ -44,7 +44,7 @@ const GlobalSectionNavigation = ({
           let closestToTop = "";
           let minDistance = Infinity;
 
-          sections.forEach((section) => {
+          sections.forEach((section: PageSection) => {
             const element = document.getElementById(section.id);
             if (element) {
               const rect = element.getBoundingClientRect();
@@ -79,7 +79,7 @@ const GlobalSectionNavigation = ({
     );
 
     // Observe all section elements
-    sections.forEach((section) => {
+    sections.forEach((section: PageSection) => {
       const element = document.getElementById(section.id);
       if (element) {
         observer.observe(element);
@@ -147,7 +147,7 @@ const GlobalSectionNavigation = ({
       transition={{ duration: 0.3, ease: "easeInOut" }}
     >
       <ul className="nav-dots">
-        {sections.map((section) => (
+        {sections.map((section: PageSection) => (
           <li key={section.id}>
             <motion.button
               className={`nav-dot ${

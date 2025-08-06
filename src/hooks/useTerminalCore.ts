@@ -1,4 +1,4 @@
-import { useRef, useCallback, useReducer, useEffect, useState } from "react";
+import { useRef, useCallback, useReducer, useEffect } from "react";
 import {
   FileSystemItem,
   HistoryEntry,
@@ -9,12 +9,12 @@ import {
 } from "../types/terminal";
 import { manPages } from "../data/manPages";
 
-// Type definition for TypewriterEffect
-interface TypewriterEffect {
-  start: () => void;
-  stop: () => void;
-  isRunning: boolean;
-}
+// Type definition for TypewriterEffect (unused for now)
+// interface TypewriterEffect {
+//   start: () => void;
+//   stop: () => void;
+//   isRunning: boolean;
+// }
 
 // Core terminal reducer function - handles basic terminal operations
 const coreTerminalReducer = (
@@ -541,7 +541,7 @@ export const useTerminalCore = (
   onNavigate: (route: string) => void
 ) => {
   // State for managing typewriter effects (unused for now)
-  const [_typewriter, _setTypewriter] = useState<TypewriterEffect | null>(null);
+  // const [_typewriter, _setTypewriter] = useState<TypewriterEffect | null>(null);
 
   // Load initial state from localStorage
   const getInitialState = (): CoreTerminalState => {

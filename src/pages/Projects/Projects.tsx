@@ -123,7 +123,8 @@ const Projects = () => {
           >
             <span className="stat-number">{stats.expertProjectCount}</span>
             <span className="stat-label">
-              <span className="terminal-prompt">$</span> grep "Expert" projects
+              <span className="terminal-prompt">$</span> grep &quot;Expert&quot;
+              projects
             </span>
           </button>
           <button
@@ -134,7 +135,8 @@ const Projects = () => {
           >
             <span className="stat-number">{stats.liveProjectCount}</span>
             <span className="stat-label">
-              <span className="terminal-prompt">$</span> grep "Live" projects
+              <span className="terminal-prompt">$</span> grep &quot;Live&quot;
+              projects
             </span>
           </button>
           <button
@@ -207,7 +209,7 @@ const Projects = () => {
             <div className="terminal-output">
               <div className="terminal-line">
                 <span className="terminal-prompt">$</span> cat projects/*.json |
-                jq '.title'
+                jq &apos;.title&apos;
               </div>
               <ProjectsList projects={data.filteredAndSortedProjects} />
             </div>

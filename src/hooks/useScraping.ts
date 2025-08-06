@@ -33,13 +33,14 @@ const scrapingReducer = (
         },
       };
 
-    case "REMOVE_SCRAPE_JOB":
-      const { [action.payload]: removed, ...remainingJobs } =
+    case "REMOVE_SCRAPE_JOB": {
+      const { [action.payload]: _removed, ...remainingJobs } =
         state.activeScrapeJobs;
       return {
         ...state,
         activeScrapeJobs: remainingJobs,
       };
+    }
 
     case "SHOW_SCRAPE_RESULTS":
       return {
@@ -97,12 +98,18 @@ export const useScraping = () => {
               {
                 url: "https://example.com",
                 title: "Example Page",
-                status: "success",
+                status: 200,
+                size: 1024,
+                scraped: "2024-01-01T00:00:00Z",
+                content: "Example page content...",
               },
               {
                 url: "https://test.com",
                 title: "Test Page",
-                status: "success",
+                status: 200,
+                size: 2048,
+                scraped: "2024-01-01T00:00:00Z",
+                content: "Test page content...",
               },
             ];
 
@@ -150,9 +157,12 @@ export const useScraping = () => {
     dispatch({ type: "REMOVE_SCRAPE_JOB", payload: jobId });
   }, []);
 
-  const showScrapeResults = useCallback((results: ScrapedData[], jobId: string) => {
-    dispatch({ type: "SHOW_SCRAPE_RESULTS", payload: { results, jobId } });
-  }, []);
+  const showScrapeResults = useCallback(
+    (results: ScrapedData[], jobId: string) => {
+      dispatch({ type: "SHOW_SCRAPE_RESULTS", payload: { results, jobId } });
+    },
+    []
+  );
 
   const hideScrapeResults = useCallback(() => {
     dispatch({ type: "HIDE_SCRAPE_RESULTS" });

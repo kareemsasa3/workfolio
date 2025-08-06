@@ -1,27 +1,8 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-} from "react";
+import React, { useState, useEffect, ReactNode } from "react";
+import { ThemeContext } from "./ThemeContextTypes";
 
-type Theme = "light" | "dark";
-
-interface ThemeContextType {
-  theme: Theme;
-  toggleTheme: () => void;
-}
-
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
-
-export const useTheme = () => {
-  const context = useContext(ThemeContext);
-  if (context === undefined) {
-    throw new Error("useTheme must be used within a ThemeProvider");
-  }
-  return context;
-};
+// Export the Theme type
+export type Theme = "light" | "dark";
 
 interface ThemeProviderProps {
   children: ReactNode;
@@ -113,7 +94,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   }, [theme]);
 
   const toggleTheme = () => {
-    setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
+    setTheme((prevTheme: Theme) => (prevTheme === "light" ? "dark" : "light"));
   };
 
   return (
@@ -122,3 +103,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     </ThemeContext.Provider>
   );
 };
+
+// Re-export the useTheme hook
+// eslint-disable-next-line react-refresh/only-export-components
+export { useTheme } from "./useTheme";

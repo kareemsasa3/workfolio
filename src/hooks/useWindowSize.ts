@@ -15,7 +15,8 @@ export const useWindowSize = (debounceMs = 100): WindowSize => {
   // Memoize the debounced function to ensure it's stable across renders
   const debouncedSetSize = useMemo(
     () =>
-      debounce((width: number, height: number) => {
+      debounce((...args: unknown[]) => {
+        const [width, height] = args as [number, number];
         setSize({ width, height });
       }, debounceMs),
     [debounceMs]

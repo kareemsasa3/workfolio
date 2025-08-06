@@ -200,6 +200,48 @@ export type CoreTerminalAction =
   | {
       type: "ADD_FILE_TO_FILESYSTEM";
       payload: { path: string; content: string; filename: string };
+    }
+  // Top command actions
+  | { type: "SHOW_TOP_COMMAND" }
+  | { type: "HIDE_TOP_COMMAND" }
+  | { type: "UPDATE_TOP_PROCESSES"; payload: ProcessInfo[] }
+  | {
+      type: "SET_TOP_SORT";
+      payload: {
+        field: "cpu" | "memory" | "pid" | "name";
+        order: "asc" | "desc";
+      };
+    }
+  | { type: "SET_TOP_REFRESH_RATE"; payload: number }
+  | { type: "SET_TOP_SELECTED_PID"; payload: number | null }
+  | { type: "KILL_TOP_PROCESS"; payload: number }
+  // Scraping actions
+  | { type: "ADD_SCRAPE_JOB"; payload: ActiveScrapeJob }
+  | {
+      type: "UPDATE_SCRAPE_JOB";
+      payload: { jobId: string; updates: Partial<ActiveScrapeJob> };
+    }
+  | { type: "REMOVE_SCRAPE_JOB"; payload: string }
+  | {
+      type: "SHOW_SCRAPE_RESULTS";
+      payload: { results: ScrapedData[]; jobId: string };
+    }
+  | { type: "HIDE_SCRAPE_RESULTS" }
+  // AI Chat actions
+  | { type: "START_AI_CHAT" }
+  | { type: "EXIT_AI_CHAT" }
+  | { type: "ADD_AI_MESSAGE"; payload: ChatMessage }
+  | { type: "SET_AI_TYPING"; payload: boolean }
+  | { type: "SET_AI_INPUT_VALUE"; payload: string }
+  | { type: "CLEAR_AI_CHAT_HISTORY" }
+  | {
+      type: "SET_AI_CHAT_STATE";
+      payload: {
+        isChatting: boolean;
+        history?: ChatMessage[];
+        isTyping?: boolean;
+        inputValue?: string;
+      };
     };
 
 // Combined state for backward compatibility (will be removed after refactor)

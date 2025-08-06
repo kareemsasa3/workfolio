@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useReducer } from "react";
+import React, { useEffect, useRef, useReducer, useCallback } from "react";
 import "./AiConversations.css";
 import { sendMessageToAI } from "../../services/aiApi";
 import TypeWriterText from "../../components/TypeWriterText";
@@ -266,6 +266,65 @@ const AiConversations: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const isInitialLoad = useRef(true);
 
+  // Type guard for conversation items
+  function isConversationItem(item: unknown): item is {
+    id?: number | string;
+    timestamp?: number;
+    userMessage?: string;
+    aiResponse?: string;
+    messages?: unknown[];
+  } {
+    return (
+      item !== null &&
+      typeof item === "object" &&
+      ((item as Record<string, unknown>).userMessage !== undefined ||
+        (item as Record<string, unknown>).messages !== undefined)
+    );
+  }
+
+  // Migrate old conversation format to new format
+  const migrateOldFormat = useCallback((data: unknown[]): Conversation[] => {
+    return data
+      .map((item) => {
+        if (!isConversationItem(item)) {
+          return null;
+        }
+
+        // Check if it's the old format (has userMessage and aiResponse directly)
+        if (item.userMessage && item.aiResponse && !item.messages) {
+          // Convert old format to new format
+          return {
+            id: item.id?.toString() || generateUniqueId(),
+            timestamp: item.timestamp || Date.now(),
+            messages: [
+              {
+                id: item.id?.toString() || generateUniqueId(),
+                timestamp: item.timestamp || Date.now(),
+                userMessage: item.userMessage,
+                aiResponse: item.aiResponse,
+                isNew: false,
+              },
+            ],
+          };
+        }
+
+        // If it's already the new format, return as is
+        if (item.messages && Array.isArray(item.messages)) {
+          // Ensure the item has the correct Conversation structure
+          const conversation = item as Record<string, unknown>;
+          return {
+            id: conversation.id?.toString() || generateUniqueId(),
+            timestamp: conversation.timestamp || Date.now(),
+            messages: conversation.messages || [],
+          };
+        }
+
+        // Skip invalid items
+        return null;
+      })
+      .filter(Boolean) as Conversation[];
+  }, []);
+
   useEffect(() => {
     // Load conversations from localStorage
     const savedConversations = localStorage.getItem("ai-conversations");
@@ -285,7 +344,7 @@ const AiConversations: React.FC = () => {
         localStorage.removeItem("ai-conversations");
       }
     }
-  }, []);
+  }, [migrateOldFormat]);
 
   // Optimized scroll effect - only triggers when a new message is added
   useEffect(() => {
@@ -312,41 +371,6 @@ const AiConversations: React.FC = () => {
       isInitialLoad.current = false;
     }
   }, [state.conversations]);
-
-  // Migrate old conversation format to new format
-  const migrateOldFormat = (data: unknown[]): Conversation[] => {
-    if (!Array.isArray(data)) return [];
-
-    return data
-      .map((item) => {
-        // Check if it's the old format (has userMessage and aiResponse directly)
-        if (item.userMessage && item.aiResponse && !item.messages) {
-          // Convert old format to new format
-          return {
-            id: item.id || generateUniqueId(),
-            timestamp: item.timestamp || Date.now(),
-            messages: [
-              {
-                id: item.id || generateUniqueId(),
-                timestamp: item.timestamp || Date.now(),
-                userMessage: item.userMessage,
-                aiResponse: item.aiResponse,
-                isNew: false,
-              },
-            ],
-          };
-        }
-
-        // If it's already the new format, return as is
-        if (item.messages && Array.isArray(item.messages)) {
-          return item;
-        }
-
-        // Skip invalid items
-        return null;
-      })
-      .filter(Boolean) as Conversation[];
-  };
 
   const formatDate = (timestamp: number) => {
     return new Date(timestamp).toLocaleString();
@@ -478,7 +502,7 @@ const AiConversations: React.FC = () => {
                 <div className="welcome-icon">💬</div>
                 <h2>New Conversation Started!</h2>
                 <p>
-                  You're in a fresh conversation. Send a message to begin
+                  You&apos;re in a fresh conversation. Send a message to begin
                   chatting.
                 </p>
               </div>

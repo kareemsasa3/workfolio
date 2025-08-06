@@ -1,28 +1,5 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  ReactNode,
-  useEffect,
-} from "react";
-
-interface SettingsContextType {
-  isSettingsOpen: boolean;
-  toggleSettings: () => void;
-  closeSettings: () => void;
-}
-
-const SettingsContext = createContext<SettingsContextType | undefined>(
-  undefined
-);
-
-export const useSettings = () => {
-  const context = useContext(SettingsContext);
-  if (context === undefined) {
-    throw new Error("useSettings must be used within a SettingsProvider");
-  }
-  return context;
-};
+import React, { useState, ReactNode, useEffect } from "react";
+import { SettingsContext } from "./SettingsContextTypes";
 
 interface SettingsProviderProps {
   children: ReactNode;
@@ -61,3 +38,7 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({
     </SettingsContext.Provider>
   );
 };
+
+// Re-export the useSettings hook
+// eslint-disable-next-line react-refresh/only-export-components
+export { useSettings } from "./useSettings";

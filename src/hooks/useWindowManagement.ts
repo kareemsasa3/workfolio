@@ -132,19 +132,16 @@ export const useWindowManagement = (options: UseWindowManagementOptions) => {
   }, [initialWidth, initialHeight]);
 
   // Debounced resize handler
-  const debouncedResize = useCallback(
-    debounce(() => {
-      const { width, height } = dimensionsRef.current;
-      dispatch({ type: "RESIZE", payload: { width, height } });
-    }, 100),
-    [dispatch]
-  );
+  const debouncedResize = useCallback(() => {
+    const { width, height } = dimensionsRef.current;
+    dispatch({ type: "RESIZE", payload: { width, height } });
+  }, [dispatch]);
 
   // Handle window resize
   useEffect(() => {
-    const handleResize = () => {
+    const handleResize = debounce(() => {
       debouncedResize();
-    };
+    }, 100);
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);

@@ -1,6 +1,5 @@
 import React, {
   createContext,
-  useContext,
   useState,
   ReactNode,
   useRef,
@@ -80,15 +79,8 @@ export const LayoutContextProvider = ({
   );
 };
 
-// Create a custom hook for easy consumption
-export const useLayoutContext = () => {
-  const context = useContext(LayoutContext);
-  if (!context) {
-    throw new Error(
-      "useLayoutContext must be used within a LayoutContextProvider"
-    );
-  }
-  return context;
-};
-
 export default LayoutContext;
+
+// Re-export the useLayoutContext hook
+// eslint-disable-next-line react-refresh/only-export-components
+export { useLayoutContext } from "./useLayoutContext";
