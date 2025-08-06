@@ -28,26 +28,11 @@ RUN apk update && apk add --no-cache curl
 # Remove the default nginx website
 RUN rm -rf /usr/share/nginx/html/*
 
-# Create a simple nginx configuration for the SPA
-RUN echo 'server { \
-    listen 80; \
-    server_name localhost; \
-    root /usr/share/nginx/html; \
-    index index.html; \
-    location / { \
-        try_files $uri $uri/ /index.html; \
-    } \
-    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ { \
-        expires 1y; \
-        add_header Cache-Control "public, immutable"; \
-    } \
-}' > /etc/nginx/conf.d/default.conf
+# Copy the custom nginx configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy the built application from the builder stage
 COPY --from=builder /app/build /usr/share/nginx/html
-
-# The base nginx:alpine image's entrypoint will handle permissions
-# and starting the server correctly. No need for USER, chown, or mkdir.
 
 # Expose port
 EXPOSE 80
