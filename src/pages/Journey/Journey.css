@@ -1,48 +1,74 @@
-/* Journey.css - Fully Refactored */
+/*
+========================================
+JOURNEY PAGE THEME
+----------------------------------------
+Styles for the professional journey timeline,
+featuring a central line and sticky era
+headers.
+========================================
+
+TABLE OF CONTENTS
+----------------------------------------
+1.  PAGE LAYOUT & HEADER
+2.  TIMELINE STRUCTURE
+3.  TIMELINE COMPONENTS
+4.  RESPONSIVE DESIGN (MEDIA QUERIES)
+
+*/
+
+
+/* ========================================
+   1. PAGE LAYOUT & HEADER
+   ======================================== */
 
 .journey-page {
-    padding: 40px 20px;
     max-width: 900px;
     margin: 0 auto;
+    padding: 40px 20px;
     color: var(--text-color);
 }
 
 .journey-header {
-    text-align: left;
-    margin-bottom: 60px;
     max-width: 800px;
+    margin-bottom: 60px;
+    text-align: left;
 }
 
 .journey-title {
+    margin-bottom: 10px;
+    font-family: 'Courier New', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
     font-size: 2.5rem;
     font-weight: 700;
-    margin-bottom: 10px;
-    color: var(--primary-color);
-    font-family: 'Courier New', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-    text-transform: uppercase;
     letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--primary-color);
     text-shadow: 0 2px 4px var(--shadow-color);
 }
 
 .journey-subtitle {
-    font-size: 1.1rem;
-    color: var(--terminal-text-light);
     max-width: 600px;
     margin: 0;
-    line-height: 1.6;
     font-family: 'Courier New', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 1.1rem;
     font-weight: 400;
+    line-height: 1.6;
+    color: var(--terminal-text-light);
     opacity: 0.8;
 }
+
+
+/* ========================================
+     2. TIMELINE STRUCTURE
+     ======================================== */
 
 .timeline-container {
     position: relative;
     width: 100%;
-    /* Performance optimization: hint to browser about potential position changes */
+    /* Performance hint for animations and sticky positioning */
     will-change: transform;
 }
 
-/* The central line of the timeline */
+/* The central vertical line of the timeline */
 .timeline-container::before {
     content: "";
     position: absolute;
@@ -51,11 +77,15 @@
     left: 50%;
     width: 3px;
     background: var(--border-color);
-    transform: translateX(-50%);
     border-radius: 3px;
+    transform: translateX(-50%);
 }
 
-/* A single era section container */
+
+/* ========================================
+     3. TIMELINE COMPONENTS
+     ======================================== */
+
 .timeline-era {
     padding: 60px 0;
 }
@@ -64,49 +94,67 @@
     padding-top: 20px;
 }
 
-/* --- FIX for Issue #1: Era Header Styling --- */
+/* The sticky header for each major era (e.g., "Education", "Career") */
 .timeline-era-header {
+    /* Positioning */
     position: sticky;
+    z-index: 2;
+    /* Sits above timeline items and the central line */
     top: var(--header-height);
-    display: inline-block;
     left: 50%;
     transform: translateX(-50%);
+
+    /* Layout & Box Model */
+    display: inline-block;
+    margin-bottom: 50px;
     padding: 12px 25px;
+
+    /* Appearance */
     background-color: var(--panel-bg-color);
-    color: var(--primary-color);
     border: 2px solid var(--primary-color);
     border-radius: 20px;
+    box-shadow: 0 4px 10px var(--shadow-color);
+
+    /* Typography */
+    color: var(--primary-color);
     font-size: 1.1rem;
     font-weight: 600;
-    margin-bottom: 50px;
-    z-index: 2;
-    /* Sits on top of the timeline line and items */
     text-align: center;
-    box-shadow: 0 4px 10px var(--shadow-color);
 }
 
-/* Responsive adjustments */
+
+/* ========================================
+     4. RESPONSIVE DESIGN (MEDIA QUERIES)
+     ======================================== */
+
 @media screen and (max-width: 768px) {
+
+    /* --- Header Adjustments --- */
     .journey-title {
         font-size: 2rem;
     }
 
     .journey-subtitle {
-        font-size: 1rem;
         margin-bottom: 40px;
+        font-size: 1rem;
     }
 
+    /* --- Timeline Adjustments --- */
     .timeline-container::before {
         left: 20px;
+        /* Move line to the left */
     }
 
     .timeline-era-header {
+        /* Align with the new line position on mobile */
         left: 20px;
-        /* Align with the line on mobile */
         transform: translateX(0);
+
+        /* Adjust width and positioning for the new layout */
         width: calc(100% - 40px);
         margin-left: 40px;
-        /* Use a smaller top offset for mobile to account for smaller header */
+
+        /* Smaller top offset for potentially smaller mobile headers */
         top: calc(var(--header-height) - 20px);
     }
 }

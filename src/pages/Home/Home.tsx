@@ -13,7 +13,7 @@ import {
 } from "./sections";
 
 const Home = () => {
-  const { navigateToProjects, openResume } = useNavigation();
+  const { navigateToProjects } = useNavigation();
   const { setSections } = useLayoutContext();
 
   // Define the sections for this page
@@ -75,12 +75,6 @@ const Home = () => {
     navigateToProjects();
   };
 
-  const handleOpenResume = () => {
-    // Remove loading state complexity for synchronous operations
-    // Let CSS :active pseudo-class handle the visual feedback
-    openResume();
-  };
-
   const handleIntroComplete = () => {
     setHasShownHomeIntro(true);
     localStorage.setItem("home-intro-shown", "true");
@@ -95,9 +89,7 @@ const Home = () => {
             hasShownHomeIntro={hasShownHomeIntro}
             onIntroComplete={handleIntroComplete}
             onNavigateToProjects={handleNavigateToProjects}
-            onOpenResume={handleOpenResume}
             isNavigatingToProjects={loadingStates.projects}
-            isOpeningResume={false} // Simplified - no loading state needed
           />
         </motion.div>
 

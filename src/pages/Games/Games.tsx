@@ -1,36 +1,33 @@
-import { Link } from "react-router-dom";
+import { gamesData } from "../../data/gamesData";
+import GameCard from "../../components/GameCard";
 import "./Games.css";
 
 const Games = () => {
   return (
     <div className="page-content">
-      <div className="games-title">Mini Games</div>
-      <div className="games-grid">
-        <Link to="/games/snake" className="game-card">
-          <div className="game-card-content">
-            <h3>Snake Game</h3>
-            <p>Classic snake game with wrap-around edges</p>
-            <div className="game-preview">
-              <div className="snake-preview">
-                <div className="snake-segment-preview"></div>
-                <div className="snake-segment-preview"></div>
-                <div className="snake-segment-preview"></div>
-                <div className="food-preview"></div>
-              </div>
-            </div>
-            <div className="play-button">Play Now</div>
-          </div>
-        </Link>
+      <div className="games-container">
+        <div className="games-header">
+          <h1 className="games-title">Mini Games</h1>
+          <p className="games-subtitle">
+            Interactive games and experiences built with modern web technologies
+          </p>
+        </div>
+        
+        <div className="games-grid">
+          {gamesData.map((game) => (
+            <GameCard key={game.id} {...game} />
+          ))}
 
-        {/* Future games will be added here */}
-        <div className="game-card coming-soon">
-          <div className="game-card-content">
-            <h3>Coming Soon</h3>
-            <p>More games are in development...</p>
-            <div className="game-preview">
-              <div className="placeholder">🎮</div>
-            </div>
-          </div>
+          {/* Coming Soon Card */}
+          <GameCard
+            id="coming-soon"
+            title="Coming Soon"
+            description="More games are in development..."
+            path=""
+            previewType="placeholder"
+            isAvailable={false}
+            isComingSoon={true}
+          />
         </div>
       </div>
     </div>

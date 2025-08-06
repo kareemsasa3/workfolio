@@ -25,7 +25,6 @@
     position: fixed;
     bottom: 20px;
     right: 20px;
-    width: fit-content;
     max-width: 90vw;
 
     display: flex;
@@ -34,6 +33,7 @@
     /* This makes icons sit on the "floor" */
     gap: 12px;
     padding: 8px 12px;
+    /* Width determined by flexbox content for optimal performance */
 
     background: var(--dock-background);
     border-radius: 16px;
@@ -228,3 +228,10 @@
 /* Handle dock positioning when settings are open on smaller screens */
 /* Note: Transform is now handled entirely by Framer Motion via shiftAmount state */
 /* CSS transform overrides have been removed to prevent conflicts with JavaScript animations */
+/* 
+ * Final refinements implemented:
+ * - useWindowSize hook for declarative window size tracking
+ * - Removed redundant onHoverEnd event (onMouseLeave is sufficient)
+ * - Optimized width calculation using flexbox instead of fit-content
+ * - Cleaner dependency management in useEffect
+ */

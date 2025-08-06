@@ -2,8 +2,10 @@ import "./Work.css";
 import { motion } from "framer-motion";
 import { workExperienceData } from "../../data/workExperience";
 import WorkDetails from "../../components/WorkDetails";
+import TypeWriterText from "../../components/TypeWriterText";
 import React, { useEffect } from "react";
 import { useLayoutContext, PageSection } from "../../contexts/LayoutContext";
+import { useLocation } from "react-router-dom";
 
 // Create sections outside the component to prevent recreation on every render
 const workSections: PageSection[] = workExperienceData.map((exp) => ({
@@ -16,6 +18,9 @@ const Work = () => {
     "Work component rendering, data length:",
     workExperienceData?.length
   );
+
+  // Get the current location to create a key for TypeWriterText
+  const location = useLocation();
 
   // Check if data is available
   if (!workExperienceData || workExperienceData.length === 0) {
@@ -49,7 +54,14 @@ const Work = () => {
       transition={{ duration: 0.3 }}
     >
       <header className="work-header">
-        <h1 className="work-title">Work Experience</h1>
+        <h1 className="work-title">
+          <TypeWriterText
+            key={`work-title-${location.pathname}`}
+            text="Work Experience"
+            speed={400}
+            delay={600}
+          />
+        </h1>
       </header>
       <div className="work-timeline-container">
         {workExperienceData.map((exp, index) => (

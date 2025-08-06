@@ -1,7 +1,12 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef, useReducer } from "react";
 import "./AiConversations.css";
 import { sendMessageToAI } from "../../services/aiApi";
 import TypeWriterText from "../../components/TypeWriterText";
+
+// Utility function to generate unique IDs
+const generateUniqueId = (): string => {
+  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+};
 
 interface Message {
   id: string;
@@ -17,17 +22,245 @@ interface Conversation {
   messages: Message[];
 }
 
+// Define the state shape
+interface ChatState {
+  conversations: Conversation[];
+  activeConversationId: string | null;
+  currentMessage: string;
+  viewMode: "chat" | "history";
+  status: "idle" | "typing" | "error";
+  pendingMessage: Message | null;
+  lastMessageId: string | null;
+}
+
+// Define the actions
+type ChatAction =
+  | { type: "LOAD_CONVERSATIONS"; payload: Conversation[] }
+  | { type: "START_NEW_CONVERSATION" }
+  | { type: "SET_VIEW_MODE"; payload: "chat" | "history" }
+  | { type: "SET_CURRENT_MESSAGE"; payload: string }
+  | { type: "SEND_MESSAGE_START"; payload: { message: string } }
+  | {
+      type: "SEND_MESSAGE_SUCCESS";
+      payload: { aiResponse: string };
+    }
+  | { type: "SEND_MESSAGE_ERROR" }
+  | {
+      type: "CLEAR_NEW_FLAG";
+      payload: { conversationId: string; messageId: string };
+    }
+  | { type: "DELETE_CONVERSATION"; payload: string }
+  | { type: "CLEAR_ALL_CONVERSATIONS" }
+  | { type: "SELECT_CONVERSATION"; payload: string };
+
+// Initial state
+const initialState: ChatState = {
+  conversations: [],
+  activeConversationId: null,
+  currentMessage: "",
+  viewMode: "chat",
+  status: "idle",
+  pendingMessage: null,
+  lastMessageId: null,
+};
+
+// The reducer function
+function chatReducer(state: ChatState, action: ChatAction): ChatState {
+  switch (action.type) {
+    case "LOAD_CONVERSATIONS":
+      return {
+        ...state,
+        conversations: action.payload,
+        activeConversationId:
+          action.payload.length > 0 ? action.payload[0].id : null,
+      };
+
+    case "START_NEW_CONVERSATION": {
+      const newConversation = {
+        id: generateUniqueId(),
+        timestamp: Date.now(),
+        messages: [],
+      };
+      const updatedConversations = [newConversation, ...state.conversations];
+
+      // Save to localStorage
+      localStorage.setItem(
+        "ai-conversations",
+        JSON.stringify(updatedConversations)
+      );
+
+      return {
+        ...state,
+        conversations: updatedConversations,
+        activeConversationId: newConversation.id,
+        pendingMessage: null,
+        viewMode: "chat",
+      };
+    }
+
+    case "SET_VIEW_MODE":
+      return {
+        ...state,
+        viewMode: action.payload,
+      };
+
+    case "SET_CURRENT_MESSAGE":
+      return {
+        ...state,
+        currentMessage: action.payload,
+      };
+
+    case "SEND_MESSAGE_START": {
+      const pendingMessageData = {
+        id: generateUniqueId(),
+        timestamp: Date.now(),
+        userMessage: action.payload.message,
+        aiResponse: "", // Empty for now
+        isNew: true, // It's new from the start
+      };
+
+      return {
+        ...state,
+        currentMessage: "",
+        status: "typing",
+        pendingMessage: pendingMessageData,
+      };
+    }
+
+    case "SEND_MESSAGE_SUCCESS": {
+      // Guard against this action being called without a pending message
+      if (!state.pendingMessage) return state;
+
+      // 1. Create the final message by updating the pending one.
+      const completedMessage: Message = {
+        ...state.pendingMessage,
+        aiResponse: action.payload.aiResponse,
+      };
+
+      // 2. Your existing logic for finding/creating the conversation.
+      let updatedConversations = [...state.conversations];
+      let activeConvId = state.activeConversationId;
+
+      // If no conversations exist, create the first one.
+      if (updatedConversations.length === 0) {
+        const newConversation = {
+          id: generateUniqueId(),
+          timestamp: Date.now(),
+          messages: [completedMessage],
+        };
+        updatedConversations = [newConversation];
+        activeConvId = newConversation.id;
+      } else {
+        // Add to the active conversation.
+        const activeConvIndex = updatedConversations.findIndex(
+          (c) => c.id === activeConvId
+        );
+        if (activeConvIndex !== -1) {
+          const newMessages = [
+            ...updatedConversations[activeConvIndex].messages,
+            completedMessage,
+          ];
+          updatedConversations[activeConvIndex] = {
+            ...updatedConversations[activeConvIndex],
+            messages: newMessages,
+            timestamp: Date.now(),
+          };
+        }
+      }
+
+      // Limit total conversations to 50
+      if (updatedConversations.length > 50) {
+        updatedConversations.splice(50);
+      }
+
+      // 3. Save to localStorage
+      localStorage.setItem(
+        "ai-conversations",
+        JSON.stringify(updatedConversations)
+      );
+
+      // 4. Return the new state, clearing the pending message.
+      return {
+        ...state,
+        conversations: updatedConversations,
+        activeConversationId: activeConvId,
+        status: "idle",
+        pendingMessage: null, // It's no longer pending!
+        lastMessageId: completedMessage.id,
+      };
+    }
+
+    case "SEND_MESSAGE_ERROR":
+      return {
+        ...state,
+        status: "error",
+        pendingMessage: null,
+      };
+
+    case "CLEAR_NEW_FLAG": {
+      const { conversationId, messageId } = action.payload;
+      const updatedConversations = state.conversations.map((conv) => {
+        if (conv.id === conversationId) {
+          return {
+            ...conv,
+            messages: conv.messages.map((msg) =>
+              msg.id === messageId ? { ...msg, isNew: false } : msg
+            ),
+          };
+        }
+        return conv;
+      });
+
+      localStorage.setItem(
+        "ai-conversations",
+        JSON.stringify(updatedConversations)
+      );
+
+      return {
+        ...state,
+        conversations: updatedConversations,
+      };
+    }
+
+    case "DELETE_CONVERSATION": {
+      const updatedConversations = state.conversations.filter(
+        (conv) => conv.id !== action.payload
+      );
+      localStorage.setItem(
+        "ai-conversations",
+        JSON.stringify(updatedConversations)
+      );
+
+      return {
+        ...state,
+        conversations: updatedConversations,
+        activeConversationId:
+          updatedConversations.length > 0 ? updatedConversations[0].id : null,
+      };
+    }
+
+    case "CLEAR_ALL_CONVERSATIONS":
+      localStorage.removeItem("ai-conversations");
+      return {
+        ...state,
+        conversations: [],
+        activeConversationId: null,
+      };
+
+    case "SELECT_CONVERSATION":
+      return {
+        ...state,
+        activeConversationId: action.payload,
+        viewMode: "chat",
+      };
+
+    default:
+      return state;
+  }
+}
+
 const AiConversations: React.FC = () => {
-  const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [selectedConversation, setSelectedConversation] =
-    useState<Conversation | null>(null);
-  const [currentMessage, setCurrentMessage] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
-  const [viewMode, setViewMode] = useState<"chat" | "history">("chat");
-  const [pendingMessage, setPendingMessage] = useState<Message | null>(null);
-  const [activeConversationId, setActiveConversationId] = useState<
-    string | null
-  >(null);
+  const [state, dispatch] = useReducer(chatReducer, initialState);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -42,7 +275,10 @@ const AiConversations: React.FC = () => {
 
         // Migrate old format to new format if needed
         const migratedConversations = migrateOldFormat(parsed);
-        setConversations(migratedConversations);
+        dispatch({
+          type: "LOAD_CONVERSATIONS",
+          payload: migratedConversations,
+        });
       } catch (error) {
         console.error("Failed to parse saved conversations:", error);
         // Clear corrupted data
@@ -50,6 +286,32 @@ const AiConversations: React.FC = () => {
       }
     }
   }, []);
+
+  // Optimized scroll effect - only triggers when a new message is added
+  useEffect(() => {
+    if (state.lastMessageId && messagesContainerRef.current) {
+      const container = messagesContainerRef.current;
+
+      // Check if the user is near the bottom
+      const isScrolledToBottom =
+        container.scrollHeight - container.clientHeight <=
+        container.scrollTop + 100;
+
+      if (isScrolledToBottom) {
+        // Let the browser handle the smooth animation
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  }, [state.lastMessageId]);
+
+  // Initial scroll to bottom on first load
+  useEffect(() => {
+    if (isInitialLoad.current && messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop =
+        messagesContainerRef.current.scrollHeight;
+      isInitialLoad.current = false;
+    }
+  }, [state.conversations]);
 
   // Migrate old conversation format to new format
   const migrateOldFormat = (data: any[]): Conversation[] => {
@@ -61,11 +323,11 @@ const AiConversations: React.FC = () => {
         if (item.userMessage && item.aiResponse && !item.messages) {
           // Convert old format to new format
           return {
-            id: item.id || Date.now().toString(),
+            id: item.id || generateUniqueId(),
             timestamp: item.timestamp || Date.now(),
             messages: [
               {
-                id: item.id || Date.now().toString(),
+                id: item.id || generateUniqueId(),
                 timestamp: item.timestamp || Date.now(),
                 userMessage: item.userMessage,
                 aiResponse: item.aiResponse,
@@ -86,142 +348,44 @@ const AiConversations: React.FC = () => {
       .filter(Boolean) as Conversation[];
   };
 
-  useEffect(() => {
-    // Use a separate ref for the scrollable container itself
-    const container = messagesContainerRef.current;
-
-    if (container) {
-      // We only want to auto-scroll if the user is already near the bottom.
-      // This prevents the view from jumping if the user has scrolled up to read old messages.
-      const isScrolledToBottom =
-        container.scrollHeight - container.clientHeight <=
-        container.scrollTop + 100; // 100px threshold
-
-      // Always scroll on the initial load, but ONLY for the chat window
-      if (isInitialLoad.current) {
-        // Set scroll position directly to the bottom without smooth scrolling
-        container.scrollTop = container.scrollHeight;
-        isInitialLoad.current = false;
-        return;
-      }
-
-      // For new messages, only scroll if the user was already at the bottom
-      if (isScrolledToBottom) {
-        // Use a custom smooth scroll that only affects the container
-        const targetScrollTop = container.scrollHeight - container.clientHeight;
-        const startScrollTop = container.scrollTop;
-        const distance = targetScrollTop - startScrollTop;
-        const duration = 300; // 300ms for smooth animation
-        let startTime: number | null = null;
-
-        const animateScroll = (currentTime: number) => {
-          if (startTime === null) startTime = currentTime;
-          const timeElapsed = currentTime - startTime;
-          const progress = Math.min(timeElapsed / duration, 1);
-
-          // Easing function for smooth animation
-          const easeOutCubic = 1 - Math.pow(1 - progress, 3);
-
-          container.scrollTop = startScrollTop + distance * easeOutCubic;
-
-          if (progress < 1) {
-            requestAnimationFrame(animateScroll);
-          }
-        };
-
-        requestAnimationFrame(animateScroll);
-      }
-    }
-  }, [conversations]); // The dependency is still correct
-
   const formatDate = (timestamp: number) => {
     return new Date(timestamp).toLocaleString();
   };
 
   const clearConversations = () => {
     if (window.confirm("Are you sure you want to clear all conversations?")) {
-      localStorage.removeItem("ai-conversations");
-      setConversations([]);
-      setSelectedConversation(null);
+      dispatch({ type: "CLEAR_ALL_CONVERSATIONS" });
     }
   };
 
   const deleteConversation = (id: string) => {
-    const updatedConversations = conversations.filter((conv) => conv.id !== id);
-    localStorage.setItem(
-      "ai-conversations",
-      JSON.stringify(updatedConversations)
-    );
-    setConversations(updatedConversations);
-    if (selectedConversation?.id === id) {
-      setSelectedConversation(null);
-    }
+    dispatch({ type: "DELETE_CONVERSATION", payload: id });
   };
 
   const handleSendMessage = async () => {
-    if (!currentMessage.trim() || isTyping) return;
+    if (!state.currentMessage.trim() || state.status === "typing") return;
 
-    const userMessage = currentMessage.trim();
-    setCurrentMessage("");
-    setIsTyping(true);
+    const userMessage = state.currentMessage.trim();
 
-    // Create pending message immediately
-    const pendingMessageData = {
-      id: Date.now().toString(),
-      timestamp: Date.now(),
-      userMessage,
-      aiResponse: "",
-    };
-    setPendingMessage(pendingMessageData);
+    // 1. Dispatch the start action. This will create the pending message in the state.
+    dispatch({ type: "SEND_MESSAGE_START", payload: { message: userMessage } });
 
     try {
       // Send message to AI
       const response = await sendMessageToAI(userMessage, []);
 
-      // Update the pending message with AI response
-      const completedMessage = {
-        ...pendingMessageData,
-        aiResponse: response.response,
-        isNew: true, // Mark as new for typewriter effect
-      };
-
-      // Add to current conversation or create new one
-      let updatedConversations = [...conversations];
-
-      if (updatedConversations.length === 0) {
-        // Create new conversation
-        const newConversation = {
-          id: Date.now().toString(),
-          timestamp: Date.now(),
-          messages: [completedMessage],
-        };
-        updatedConversations = [newConversation];
-        setActiveConversationId(newConversation.id);
-      } else {
-        // Add to most recent conversation
-        updatedConversations[0].messages.push(completedMessage);
-        updatedConversations[0].timestamp = Date.now(); // Update conversation timestamp
-        setActiveConversationId(updatedConversations[0].id);
-      }
-
-      // Limit total conversations to 50
-      if (updatedConversations.length > 50) {
-        updatedConversations.splice(50);
-      }
-
-      // Save to localStorage
-      localStorage.setItem(
-        "ai-conversations",
-        JSON.stringify(updatedConversations)
-      );
-      setConversations(updatedConversations);
-      setPendingMessage(null);
+      // 2. Dispatch the success action.
+      // DO NOT create a new message object here. The reducer will handle it.
+      dispatch({
+        type: "SEND_MESSAGE_SUCCESS",
+        payload: {
+          aiResponse: response.response,
+          // The reducer will get the userMessage from the pendingMessage in the state.
+        },
+      });
     } catch (error) {
       console.error("Failed to send message:", error);
-      // Remove pending message on error
-      setPendingMessage(null);
-    } finally {
-      setIsTyping(false);
+      dispatch({ type: "SEND_MESSAGE_ERROR" });
     }
   };
 
@@ -233,56 +397,25 @@ const AiConversations: React.FC = () => {
   };
 
   const clearNewFlag = (conversationId: string, messageId: string) => {
-    const updatedConversations = conversations.map((conv) => {
-      if (conv.id === conversationId) {
-        return {
-          ...conv,
-          messages: conv.messages.map((msg) =>
-            msg.id === messageId ? { ...msg, isNew: false } : msg
-          ),
-        };
-      }
-      return conv;
+    dispatch({
+      type: "CLEAR_NEW_FLAG",
+      payload: { conversationId, messageId },
     });
-    setConversations(updatedConversations);
-    localStorage.setItem(
-      "ai-conversations",
-      JSON.stringify(updatedConversations)
-    );
   };
 
   const startNewConversation = () => {
-    // Create a new conversation with a unique ID
-    const newConversation = {
-      id: Date.now().toString(),
-      timestamp: Date.now(),
-      messages: [],
-    };
-
-    // Add the new conversation to the beginning of the list
-    const updatedConversations = [newConversation, ...conversations];
-
-    // Save to localStorage
-    localStorage.setItem(
-      "ai-conversations",
-      JSON.stringify(updatedConversations)
-    );
-    setConversations(updatedConversations);
-    setActiveConversationId(newConversation.id);
-
-    // Clear any pending message
-    setPendingMessage(null);
+    dispatch({ type: "START_NEW_CONVERSATION" });
   };
 
   const selectConversation = (conversation: Conversation) => {
-    setActiveConversationId(conversation.id);
-    setViewMode("chat");
+    dispatch({ type: "SELECT_CONVERSATION", payload: conversation.id });
   };
 
   // Get the currently active conversation
   const activeConversation =
-    conversations.find((conv) => conv.id === activeConversationId) ||
-    conversations[0];
+    state.conversations.find(
+      (conv) => conv.id === state.activeConversationId
+    ) || state.conversations[0];
 
   return (
     <div className="ai-conversations">
@@ -290,17 +423,21 @@ const AiConversations: React.FC = () => {
         <h2>Chat with Kareem</h2>
         <div className="header-controls">
           <div className="view-toggle">
-            {viewMode === "chat" ? (
+            {state.viewMode === "chat" ? (
               <button
                 className="toggle-btn"
-                onClick={() => setViewMode("history")}
+                onClick={() =>
+                  dispatch({ type: "SET_VIEW_MODE", payload: "history" })
+                }
               >
                 📚 History
               </button>
             ) : (
               <button
                 className="toggle-btn"
-                onClick={() => setViewMode("chat")}
+                onClick={() =>
+                  dispatch({ type: "SET_VIEW_MODE", payload: "chat" })
+                }
               >
                 💬 Current Chat
               </button>
@@ -317,10 +454,10 @@ const AiConversations: React.FC = () => {
         </div>
       </div>
 
-      {viewMode === "chat" ? (
+      {state.viewMode === "chat" ? (
         <div className="chat-interface">
           <div className="chat-messages" ref={messagesContainerRef}>
-            {conversations.length === 0 && !pendingMessage ? (
+            {state.conversations.length === 0 && !state.pendingMessage ? (
               <div className="welcome-message">
                 <h2>Welcome to Kareem AI</h2>
                 <p>
@@ -334,9 +471,9 @@ const AiConversations: React.FC = () => {
                   Start Your First Chat
                 </button>
               </div>
-            ) : conversations.length > 0 &&
-              conversations[0].messages.length === 0 &&
-              !pendingMessage ? (
+            ) : state.conversations.length > 0 &&
+              state.conversations[0].messages.length === 0 &&
+              !state.pendingMessage ? (
               <div className="welcome-message">
                 <div className="welcome-icon">💬</div>
                 <h2>New Conversation Started!</h2>
@@ -348,7 +485,7 @@ const AiConversations: React.FC = () => {
             ) : (
               <>
                 {/* Show pending message if exists */}
-                {pendingMessage && (
+                {state.pendingMessage && (
                   <div className="chat-conversation">
                     <div className="message user-message">
                       <div className="message-header">
@@ -356,7 +493,7 @@ const AiConversations: React.FC = () => {
                         <span className="message-label">You</span>
                       </div>
                       <div className="message-content">
-                        {pendingMessage.userMessage}
+                        {state.pendingMessage.userMessage}
                       </div>
                     </div>
 
@@ -421,31 +558,38 @@ const AiConversations: React.FC = () => {
               <input
                 ref={inputRef}
                 type="text"
-                value={currentMessage}
-                onChange={(e) => setCurrentMessage(e.target.value)}
+                value={state.currentMessage}
+                onChange={(e) =>
+                  dispatch({
+                    type: "SET_CURRENT_MESSAGE",
+                    payload: e.target.value,
+                  })
+                }
                 onKeyPress={handleKeyPress}
                 placeholder="Type your message here..."
                 className="chat-input"
-                disabled={isTyping}
+                disabled={state.status === "typing"}
               />
               <button
                 onClick={handleSendMessage}
-                disabled={!currentMessage.trim() || isTyping}
+                disabled={
+                  !state.currentMessage.trim() || state.status === "typing"
+                }
                 className="send-button"
               >
-                {isTyping ? "⏳" : "➤"}
+                {state.status === "typing" ? "⏳" : "➤"}
               </button>
             </div>
           </div>
         </div>
       ) : // History view (existing code)
-      conversations.length === 0 ? (
+      state.conversations.length === 0 ? (
         <div className="empty-state">
           <div className="empty-icon">💬</div>
           <h2>No conversations yet</h2>
           <p>Start chatting with the AI to see your conversations here!</p>
           <button
-            onClick={() => setViewMode("chat")}
+            onClick={() => dispatch({ type: "SET_VIEW_MODE", payload: "chat" })}
             className="start-chat-button"
           >
             Start Chatting
@@ -455,19 +599,21 @@ const AiConversations: React.FC = () => {
         <div className="conversations-layout">
           <div className="conversations-list">
             <div className="conversations-header-row">
-              <h3>Recent Conversations ({conversations.length})</h3>
-              {conversations.length > 0 && (
+              <h3>Recent Conversations ({state.conversations.length})</h3>
+              {state.conversations.length > 0 && (
                 <button onClick={clearConversations} className="clear-button">
                   Clear All
                 </button>
               )}
             </div>
             <div className="conversation-items">
-              {conversations.map((conversation) => (
+              {state.conversations.map((conversation) => (
                 <div
                   key={conversation.id}
                   className={`conversation-item ${
-                    activeConversationId === conversation.id ? "selected" : ""
+                    state.activeConversationId === conversation.id
+                      ? "selected"
+                      : ""
                   }`}
                   onClick={() => selectConversation(conversation)}
                 >
@@ -522,17 +668,17 @@ const AiConversations: React.FC = () => {
             </div>
           </div>
 
-          {selectedConversation && (
+          {activeConversation && (
             <div className="conversation-detail">
               <div className="detail-header">
                 <h3>Conversation Details</h3>
                 <span className="detail-date">
-                  {formatDate(selectedConversation.timestamp)}
+                  {formatDate(activeConversation.timestamp)}
                 </span>
               </div>
 
               <div className="conversation-messages">
-                {selectedConversation.messages?.map((message) => (
+                {activeConversation.messages?.map((message) => (
                   <div key={message.id} className="chat-conversation">
                     <div className="message user-message">
                       <div className="message-header">

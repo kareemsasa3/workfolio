@@ -33,6 +33,17 @@ const TypeWriterText: React.FC<TypeWriterTextProps> = ({
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
 
+  // Add debugging
+  useEffect(() => {
+    console.log("TypeWriterText:", {
+      text,
+      delay,
+      speed,
+      prefersReducedMotion,
+      characters: text?.split("").length
+    });
+  }, [text, delay, speed, prefersReducedMotion]);
+
   // Validate inputs
   if (!text || typeof text !== "string") {
     return (

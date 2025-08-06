@@ -16,23 +16,8 @@ export const SocialLinksSection = forwardRef(
       },
       {
         name: "LinkedIn",
-        url: "https://linkedin.com/in/kareemsasa",
+        url: "https://linkedin.com/in/kareem-sasa",
         icon: "💼",
-      },
-      {
-        name: "YouTube",
-        url: "https://youtube.com/@kareemsasa",
-        icon: "📺",
-      },
-      {
-        name: "Instagram",
-        url: "https://instagram.com/kareemsasa",
-        icon: "📸",
-      },
-      {
-        name: "X",
-        url: "https://x.com/kareemsasa",
-        icon: "🐦",
       },
     ];
 

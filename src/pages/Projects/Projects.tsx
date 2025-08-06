@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import "./Projects.css";
 import ProjectsList from "../../components/ProjectsList";
 import TerminalDropdown from "../../components/TerminalDropdown";
+import TypeWriterText from "../../components/TypeWriterText";
 import { useProjects } from "./useProjects";
 
 // Import the type for proper type safety
@@ -38,12 +39,8 @@ const Projects = () => {
       <div className="projects-container">
         <header className="projects-header">
           <h1 className="projects-title">
-            <span className="terminal-prompt">$</span> ls -la projects/
+            <TypeWriterText text="Projects" speed={80} />
           </h1>
-          <p className="projects-subtitle">
-            <span className="terminal-comment">#</span> A showcase of my
-            technical expertise across multiple domains and technologies
-          </p>
         </header>
 
         {/* Filters and Sorting */}

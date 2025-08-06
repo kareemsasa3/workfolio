@@ -42,7 +42,7 @@ const INITIAL_SPEED = 150;
 const initialGameState: GameStateObject = {
   snake: [{ x: 20, y: 15 }],
   food: { x: 30, y: 15 },
-  direction: { x: 0, y: 0 },
+  direction: { x: 1, y: 0 }, // Start moving right
   speed: INITIAL_SPEED,
   score: 0,
   highScore: 0,
@@ -77,43 +77,57 @@ const isValidDirection = (
   );
 };
 
-// Function to check for self-collision
-const checkCollision = (snake: SnakeSegment[]): boolean => {
-  if (snake.length <= 1) return false;
-
-  const head = snake[0];
-  for (let i = 1; i < snake.length; i++) {
-    if (snake[i].x === head.x && snake[i].y === head.y) {
-      return true;
-    }
-  }
-  return false;
-};
-
 function gameReducer(
   state: GameStateObject,
   action: GameAction
 ): GameStateObject {
   switch (action.type) {
     case "MOVE_SNAKE": {
-      if (state.gameState !== "playing") return state;
+      if (
+        state.gameState !== "playing" ||
+        (state.direction.x === 0 && state.direction.y === 0)
+      ) {
+        return state; // Don't move if paused or direction is not set
+      }
 
+      // Create a mutable copy of the snake for this turn's logic
       const newSnake = [...state.snake];
-      const head = {
-        x: newSnake[0].x + state.direction.x,
-        y: newSnake[0].y + state.direction.y,
+      const currentHead = newSnake[0];
+
+      // 1. Calculate the new head's position
+      const newHead = {
+        x: currentHead.x + state.direction.x,
+        y: currentHead.y + state.direction.y,
       };
 
       // Wrap around logic
-      if (head.x < 0) head.x = GRID_WIDTH - 1;
-      if (head.x >= GRID_WIDTH) head.x = 0;
-      if (head.y < 0) head.y = GRID_HEIGHT - 1;
-      if (head.y >= GRID_HEIGHT) head.y = 0;
+      if (newHead.x < 0) newHead.x = GRID_WIDTH - 1;
+      if (newHead.x >= GRID_WIDTH) newHead.x = 0;
+      if (newHead.y < 0) newHead.y = GRID_HEIGHT - 1;
+      if (newHead.y >= GRID_HEIGHT) newHead.y = 0;
 
-      // Check for food collision
-      if (head.x === state.food.x && head.y === state.food.y) {
-        // Eat food - grow snake and generate new food
-        newSnake.unshift(head);
+      // 2. Check for game-ending self-collision
+      // The new head's position cannot be on any part of the *current* snake body
+      // EXCEPT the last segment (tail), because the tail will move away on the next frame
+      for (let i = 0; i < newSnake.length - 1; i++) {
+        const segment = newSnake[i];
+        if (segment.x === newHead.x && segment.y === newHead.y) {
+          const newHighScore =
+            state.score > state.highScore ? state.score : state.highScore;
+          return {
+            ...state,
+            highScore: newHighScore,
+            gameState: "gameOver",
+          };
+        }
+      }
+
+      // If we are here, there was no collision. Now add the new head.
+      newSnake.unshift(newHead);
+
+      // 3. Check for food collision (eating)
+      if (newHead.x === state.food.x && newHead.y === state.food.y) {
+        // The snake grows, so we DON'T remove the tail.
         const newFood = generateFood(newSnake);
         const newScore = state.score + 1;
         const newSpeed =
@@ -127,10 +141,9 @@ function gameReducer(
           speed: newSpeed,
         };
       } else {
-        // Move without eating - remove tail
-        newSnake.unshift(head);
+        // 4. Just a normal move (no food eaten)
+        // Remove the tail segment to keep the snake the same length
         newSnake.pop();
-
         return {
           ...state,
           snake: newSnake,
@@ -151,6 +164,8 @@ function gameReducer(
     }
 
     case "GAME_OVER": {
+      // This case can now be simplified or removed, as the logic is in MOVE_SNAKE
+      // For now, we can leave it in case it's used elsewhere, but it's now redundant for self-collision.
       const newHighScore =
         state.score > state.highScore ? state.score : state.highScore;
       return {
@@ -196,6 +211,13 @@ export const useSnakeGame = () => {
   const animationFrameRef = useRef<number | null>(null);
   const directionQueueRef = useRef<Direction[]>([]);
 
+  // === THE FIX: Use a ref to hold a stable reference to the state ===
+  const gameStateRef = useRef(gameState);
+  useEffect(() => {
+    gameStateRef.current = gameState;
+  }, [gameState]);
+  // ===================================================================
+
   // Load high score from localStorage on mount
   useEffect(() => {
     const savedHighScore = localStorage.getItem("snakeGameHighScore");
@@ -218,61 +240,52 @@ export const useSnakeGame = () => {
   }, [gameState.highScore]);
 
   // Game loop using requestAnimationFrame
-  const gameLoop = useCallback(
-    (currentTime: number) => {
-      if (gameState.gameState !== "playing") {
-        animationFrameRef.current = requestAnimationFrame(gameLoop);
-        return;
+  const gameLoop = useCallback((currentTime: number) => {
+    animationFrameRef.current = requestAnimationFrame(gameLoop);
+
+    if (gameStateRef.current.gameState !== "playing") {
+      return;
+    }
+
+    if (currentTime - lastUpdateTimeRef.current >= gameStateRef.current.speed) {
+      if (directionQueueRef.current.length > 0) {
+        const newDirection = directionQueueRef.current.shift()!;
+        dispatch({ type: "CHANGE_DIRECTION", payload: newDirection });
       }
+      dispatch({ type: "MOVE_SNAKE" });
+      lastUpdateTimeRef.current = currentTime;
+    }
+  }, []);
 
-      if (currentTime - lastUpdateTimeRef.current >= gameState.speed) {
-        // Process input queue
-        if (directionQueueRef.current.length > 0) {
-          const newDirection = directionQueueRef.current.shift()!;
-          dispatch({ type: "CHANGE_DIRECTION", payload: newDirection });
-        }
-
-        // Move snake
-        dispatch({ type: "MOVE_SNAKE" });
-        lastUpdateTimeRef.current = currentTime;
-      }
-
-      animationFrameRef.current = requestAnimationFrame(gameLoop);
-    },
-    [gameState.gameState, gameState.speed]
-  );
-
-  // Start/stop game loop based on game state
+  // === THE CORRECTED AND SIMPLIFIED GAME LOOP MANAGER ===
   useEffect(() => {
+    // If the game is in a state that should have a running loop, start it.
     if (gameState.gameState === "playing") {
       animationFrameRef.current = requestAnimationFrame(gameLoop);
     }
-
+    // The cleanup function will always run when the dependency [gameState.gameState] changes.
+    // This will correctly stop the loop when pausing, or on game over.
     return () => {
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [gameLoop, gameState.gameState]);
+  }, [gameState.gameState, gameLoop]);
+  // =======================================================
 
   // Input handling with queue
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Prevent default browser behavior for arrow keys to avoid scrolling
       if (
         ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "].includes(e.key)
       ) {
         e.preventDefault();
       }
-
-      // Handle pause/resume with spacebar
       if (e.key === " ") {
         dispatch({ type: "PAUSE_TOGGLE" });
         return;
       }
-
-      // Only handle direction keys if game is playing
-      if (gameState.gameState !== "playing") return;
+      if (gameStateRef.current.gameState !== "playing") return;
 
       let newDirection: Direction;
       switch (e.key) {
@@ -292,7 +305,6 @@ export const useSnakeGame = () => {
           return;
       }
 
-      // Add to direction queue (limit queue size to prevent memory issues)
       if (directionQueueRef.current.length < 3) {
         directionQueueRef.current.push(newDirection);
       }
@@ -302,23 +314,13 @@ export const useSnakeGame = () => {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [gameState.gameState]);
+  }, []); // <-- Empty dependency array makes this stable as well
 
-  // Collision detection
-  useEffect(() => {
-    if (gameState.gameState !== "playing" || gameState.snake.length <= 1)
-      return;
-
-    if (checkCollision(gameState.snake)) {
-      dispatch({ type: "GAME_OVER" });
-    }
-  }, [gameState.snake, gameState.gameState]);
-
-  // Reset game function
   const resetGame = useCallback(() => {
     dispatch({ type: "RESET" });
     directionQueueRef.current = [];
     lastUpdateTimeRef.current = 0;
+    animationFrameRef.current = null; // Ensure ref is cleared on reset
   }, []);
 
   return {

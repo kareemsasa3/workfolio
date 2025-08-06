@@ -202,14 +202,7 @@ export const fileSystem: FileSystemItem[] = [
       },
     ],
   },
-  {
-    name: "resume",
-    type: "file",
-    permissions: "-rw-r--r--",
-    size: "245K",
-    date: "Dec 15 10:30",
-    route: "resume",
-  },
+
   {
     name: "games",
     type: "directory",

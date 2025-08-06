@@ -4,7 +4,6 @@ import {
   faBriefcase,
   faRoute,
   faGamepad,
-  faFileAlt,
   faTerminal,
   faComments,
 } from "@fortawesome/free-solid-svg-icons";
@@ -16,6 +15,6 @@ export const navItems = [
   { path: "/work", label: "Work", icon: faBriefcase },
   { path: "/journey", label: "Journey", icon: faRoute },
   { path: "/games", label: "Games", icon: faGamepad },
-  { path: "/resume", label: "Resume", icon: faFileAlt },
+
   { path: "/ai-conversations", label: "AI Chat", icon: faComments },
 ];

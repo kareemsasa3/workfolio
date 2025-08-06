@@ -28,11 +28,20 @@
     font-weight: 600;
     font-size: 1rem;
     padding: 0.5rem 1rem;
-    background: var(--primary-color-light);
-    border: 1px solid var(--primary-color-medium);
+    background: var(--card-background);
+    border: 1px solid var(--primary-color);
     border-radius: 8px;
     text-align: center;
     font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.2);
+    transition: all 0.3s ease;
+}
+
+.work-dates:hover {
+    background: var(--primary-color);
+    color: var(--card-background);
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.4);
+    transform: translateY(-1px);
 }
 
 .work-company-info {
@@ -142,15 +151,16 @@
 }
 
 .tech-tag {
-    background: var(--primary-color-light);
+    background: var(--card-background);
     color: var(--primary-color);
     padding: 0.25rem 0.75rem;
     border-radius: 15px;
     font-size: 0.8rem;
     font-weight: 500;
-    border: 1px solid var(--primary-color-medium);
+    border: 1px solid var(--primary-color);
     font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
     transition: all 0.2s ease;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.1);
 }
 
 .tech-tag:hover {

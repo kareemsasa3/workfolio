@@ -6,9 +6,7 @@ interface HeroSectionProps {
   hasShownHomeIntro: boolean;
   onIntroComplete: () => void;
   onNavigateToProjects: () => void;
-  onOpenResume: () => void;
   isNavigatingToProjects: boolean;
-  isOpeningResume: boolean;
   style?: any; // Framer Motion style prop
 }
 
@@ -18,9 +16,7 @@ export const HeroSection = forwardRef(
       hasShownHomeIntro,
       onIntroComplete,
       onNavigateToProjects,
-      onOpenResume,
       isNavigatingToProjects,
-      isOpeningResume,
       style,
     }: HeroSectionProps,
     ref: ForwardedRef<HTMLElement>
@@ -98,14 +94,6 @@ export const HeroSection = forwardRef(
               aria-label="View my projects and work portfolio"
             >
               {isNavigatingToProjects ? "Loading..." : "View My Work"}
-            </button>
-            <button
-              className="btn btn-secondary"
-              onClick={onOpenResume}
-              disabled={isOpeningResume}
-              aria-label="Download my resume in a new tab"
-            >
-              {isOpeningResume ? "Opening..." : "Download Resume"}
             </button>
           </motion.div>
         </div>

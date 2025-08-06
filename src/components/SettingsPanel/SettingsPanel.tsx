@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faTimes,
@@ -21,7 +21,9 @@ import {
   setDockSettings,
   setTheme,
   setAnimationPaused,
+  DEFAULT_SETTINGS,
 } from "../../utils/settings";
+import { Modal, useToast } from "../common";
 import "./SettingsPanel.css";
 
 interface SettingsPanelProps {
@@ -49,6 +51,9 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
   isOpen,
   onClose,
 }) => {
+  const { showSuccess, showError } = useToast();
+  const [showResetModal, setShowResetModal] = useState(false);
+
   const handleDockSizeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onDockSizeChange(Number(event.target.value));
   };
@@ -70,26 +75,29 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
   };
 
   const handleResetToDefaults = () => {
-    if (
-      window.confirm(
-        "Are you sure you want to reset all settings to their default values? This action cannot be undone."
-      )
-    ) {
+    setShowResetModal(true);
+  };
+
+  const confirmResetToDefaults = () => {
+    try {
+      // Clear localStorage
       resetAllSettings();
 
-      // Reset all settings to defaults
-      onDockSizeChange(40);
-      onDockStiffnessChange(400);
-      onMagnificationChange(40);
-      onAnimationToggle(false);
+      // Reset all settings to defaults using the provided handlers
+      onDockSizeChange(DEFAULT_SETTINGS.dockSize);
+      onDockStiffnessChange(DEFAULT_SETTINGS.dockStiffness);
+      onMagnificationChange(DEFAULT_SETTINGS.magnification);
+      onAnimationToggle(DEFAULT_SETTINGS.isAnimationPaused);
 
       // Note: Theme will be reset on next page reload since it's managed by ThemeContext
+      // For now, we'll show a message about the theme reset
 
-      // Show a brief success message
-      alert(
-        "Settings have been reset to defaults. The page will refresh to apply all changes."
+      showSuccess(
+        "Settings Reset",
+        "All settings have been reset to defaults. The theme will update on the next page refresh."
       );
-      window.location.reload();
+    } catch (error) {
+      showError("Reset Failed", "Failed to reset settings. Please try again.");
     }
   };
 
@@ -109,9 +117,17 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+
+      showSuccess(
+        "Settings Exported",
+        "Your settings have been exported successfully."
+      );
     } catch (error) {
       console.error("Failed to export settings:", error);
-      alert("Failed to export settings. Please try again.");
+      showError(
+        "Export Failed",
+        "Failed to export settings. Please try again."
+      );
     }
   };
 
@@ -152,13 +168,16 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
               onAnimationToggle(settings.isAnimationPaused);
             }
 
-            alert(
-              "Settings imported successfully! The page will refresh to apply all changes."
+            showSuccess(
+              "Settings Imported",
+              "Settings have been imported successfully. The theme will update on the next page refresh."
             );
-            window.location.reload();
           } catch (error) {
             console.error("Failed to import settings:", error);
-            alert("Failed to import settings. Please check the file format.");
+            showError(
+              "Import Failed",
+              "Failed to import settings. Please check the file format."
+            );
           }
         };
         reader.readAsText(file);
@@ -168,215 +187,238 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
   };
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          {/* Settings Panel */}
-          <motion.div
-            className="settings-panel"
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "spring", damping: 30, stiffness: 220 }}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="settings-title"
-          >
-            <div className="settings-header">
-              <h3 id="settings-title">Settings</h3>
-              <motion.button
-                className="settings-close"
-                onClick={onClose}
-                aria-label="Close settings"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <FontAwesomeIcon icon={faTimes} />
-              </motion.button>
-            </div>
-
+    <>
+      <AnimatePresence>
+        {isOpen && (
+          <>
+            {/* Settings Panel */}
             <motion.div
-              className="settings-content"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.1, duration: 0.2 }}
+              className="settings-panel"
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 30, stiffness: 220 }}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="settings-title"
             >
-              <div className="settings-row">
+              <div className="settings-header">
+                <h3 id="settings-title">Settings</h3>
+                <motion.button
+                  className="settings-close"
+                  onClick={onClose}
+                  aria-label="Close settings"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <FontAwesomeIcon icon={faTimes} />
+                </motion.button>
+              </div>
+
+              <motion.div
+                className="settings-content"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.1, duration: 0.2 }}
+              >
+                <div className="settings-row">
+                  <div className="setting-group">
+                    <label className="setting-label">
+                      Background Animation
+                    </label>
+                    <div className="setting-control">
+                      <motion.button
+                        className={`animation-toggle ${
+                          isAnimationPaused ? "paused" : "playing"
+                        }`}
+                        onClick={handleAnimationToggle}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        aria-label={
+                          isAnimationPaused
+                            ? "Resume animation"
+                            : "Pause animation"
+                        }
+                      >
+                        <FontAwesomeIcon
+                          icon={isAnimationPaused ? faPlay : faPause}
+                        />
+                        <span>{isAnimationPaused ? "Resume" : "Pause"}</span>
+                      </motion.button>
+                    </div>
+                    <div className="setting-description">
+                      {isAnimationPaused
+                        ? "Background animation is currently paused."
+                        : "Background animation is currently running."}
+                    </div>
+                  </div>
+
+                  <div className="setting-group">
+                    <label className="setting-label">Theme</label>
+                    <div className="setting-control">
+                      <ThemeToggle />
+                    </div>
+                    <div className="setting-description">
+                      Switch between light and dark themes.
+                    </div>
+                  </div>
+                </div>
+
                 <div className="setting-group">
-                  <label className="setting-label">Background Animation</label>
+                  <label htmlFor="dock-size" className="setting-label">
+                    Dock Size
+                  </label>
+                  <div className="setting-control">
+                    <input
+                      type="range"
+                      id="dock-size"
+                      min={DOCK_SIZE_CONFIG.min}
+                      max={DOCK_SIZE_CONFIG.max}
+                      step={DOCK_SIZE_CONFIG.step}
+                      value={currentDockSize}
+                      onChange={handleDockSizeChange}
+                      className="dock-size-slider"
+                    />
+                    <div className="dock-size-value">{currentDockSize}px</div>
+                  </div>
+                  <div className="setting-description">
+                    Adjust the base size of the icons in the dock.
+                  </div>
+                </div>
+
+                <div className="setting-group">
+                  <label htmlFor="dock-stiffness" className="setting-label">
+                    Dock Stiffness
+                  </label>
+                  <div className="setting-control">
+                    <input
+                      type="range"
+                      id="dock-stiffness"
+                      min={DOCK_STIFFNESS_CONFIG.min}
+                      max={DOCK_STIFFNESS_CONFIG.max}
+                      step={DOCK_STIFFNESS_CONFIG.step}
+                      value={currentDockStiffness}
+                      onChange={handleDockStiffnessChange}
+                      className="dock-stiffness-slider"
+                    />
+                    <div className="dock-stiffness-value">
+                      {currentDockStiffness}
+                    </div>
+                  </div>
+                  <div className="setting-description">
+                    Controls how snappy the dock animations feel.
+                  </div>
+                </div>
+
+                <div className="setting-group">
+                  <label htmlFor="magnification" className="setting-label">
+                    Magnification
+                  </label>
+                  <div className="setting-control">
+                    <input
+                      type="range"
+                      id="magnification"
+                      min={MAGNIFICATION_CONFIG.min}
+                      max={MAGNIFICATION_CONFIG.max}
+                      step={MAGNIFICATION_CONFIG.step}
+                      value={currentMagnification}
+                      onChange={handleMagnificationChange}
+                      className="magnification-slider"
+                    />
+                    <div className="magnification-value">
+                      {currentMagnification}%
+                    </div>
+                  </div>
+                  <div className="setting-description">
+                    Controls how large icons become on hover.
+                  </div>
+                </div>
+
+                <div className="setting-group">
+                  <label className="setting-label">Backup & Restore</label>
                   <div className="setting-control">
                     <motion.button
-                      className={`animation-toggle ${
-                        isAnimationPaused ? "paused" : "playing"
-                      }`}
-                      onClick={handleAnimationToggle}
+                      className="export-button"
+                      onClick={handleExportSettings}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      aria-label={
-                        isAnimationPaused
-                          ? "Resume animation"
-                          : "Pause animation"
-                      }
+                      aria-label="Export settings"
                     >
-                      <FontAwesomeIcon
-                        icon={isAnimationPaused ? faPlay : faPause}
-                      />
-                      <span>{isAnimationPaused ? "Resume" : "Pause"}</span>
+                      <FontAwesomeIcon icon={faDownload} />
+                      <span>Export Settings</span>
+                    </motion.button>
+                    <motion.button
+                      className="import-button"
+                      onClick={handleImportSettings}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      aria-label="Import settings"
+                    >
+                      <FontAwesomeIcon icon={faUpload} />
+                      <span>Import Settings</span>
                     </motion.button>
                   </div>
                   <div className="setting-description">
-                    {isAnimationPaused
-                      ? "Background animation is currently paused."
-                      : "Background animation is currently running."}
+                    Export your current settings to a file or import previously
+                    saved settings.
                   </div>
                 </div>
 
                 <div className="setting-group">
-                  <label className="setting-label">Theme</label>
+                  <label className="setting-label">About</label>
+                  <div className="setting-description">
+                    <strong>Workfolio v1.0</strong>
+                    <br />
+                    A Mac-inspired portfolio with interactive dock navigation.
+                    <br />
+                    Built with React, TypeScript, and Framer Motion.
+                  </div>
+                </div>
+
+                <div className="setting-group">
+                  <label className="setting-label">Reset Settings</label>
                   <div className="setting-control">
-                    <ThemeToggle />
+                    <motion.button
+                      className="reset-button"
+                      onClick={handleResetToDefaults}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      aria-label="Reset all settings to defaults"
+                    >
+                      <FontAwesomeIcon icon={faUndo} />
+                      <span>Reset to Defaults</span>
+                    </motion.button>
                   </div>
                   <div className="setting-description">
-                    Switch between light and dark themes.
+                    Reset all settings to their default values.
                   </div>
                 </div>
-              </div>
-
-              <div className="setting-group">
-                <label htmlFor="dock-size" className="setting-label">
-                  Dock Size
-                </label>
-                <div className="setting-control">
-                  <input
-                    type="range"
-                    id="dock-size"
-                    min={DOCK_SIZE_CONFIG.min}
-                    max={DOCK_SIZE_CONFIG.max}
-                    step={DOCK_SIZE_CONFIG.step}
-                    value={currentDockSize}
-                    onChange={handleDockSizeChange}
-                    className="dock-size-slider"
-                  />
-                  <div className="dock-size-value">{currentDockSize}px</div>
-                </div>
-                <div className="setting-description">
-                  Adjust the base size of the icons in the dock.
-                </div>
-              </div>
-
-              <div className="setting-group">
-                <label htmlFor="dock-stiffness" className="setting-label">
-                  Dock Stiffness
-                </label>
-                <div className="setting-control">
-                  <input
-                    type="range"
-                    id="dock-stiffness"
-                    min={DOCK_STIFFNESS_CONFIG.min}
-                    max={DOCK_STIFFNESS_CONFIG.max}
-                    step={DOCK_STIFFNESS_CONFIG.step}
-                    value={currentDockStiffness}
-                    onChange={handleDockStiffnessChange}
-                    className="dock-stiffness-slider"
-                  />
-                  <div className="dock-stiffness-value">
-                    {currentDockStiffness}
-                  </div>
-                </div>
-                <div className="setting-description">
-                  Controls how snappy the dock animations feel.
-                </div>
-              </div>
-
-              <div className="setting-group">
-                <label htmlFor="magnification" className="setting-label">
-                  Magnification
-                </label>
-                <div className="setting-control">
-                  <input
-                    type="range"
-                    id="magnification"
-                    min={MAGNIFICATION_CONFIG.min}
-                    max={MAGNIFICATION_CONFIG.max}
-                    step={MAGNIFICATION_CONFIG.step}
-                    value={currentMagnification}
-                    onChange={handleMagnificationChange}
-                    className="magnification-slider"
-                  />
-                  <div className="magnification-value">
-                    {currentMagnification}%
-                  </div>
-                </div>
-                <div className="setting-description">
-                  Controls how large icons become on hover.
-                </div>
-              </div>
-
-              <div className="setting-group">
-                <label className="setting-label">Backup & Restore</label>
-                <div className="setting-control">
-                  <motion.button
-                    className="export-button"
-                    onClick={handleExportSettings}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    aria-label="Export settings"
-                  >
-                    <FontAwesomeIcon icon={faDownload} />
-                    <span>Export Settings</span>
-                  </motion.button>
-                  <motion.button
-                    className="import-button"
-                    onClick={handleImportSettings}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    aria-label="Import settings"
-                  >
-                    <FontAwesomeIcon icon={faUpload} />
-                    <span>Import Settings</span>
-                  </motion.button>
-                </div>
-                <div className="setting-description">
-                  Export your current settings to a file or import previously
-                  saved settings.
-                </div>
-              </div>
-
-              <div className="setting-group">
-                <label className="setting-label">About</label>
-                <div className="setting-description">
-                  <strong>Workfolio v1.0</strong>
-                  <br />
-                  A Mac-inspired portfolio with interactive dock navigation.
-                  <br />
-                  Built with React, TypeScript, and Framer Motion.
-                </div>
-              </div>
-
-              <div className="setting-group">
-                <label className="setting-label">Reset Settings</label>
-                <div className="setting-control">
-                  <motion.button
-                    className="reset-button"
-                    onClick={handleResetToDefaults}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    aria-label="Reset all settings to defaults"
-                  >
-                    <FontAwesomeIcon icon={faUndo} />
-                    <span>Reset to Defaults</span>
-                  </motion.button>
-                </div>
-                <div className="setting-description">
-                  Reset all settings to their default values. This will refresh
-                  the page.
-                </div>
-              </div>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Reset Confirmation Modal */}
+      <Modal
+        isOpen={showResetModal}
+        onClose={() => setShowResetModal(false)}
+        title="Reset Settings"
+        type="warning"
+        onConfirm={confirmResetToDefaults}
+        onCancel={() => setShowResetModal(false)}
+        confirmText="Reset"
+        cancelText="Cancel"
+      >
+        <p>
+          Are you sure you want to reset all settings to their default values?
+          This action cannot be undone.
+        </p>
+        <p style={{ marginTop: "12px", fontSize: "0.9rem", color: "#b0b0b0" }}>
+          Note: The theme setting will update on the next page refresh.
+        </p>
+      </Modal>
+    </>
   );
 };
 

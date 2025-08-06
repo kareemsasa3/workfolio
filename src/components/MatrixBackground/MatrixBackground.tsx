@@ -150,12 +150,19 @@ const MatrixBackground = () => {
     });
   }, [theme]); // This function *should* change when the theme changes.
 
-  // **FIX 2**: The animation loop function.
-  // It is now stable and does not depend on `theme`.
+  // **THE FINAL POLISH**: useLatest hook pattern implementation
+  // 1. Create a ref to hold the LATEST version of the drawing function
+  const drawAndUpdateMatrixRef = useRef(drawAndUpdateMatrix);
+  useEffect(() => {
+    drawAndUpdateMatrixRef.current = drawAndUpdateMatrix;
+  }, [drawAndUpdateMatrix]);
+
+  // **FIX 2**: The animation loop function - now PERMANENTLY STABLE
+  // It will always call the CURRENT drawing function from the ref
   const animate = useCallback(() => {
-    drawAndUpdateMatrix();
+    drawAndUpdateMatrixRef.current(); // Call the latest function via the ref
     requestRef.current = requestAnimationFrame(animate);
-  }, [drawAndUpdateMatrix]); // `animate` now only changes if `drawAndUpdateMatrix` changes.
+  }, []); // <-- Empty dependency array. This function is now permanent.
 
   // Resize handler - This needs to draw a static frame
   const redrawStaticFrame = useCallback(() => {
@@ -209,8 +216,8 @@ const MatrixBackground = () => {
     };
   }, [prefersReducedMotion, initializeColumns, redrawStaticFrame]);
 
-  // **FIX 3**: The animation control effect.
-  // The `animate` dependency is now stable across theme changes.
+  // **FIX 3**: The animation control effect - now PERFECT
+  // The `animate` dependency is now completely stable - the loop is never restarted
   useEffect(() => {
     if (isAnimationPaused || !isVisible || prefersReducedMotion) {
       if (requestRef.current) {
@@ -235,13 +242,7 @@ const MatrixBackground = () => {
         requestRef.current = null;
       }
     };
-  }, [
-    isAnimationPaused,
-    isVisible,
-    prefersReducedMotion,
-    animate,
-    redrawStaticFrame,
-  ]);
+  }, [isAnimationPaused, isVisible, prefersReducedMotion, redrawStaticFrame]); // <-- `animate` is gone. The loop is now permanent.
 
   // Hide the canvas entirely for reduced motion users
   if (prefersReducedMotion) {

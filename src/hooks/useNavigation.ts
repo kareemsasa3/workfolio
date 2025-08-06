@@ -11,19 +11,12 @@ export const useNavigation = () => {
     [navigate]
   );
 
-  const openInNewTab = useCallback((url: string) => {
-    window.open(url, "_blank", "noopener,noreferrer");
-  }, []);
-
   const navigateToProjects = useCallback(
     () => navigateTo("/projects"),
     [navigateTo]
   );
-  const openResume = useCallback(() => openInNewTab("/resume"), [openInNewTab]);
-
   return {
     navigateTo,
     navigateToProjects,
-    openResume,
   };
 };

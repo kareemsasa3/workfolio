@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { useLayoutContext } from "../../contexts/LayoutContext";
+import { useWindowSize } from "../../hooks/useWindowSize";
 import "./GlobalSectionNavigation.css";
 
 interface GlobalSectionNavigationProps {
@@ -12,6 +13,7 @@ const GlobalSectionNavigation = ({
 }: GlobalSectionNavigationProps) => {
   const { sections, activeSection, setActiveSection } = useLayoutContext();
   const [shiftAmount, setShiftAmount] = useState(0);
+  const { width: windowWidth } = useWindowSize();
 
   // Use a ref to track the active section without causing re-renders
   const activeSectionRef = useRef(activeSection);
@@ -92,7 +94,7 @@ const GlobalSectionNavigation = ({
     return () => {
       observer.disconnect();
     };
-  }, [sections, setActiveSection, activeSection]);
+  }, [sections, setActiveSection]); // Removed activeSection dependency for efficiency
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -109,38 +111,23 @@ const GlobalSectionNavigation = ({
           block: "start",
         });
       }
-
-      // Force update active section after a short delay to ensure scroll completes
-      setTimeout(() => {
-        if (activeSectionRef.current !== sectionId) {
-          setActiveSection(sectionId);
-        }
-      }, 500);
+      // Trust the IntersectionObserver to handle the active section update
+      // No manual setTimeout needed - the observer will see the scroll and update automatically
     }
   };
 
-  // Handle responsive shift amount for settings panel
+  // Handle responsive shift amount for settings panel using the superior useWindowSize hook
   useEffect(() => {
     const calculateShift = () => {
       if (!isSettingsOpen) return 0;
-      if (window.innerWidth > 1200) return -385; // Increased to account for 400px panel + margin
-      if (window.innerWidth > 768) return -250; // Increased for better clearance
+      if (windowWidth > 1200) return -385; // Increased to account for 400px panel + margin
+      if (windowWidth > 768) return -250; // Increased for better clearance
       return 0;
     };
 
-    // Set initial value
     const newShiftAmount = calculateShift();
     setShiftAmount(newShiftAmount);
-
-    // Handle resize events
-    const handleResize = () => {
-      const newShiftAmount = calculateShift();
-      setShiftAmount(newShiftAmount);
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [isSettingsOpen]);
+  }, [isSettingsOpen, windowWidth]); // More declarative and uses the superior hook
 
   // No longer need to check isHomePage here, it's implicit
   if (sections.length === 0) {
