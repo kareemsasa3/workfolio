@@ -28,7 +28,7 @@ const Work = () => {
   // Announce our sections when the component mounts
   useEffect(() => {
     setSections(workSections);
-  }, [setSections, workSections]);
+  }, [setSections]); // workSections is stable (defined outside component)
 
   // Check if data is available
   if (!workExperienceData || workExperienceData.length === 0) {

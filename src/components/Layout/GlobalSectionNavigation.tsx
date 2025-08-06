@@ -87,14 +87,14 @@ const GlobalSectionNavigation = ({
     });
 
     // Set initial active section to the first section if none is set
-    if (!activeSection && sections.length > 0) {
+    if (!activeSectionRef.current && sections.length > 0) {
       setActiveSection(sections[0].id);
     }
 
     return () => {
       observer.disconnect();
     };
-  }, [sections, setActiveSection]); // Removed activeSection dependency for efficiency
+  }, [sections, setActiveSection]); // Using ref to avoid dependency on activeSection
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);

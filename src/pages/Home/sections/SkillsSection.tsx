@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, MotionStyle } from "framer-motion";
 import { forwardRef, ForwardedRef, useMemo } from "react";
 import SkillItem from "../../../components/SkillItem";
 
@@ -27,7 +27,7 @@ const skills = [
 ];
 
 interface SkillsSectionProps {
-  style?: any; // Framer Motion style prop
+  style?: MotionStyle; // Framer Motion style prop
 }
 
 export const SkillsSection = forwardRef(

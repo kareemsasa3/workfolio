@@ -41,7 +41,7 @@ const Journey = () => {
     setSections(journeySections);
 
     return () => setSections([]);
-  }, [eraNames]); // Only depends on eraNames - setSections is stable
+  }, [eraNames, setSections]); // Only depends on eraNames - setSections is stable from context
 
   return (
     <motion.div

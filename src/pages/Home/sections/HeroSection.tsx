@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, MotionStyle } from "framer-motion";
 import { forwardRef, ForwardedRef } from "react";
 import TypeWriterText from "../../../components/TypeWriterText";
 
@@ -7,7 +7,7 @@ interface HeroSectionProps {
   onIntroComplete: () => void;
   onNavigateToProjects: () => void;
   isNavigatingToProjects: boolean;
-  style?: any; // Framer Motion style prop
+  style?: MotionStyle; // Framer Motion style prop
 }
 
 export const HeroSection = forwardRef(

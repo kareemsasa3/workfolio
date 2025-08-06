@@ -242,7 +242,7 @@ const MatrixBackground = () => {
         requestRef.current = null;
       }
     };
-  }, [isAnimationPaused, isVisible, prefersReducedMotion, redrawStaticFrame]); // <-- `animate` is gone. The loop is now permanent.
+  }, [isAnimationPaused, isVisible, prefersReducedMotion, redrawStaticFrame]); // eslint-disable-line react-hooks/exhaustive-deps -- animate intentionally excluded, uses ref pattern
 
   // Hide the canvas entirely for reduced motion users
   if (prefersReducedMotion) {

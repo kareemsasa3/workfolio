@@ -163,10 +163,11 @@ const VimUI: React.FC<VimUIProps> = ({
       commandLine,
       isReadOnly,
       onClose,
+      handleCommand,
     ]
   );
 
-  const handleCommand = (cmd: string) => {
+  const handleCommand = useCallback((cmd: string) => {
     const trimmedCmd = cmd.trim();
 
     if (trimmedCmd === "q" || trimmedCmd === "quit") {
@@ -187,7 +188,7 @@ const VimUI: React.FC<VimUIProps> = ({
         // Could implement readonly mode
       }
     }
-  };
+  }, [onClose, onSave, editedContent]);
 
   const handleContentChange = (lineIndex: number, newLine: string) => {
     if (isReadOnly) return;

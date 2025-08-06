@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, MotionStyle } from "framer-motion";
 import { forwardRef, ForwardedRef } from "react";
 
 // Define about data here
@@ -30,7 +30,7 @@ const aboutItems = [
 ];
 
 interface AboutSectionProps {
-  style?: any; // Framer Motion style prop
+  style?: MotionStyle; // Framer Motion style prop
 }
 
 export const AboutSection = forwardRef(

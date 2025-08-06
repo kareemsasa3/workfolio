@@ -1,9 +1,9 @@
-import { motion } from "framer-motion";
+import { motion, MotionStyle } from "framer-motion";
 import { forwardRef, ForwardedRef } from "react";
 import TypeWriterText from "../../../components/TypeWriterText";
 
 interface SocialLinksSectionProps {
-  style?: any; // Framer Motion style prop
+  style?: MotionStyle; // Framer Motion style prop
 }
 
 export const SocialLinksSection = forwardRef(

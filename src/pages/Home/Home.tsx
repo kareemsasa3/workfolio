@@ -44,7 +44,7 @@ const Home = () => {
   useEffect(() => {
     setSections(homeSections);
     return () => setSections([]);
-  }, []); // Empty dependency array since homeSections is stable and setSections is guaranteed stable
+  }, [homeSections, setSections]); // homeSections is stable via useMemo, setSections is stable from context
 
   // Check if home intro has been shown before
   const [hasShownHomeIntro, setHasShownHomeIntro] = useState(() => {

@@ -137,7 +137,7 @@ export const useWindowManagement = (options: UseWindowManagementOptions) => {
       const { width, height } = dimensionsRef.current;
       dispatch({ type: "RESIZE", payload: { width, height } });
     }, 100),
-    []
+    [dispatch]
   );
 
   // Handle window resize

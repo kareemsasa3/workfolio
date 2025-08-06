@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, MotionStyle } from "framer-motion";
 import { forwardRef, ForwardedRef } from "react";
 
 // Define project data here
@@ -31,7 +31,7 @@ const featuredProjects = [
 interface FeaturedProjectsSectionProps {
   onNavigateToProjects: () => void;
   isNavigating: boolean;
-  style?: any; // Framer Motion style prop
+  style?: MotionStyle; // Framer Motion style prop
 }
 
 export const FeaturedProjectsSection = forwardRef(

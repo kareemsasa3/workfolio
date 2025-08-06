@@ -95,7 +95,7 @@ const Terminal: React.FC<TerminalProps> = ({ isIntro }) => {
     isIntro,
     hasShownIntro,
     coreState.showPrompt,
-    coreHandlers.setShowPrompt,
+    coreHandlers,
   ]);
 
   // Handle intro completion
