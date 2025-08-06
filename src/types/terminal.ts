@@ -101,7 +101,10 @@ export type ScrapingAction =
       payload: { jobId: string; updates: Partial<ActiveScrapeJob> };
     }
   | { type: "REMOVE_SCRAPE_JOB"; payload: string }
-  | { type: "SHOW_SCRAPE_RESULTS"; payload: { results: unknown[]; jobId: string } }
+  | {
+      type: "SHOW_SCRAPE_RESULTS";
+      payload: { results: unknown[]; jobId: string };
+    }
   | { type: "HIDE_SCRAPE_RESULTS" };
 
 // AI Chat Feature State

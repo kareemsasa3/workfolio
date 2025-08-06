@@ -589,7 +589,7 @@ export const useTerminalCore = (
       const validParsedState: Partial<CoreTerminalState> = {};
       Object.keys(defaultState).forEach((key) => {
         if (key in parsed) {
-          (validParsedState as any)[key] = parsed[key];
+          (validParsedState as Record<string, unknown>)[key] = parsed[key];
         }
       });
 
