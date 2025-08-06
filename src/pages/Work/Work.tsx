@@ -22,6 +22,14 @@ const Work = () => {
   // Get the current location to create a key for TypeWriterText
   const location = useLocation();
 
+  // Get the section management from our context
+  const { setSections } = useLayoutContext();
+
+  // Announce our sections when the component mounts
+  useEffect(() => {
+    setSections(workSections);
+  }, [setSections, workSections]);
+
   // Check if data is available
   if (!workExperienceData || workExperienceData.length === 0) {
     return (
@@ -36,14 +44,6 @@ const Work = () => {
       </motion.div>
     );
   }
-
-  // Get the section management from our context
-  const { setSections } = useLayoutContext();
-
-  // Announce our sections when the component mounts
-  useEffect(() => {
-    setSections(workSections);
-  }, [setSections, workSections]);
 
   return (
     <motion.div

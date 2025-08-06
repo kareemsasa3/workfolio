@@ -19,6 +19,8 @@ module.exports = {
     ],
     // Temporarily disable strict rules for CI to pass
     "react/react-in-jsx-scope": "off",
+    // Disable prop-types since we're using TypeScript interfaces
+    "react/prop-types": "off",
     "@typescript-eslint/no-explicit-any": "warn",
     "react/no-unescaped-entities": "warn",
     "@typescript-eslint/no-unused-vars": "warn",
