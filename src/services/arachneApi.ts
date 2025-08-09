@@ -46,8 +46,10 @@ export async function submitScrapeJob(
   urls: string[]
 ): Promise<ScrapeJobResponse> {
   try {
-    console.log("Submitting scrape job to:", `${ARACHNE_BASE_URL}/scrape`);
-    console.log("URLs:", urls);
+    if (import.meta.env.DEV) {
+      console.log("Submitting scrape job to:", `${ARACHNE_BASE_URL}/scrape`);
+      console.log("URLs:", urls);
+    }
 
     const response = await fetch(`${ARACHNE_BASE_URL}/scrape`, {
       method: "POST",
@@ -57,15 +59,13 @@ export async function submitScrapeJob(
       body: JSON.stringify({ urls } as ScrapeJobRequest),
     });
 
-    console.log("Response status:", response.status);
-    console.log(
-      "Response headers:",
-      Object.fromEntries(response.headers.entries())
-    );
+    if (import.meta.env.DEV) {
+      console.log("Response status:", response.status);
+    }
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("Error response:", errorText);
+      if (import.meta.env.DEV) console.error("Error response:", errorText);
       throw new ArachneApiError(
         `Failed to submit scrape job: ${response.statusText} - ${errorText}`,
         response.status
@@ -73,10 +73,10 @@ export async function submitScrapeJob(
     }
 
     const data = await response.json();
-    console.log("Response data:", data);
+    if (import.meta.env.DEV) console.log("Response data:", data);
     return data as ScrapeJobResponse;
   } catch (error) {
-    console.error("Error in submitScrapeJob:", error);
+    if (import.meta.env.DEV) console.error("Error in submitScrapeJob:", error);
     if (error instanceof ArachneApiError) {
       throw error;
     }
@@ -97,11 +97,13 @@ export async function getScrapeStatus(
   jobId: string
 ): Promise<ScrapeStatusResponse> {
   try {
-    console.log("Getting scrape status for job:", jobId);
-    console.log(
-      "Status URL:",
-      `${ARACHNE_BASE_URL}/scrape/status?id=${encodeURIComponent(jobId)}`
-    );
+    if (import.meta.env.DEV) {
+      console.log("Getting scrape status for job:", jobId);
+      console.log(
+        "Status URL:",
+        `${ARACHNE_BASE_URL}/scrape/status?id=${encodeURIComponent(jobId)}`
+      );
+    }
 
     const response = await fetch(
       `${ARACHNE_BASE_URL}/scrape/status?id=${encodeURIComponent(jobId)}`,
@@ -113,11 +115,13 @@ export async function getScrapeStatus(
       }
     );
 
-    console.log("Status response status:", response.status);
+    if (import.meta.env.DEV)
+      console.log("Status response status:", response.status);
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("Status error response:", errorText);
+      if (import.meta.env.DEV)
+        console.error("Status error response:", errorText);
       throw new ArachneApiError(
         `Failed to get scrape status: ${response.statusText} - ${errorText}`,
         response.status
@@ -125,10 +129,10 @@ export async function getScrapeStatus(
     }
 
     const data = await response.json();
-    console.log("Status response data:", data);
+    if (import.meta.env.DEV) console.log("Status response data:", data);
     return data as ScrapeStatusResponse;
   } catch (error) {
-    console.error("Error in getScrapeStatus:", error);
+    if (import.meta.env.DEV) console.error("Error in getScrapeStatus:", error);
     if (error instanceof ArachneApiError) {
       throw error;
     }

@@ -51,6 +51,22 @@ const Layout = () => {
     return () => clearTimeout(timer);
   }, [location.pathname]);
 
+  // Route-aware document title
+  useEffect(() => {
+    const routeTitles: Record<string, string> = {
+      "/": "Kareem Sasa — Portfolio",
+      "/projects": "Projects — Kareem Sasa",
+      "/games": "Games — Kareem Sasa",
+      "/games/snake": "Snake Game — Kareem Sasa",
+      "/work": "Work — Kareem Sasa",
+      "/journey": "Journey — Kareem Sasa",
+      "/ai-conversations": "AI Conversations — Kareem Sasa",
+      "/terminal": "Terminal — Kareem Sasa",
+    };
+    const title = routeTitles[location.pathname] || "Kareem Sasa — Portfolio";
+    if (document.title !== title) document.title = title;
+  }, [location.pathname]);
+
   return (
     // Use a simple fragment, or a div with NO positioning/transform styles
     <>

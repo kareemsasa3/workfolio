@@ -11,7 +11,8 @@ export default defineConfig({
     hmr: {
       port: 3000,
       host: "localhost",
-      clientPort: 80, // Use nginx port for client connections
+      // Use nginx port in dockerized env; otherwise default to dev server port
+      clientPort: Number(process.env.VITE_HMR_CLIENT_PORT || 3000),
     },
     watch: {
       usePolling: true, // Use polling for Docker environments

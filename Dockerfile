@@ -7,6 +7,12 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
+# Build-time environment (Vite picks up VITE_* at build)
+ARG VITE_AI_BACKEND_URL
+ARG VITE_TURNSTILE_SITE_KEY
+ENV VITE_AI_BACKEND_URL=$VITE_AI_BACKEND_URL
+ENV VITE_TURNSTILE_SITE_KEY=$VITE_TURNSTILE_SITE_KEY
+
 # Install dependencies
 RUN npm ci
 

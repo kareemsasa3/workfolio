@@ -42,7 +42,8 @@ export class AiApiError extends Error {
  */
 export async function sendMessageToAI(
   message: string,
-  history: ChatMessage[] = []
+  history: ChatMessage[] = [],
+  sessionToken?: string
 ): Promise<ChatResponse> {
   try {
     const requestBody: ChatRequest = {
@@ -58,6 +59,7 @@ export async function sendMessageToAI(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        ...(sessionToken ? { Authorization: `Bearer ${sessionToken}` } : {}),
       },
       body: JSON.stringify(requestBody),
     });

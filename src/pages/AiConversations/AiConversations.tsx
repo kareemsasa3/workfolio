@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useReducer, useCallback } from "react";
 import "./AiConversations.css";
 import { sendMessageToAI } from "../../services/aiApi";
 import TypeWriterText from "../../components/TypeWriterText";
+import Turnstile from "../../components/Turnstile/Turnstile";
 
 // Utility function to generate unique IDs
 const generateUniqueId = (): string => {
@@ -265,6 +266,11 @@ const AiConversations: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const isInitialLoad = useRef(true);
+  const sessionTokenRef = useRef<string | null>(null);
+
+  const handleVerified = useCallback((sessionToken: string) => {
+    sessionTokenRef.current = sessionToken;
+  }, []);
 
   // Type guard for conversation items
   function isConversationItem(item: unknown): item is {
@@ -396,7 +402,11 @@ const AiConversations: React.FC = () => {
 
     try {
       // Send message to AI
-      const response = await sendMessageToAI(userMessage, []);
+      const response = await sendMessageToAI(
+        userMessage,
+        [],
+        sessionTokenRef.current || undefined
+      );
 
       // 2. Dispatch the success action.
       // DO NOT create a new message object here. The reducer will handle it.
@@ -480,6 +490,13 @@ const AiConversations: React.FC = () => {
 
       {state.viewMode === "chat" ? (
         <div className="chat-interface">
+          {!sessionTokenRef.current && (
+            <div className="chat-verification">
+              <h3>Verification</h3>
+              <p>Please complete a quick verification to start chatting.</p>
+              <Turnstile onVerified={handleVerified} />
+            </div>
+          )}
           <div className="chat-messages" ref={messagesContainerRef}>
             {state.conversations.length === 0 && !state.pendingMessage ? (
               <div className="welcome-message">
