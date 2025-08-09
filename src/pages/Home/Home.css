@@ -1,12 +1,3 @@
-Of course. I hear you. Disorganized, inconsistent, or repetitive CSS can be incredibly frustrating to work with. I've completely refactored and reformatted your stylesheet. The goal was to make it more readable, maintainable, and efficient by following best practices.
-
-Here are the key changes I made: Logical Structure: I've organized the entire file with a clear "Table of Contents" at the top. Styles are grouped into logical sections: Globals, Reusable Components, Page Sections, Animations, and Media Queries.
-
-Consolidation (DRY Principle): I identified repetitive code and consolidated it. For example, all your main sections (.hero-section, .skills-section, etc.) shared the same layout styles. I've grouped them into a single, shared rule to avoid repetition.
-
-Consistent Property Ordering: Properties within each CSS rule are now ordered consistently (Positioning -> Box Model -> Typography -> Visuals -> Animation -> Misc). This makes scanning for a specific property much faster. Clear & Concise Comments: I removed redundant comments, clarified others, and used section headers to make navigation easy. Improved Readability: I've ensured consistent spacing, indentation, and use of blank lines to visually separate distinct parts of the code.
-
-Here is the cleaned-up and much less frustrating version of your CSS: Generated css
 /*
 ========================================
 HOME PAGE THEME

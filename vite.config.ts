@@ -35,7 +35,7 @@ export default defineConfig({
             "@fortawesome/react-fontawesome",
           ],
           "syntax-vendor": ["prismjs"],
-          "utils-vendor": ["axios"],
+          // Note: add a utils chunk here only when needed to avoid empty chunks
         },
       },
     },
