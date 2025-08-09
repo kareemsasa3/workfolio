@@ -12,7 +12,21 @@ export default defineConfig({
       port: 3000,
       host: "localhost",
       // Use nginx port in dockerized env; otherwise default to dev server port
-      clientPort: Number(process.env.VITE_HMR_CLIENT_PORT || 3000),
+      clientPort: Number(
+        // Guarded access without relying on Node types or `any`
+        typeof globalThis !== "undefined" &&
+          typeof (
+            globalThis as unknown as {
+              process?: { env?: Record<string, string> };
+            }
+          ).process?.env?.VITE_HMR_CLIENT_PORT !== "undefined"
+          ? (
+              globalThis as unknown as {
+                process?: { env?: Record<string, string> };
+              }
+            ).process!.env!.VITE_HMR_CLIENT_PORT
+          : 3000
+      ),
     },
     watch: {
       usePolling: true, // Use polling for Docker environments
