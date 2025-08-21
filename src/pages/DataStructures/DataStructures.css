@@ -1,0 +1,14 @@
+.data-structures-page {
+    padding: 24px;
+}
+
+.ds-header {
+    margin-bottom: 16px;
+}
+
+.ds-canvas {
+    background: var(--bg-muted, #0e0e12);
+    border-radius: 12px;
+    padding: 16px;
+    overflow: auto;
+}

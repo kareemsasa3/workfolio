@@ -16,6 +16,7 @@ const Games = lazyWithMinTime(() => import("../pages/Games"));
 const SnakeGame = lazyWithMinTime(() => import("../pages/SnakeGame"));
 const Work = lazyWithMinTime(() => import("../pages/Work"));
 const Journey = lazyWithMinTime(() => import("../pages/Journey"));
+const DataStructures = lazyWithMinTime(() => import("../pages/DataStructures"));
 
 const AiConversations = lazyWithMinTime(
   () => import("../pages/AiConversations")
@@ -29,6 +30,7 @@ export const mainRoutes: AppRoute[] = [
   { path: "games/snake", element: React.createElement(SnakeGame) },
   { path: "work", element: React.createElement(Work) },
   { path: "journey", element: React.createElement(Journey) },
+  { path: "visualizer", element: React.createElement(DataStructures) },
 
   { path: "ai-conversations", element: React.createElement(AiConversations) },
   {
