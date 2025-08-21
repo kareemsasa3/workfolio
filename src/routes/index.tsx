@@ -24,13 +24,12 @@ const AiConversations = lazyWithMinTime(
 const NotFound = lazyWithMinTime(() => import("../pages/NotFound"));
 
 // Main routes that use the Layout component
-export const mainRoutes: AppRoute[] = [
+const routes: AppRoute[] = [
   { path: "projects", element: React.createElement(Projects) },
   { path: "games", element: React.createElement(Games) },
   { path: "games/snake", element: React.createElement(SnakeGame) },
   { path: "work", element: React.createElement(Work) },
   { path: "journey", element: React.createElement(Journey) },
-  { path: "visualizer", element: React.createElement(DataStructures) },
 
   { path: "ai-conversations", element: React.createElement(AiConversations) },
   {
@@ -38,6 +37,12 @@ export const mainRoutes: AppRoute[] = [
     element: React.createElement(Terminal, { isIntro: false }),
   },
 ];
+
+if (!import.meta.env.PROD) {
+  routes.push({ path: "visualizer", element: React.createElement(DataStructures) });
+}
+
+export const mainRoutes: AppRoute[] = routes;
 
 // Top-level routes that don't use the main Layout
 export const topLevelRoutes: AppRoute[] = [];
