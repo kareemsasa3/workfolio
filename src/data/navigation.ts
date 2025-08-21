@@ -21,4 +21,7 @@ const baseNavItems = [
 
 export const navItems = import.meta.env.PROD
   ? baseNavItems
-  : [...baseNavItems, { path: "/visualizer", label: "Visualizer", icon: faSitemap }];
+  : [
+      ...baseNavItems,
+      { path: "/visualizer", label: "Visualizer", icon: faSitemap },
+    ];

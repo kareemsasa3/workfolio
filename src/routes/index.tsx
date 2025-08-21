@@ -39,7 +39,10 @@ const routes: AppRoute[] = [
 ];
 
 if (!import.meta.env.PROD) {
-  routes.push({ path: "visualizer", element: React.createElement(DataStructures) });
+  routes.push({
+    path: "visualizer",
+    element: React.createElement(DataStructures),
+  });
 }
 
 export const mainRoutes: AppRoute[] = routes;
