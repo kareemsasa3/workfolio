@@ -19,16 +19,10 @@ const Journey = lazyWithMinTime(() => import("../pages/Journey"));
 const DataStructures = lazyWithMinTime(() => import("../pages/DataStructures"));
 
 const AiConversations = lazyWithMinTime(
-  () =>
-    (import("../pages/AiConversations") as unknown as Promise<{
-      default: React.ComponentType<any>;
-    }>)
+  () => import("../pages/AiConversations")
 );
 const NotFound = lazyWithMinTime(
-  () =>
-    (import("../pages/NotFound") as unknown as Promise<{
-      default: React.ComponentType<any>;
-    }>)
+  () => import("../pages/NotFound")
 );
 
 // Main routes that use the Layout component
