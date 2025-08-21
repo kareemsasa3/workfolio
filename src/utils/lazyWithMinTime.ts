@@ -8,7 +8,7 @@ import { lazy, ComponentType, LazyExoticComponent } from "react";
  * @param minDisplayTime The minimum time in milliseconds to show the fallback loader. Defaults to 500ms.
  * @returns A lazy-loaded component.
  */
-export const lazyWithMinTime = <P = {}>(
+export const lazyWithMinTime = <P = Record<string, never>>(
   factory: () => Promise<{ default: ComponentType<P> }>,
   minDisplayTime: number = 500
 ): LazyExoticComponent<ComponentType<P>> => {

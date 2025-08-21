@@ -21,9 +21,7 @@ const DataStructures = lazyWithMinTime(() => import("../pages/DataStructures"));
 const AiConversations = lazyWithMinTime(
   () => import("../pages/AiConversations")
 );
-const NotFound = lazyWithMinTime(
-  () => import("../pages/NotFound")
-);
+const NotFound = lazyWithMinTime(() => import("../pages/NotFound"));
 
 // Main routes that use the Layout component
 const routes: AppRoute[] = [
