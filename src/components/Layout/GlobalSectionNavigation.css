@@ -91,6 +91,6 @@
 
 @media (max-width: 768px) {
     .global-section-navigation {
-        right: 1rem;
+        display: none;
     }
 }

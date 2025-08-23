@@ -14,6 +14,7 @@ import {
   DOCK_SIZE_CONFIG,
   DOCK_STIFFNESS_CONFIG,
   MAGNIFICATION_CONFIG,
+  MATRIX_SPEED_CONFIG,
 } from "./settingsConstants";
 import {
   resetAllSettings,
@@ -37,6 +38,8 @@ interface SettingsPanelProps {
   onAnimationToggle: (paused: boolean) => void;
   isOpen: boolean;
   onClose: () => void;
+  matrixSpeed?: number;
+  onMatrixSpeedChange?: (speed: number) => void;
 }
 
 const SettingsPanel: React.FC<SettingsPanelProps> = ({
@@ -50,6 +53,8 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
   onAnimationToggle,
   isOpen,
   onClose,
+  matrixSpeed,
+  onMatrixSpeedChange,
 }) => {
   const { showSuccess, showError } = useToast();
   const [showResetModal, setShowResetModal] = useState(false);
@@ -88,6 +93,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
       onDockStiffnessChange(DEFAULT_SETTINGS.dockStiffness);
       onMagnificationChange(DEFAULT_SETTINGS.magnification);
       onAnimationToggle(DEFAULT_SETTINGS.isAnimationPaused);
+      onMatrixSpeedChange?.(DEFAULT_SETTINGS.matrixSpeed ?? 1);
 
       // Note: Theme will be reset on next page reload since it's managed by ThemeContext
       // For now, we'll show a message about the theme reset
@@ -166,6 +172,10 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
             if (typeof settings.isAnimationPaused === "boolean") {
               setAnimationPaused(settings.isAnimationPaused);
               onAnimationToggle(settings.isAnimationPaused);
+            }
+
+            if (typeof settings.matrixSpeed === "number") {
+              onMatrixSpeedChange?.(settings.matrixSpeed);
             }
 
             showSuccess(
@@ -261,6 +271,35 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
                     <div className="setting-description">
                       Switch between light and dark themes.
                     </div>
+                  </div>
+                </div>
+
+                <div className="setting-group">
+                  <label htmlFor="matrix-speed" className="setting-label">
+                    Matrix Speed
+                  </label>
+                  <div className="setting-control">
+                    <input
+                      type="range"
+                      id="matrix-speed"
+                      min={MATRIX_SPEED_CONFIG.min}
+                      max={MATRIX_SPEED_CONFIG.max}
+                      step={MATRIX_SPEED_CONFIG.step}
+                      value={typeof matrixSpeed === "number" ? matrixSpeed : 1}
+                      onChange={(e) =>
+                        onMatrixSpeedChange?.(parseFloat(e.target.value))
+                      }
+                      className="magnification-slider"
+                    />
+                    <div className="magnification-value">
+                      {typeof matrixSpeed === "number"
+                        ? matrixSpeed.toFixed(1)
+                        : "1.0"}
+                      ×
+                    </div>
+                  </div>
+                  <div className="setting-description">
+                    Adjust the falling speed of the Matrix background.
                   </div>
                 </div>
 

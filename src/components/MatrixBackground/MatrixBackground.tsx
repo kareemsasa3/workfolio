@@ -28,7 +28,7 @@ interface MatrixColumn {
 
 const MatrixBackground = () => {
   const { theme } = useTheme();
-  const { isAnimationPaused } = useLayoutContext();
+  const { isAnimationPaused, matrixSpeed } = useLayoutContext();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const requestRef = useRef<number | null>(null);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
@@ -100,7 +100,7 @@ const MatrixBackground = () => {
     const context = canvas?.getContext("2d");
     if (!canvas || !context) return;
 
-    const backgroundColor = theme === "light" ? "#f8f8f8" : "#0f0f0f";
+    const backgroundColor = theme === "light" ? "#f2f4f7" : "#0f0f0f";
     const charColor = theme === "light" ? "44, 44, 44" : "0, 255, 0";
 
     // Clear with theme-appropriate background
@@ -111,7 +111,7 @@ const MatrixBackground = () => {
 
     columns.forEach((column) => {
       // Always update positions when this function is called
-      column.y += column.speed;
+      column.y += column.speed * matrixSpeed;
 
       // Reset column if it goes off screen
       if (column.y > canvas.height + column.length * CONFIG.characterSpacing) {
@@ -148,7 +148,7 @@ const MatrixBackground = () => {
         context.fillText(char, column.x + CONFIG.columnWidth / 2, charY);
       });
     });
-  }, [theme]); // This function *should* change when the theme changes.
+  }, [theme, matrixSpeed]); // React to theme and matrixSpeed changes.
 
   // **THE FINAL POLISH**: useLatest hook pattern implementation
   // 1. Create a ref to hold the LATEST version of the drawing function
@@ -249,6 +249,14 @@ const MatrixBackground = () => {
     return null;
   }
 
+  // Soften theme switches by briefly fading the canvas on theme change
+  const [canvasOpacity, setCanvasOpacity] = useState(1);
+  useEffect(() => {
+    setCanvasOpacity(0.25);
+    const timeoutId = setTimeout(() => setCanvasOpacity(1), 200);
+    return () => clearTimeout(timeoutId);
+  }, [theme]);
+
   return (
     <motion.canvas
       ref={canvasRef}
@@ -256,7 +264,7 @@ const MatrixBackground = () => {
         isAnimationPaused ? "animation-paused" : ""
       }`}
       initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+      animate={{ opacity: canvasOpacity }}
       transition={{ duration: CONFIG.animationDuration }}
     />
   );

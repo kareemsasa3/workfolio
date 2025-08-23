@@ -18,9 +18,11 @@ interface LayoutContextType {
   sections: PageSection[];
   activeSection: string;
   isAnimationPaused: boolean;
+  matrixSpeed: number;
   setSections: (sections: PageSection[]) => void;
   setActiveSection: (id: string) => void;
   setIsAnimationPaused: (paused: boolean) => void;
+  setMatrixSpeed: (speed: number) => void;
 }
 
 // Create the context with a default value
@@ -29,9 +31,11 @@ const LayoutContext = createContext<LayoutContextType>({
   sections: [],
   activeSection: "",
   isAnimationPaused: false,
+  matrixSpeed: 1,
   setSections: () => {},
   setActiveSection: () => {},
   setIsAnimationPaused: () => {},
+  setMatrixSpeed: () => {},
 });
 
 // Create the provider component
@@ -52,6 +56,19 @@ export const LayoutContextProvider = ({
     return false;
   });
 
+  // Matrix speed (multiplier) persisted in localStorage
+  const [matrixSpeed, setMatrixSpeed] = useState<number>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("workfolio-matrix-speed");
+      const parsed = saved ? parseFloat(saved) : 1;
+      // Clamp between 0.5 and 2.0
+      if (!isNaN(parsed)) {
+        return Math.min(2, Math.max(0.5, parsed));
+      }
+    }
+    return 1;
+  });
+
   const mainContentAreaRef = useRef<HTMLElement>(null);
 
   // Save animation pause state to localStorage when it changes
@@ -64,14 +81,23 @@ export const LayoutContextProvider = ({
     }
   }, [isAnimationPaused]);
 
+  // Persist matrix speed
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("workfolio-matrix-speed", String(matrixSpeed));
+    }
+  }, [matrixSpeed]);
+
   const value = {
     mainContentAreaRef,
     sections,
     activeSection,
     isAnimationPaused,
+    matrixSpeed,
     setSections,
     setActiveSection,
     setIsAnimationPaused,
+    setMatrixSpeed,
   };
 
   return (

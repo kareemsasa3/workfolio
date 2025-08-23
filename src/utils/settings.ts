@@ -11,6 +11,7 @@ export interface UserSettings {
 
   // Animation settings
   isAnimationPaused: boolean;
+  matrixSpeed?: number;
 
   // UI settings
   isSettingsOpen: boolean;
@@ -24,6 +25,7 @@ export const DEFAULT_SETTINGS: UserSettings = {
   theme: "dark",
   isAnimationPaused: false,
   isSettingsOpen: false,
+  matrixSpeed: 1,
 };
 
 // Local storage keys
@@ -32,6 +34,7 @@ const STORAGE_KEYS = {
   THEME: "theme",
   ANIMATION_PAUSED: "workfolio-animation-paused",
   SETTINGS_OPEN: "workfolio-settings-open",
+  MATRIX_SPEED: "workfolio-matrix-speed",
 } as const;
 
 // Settings validation schema
@@ -185,6 +188,16 @@ export const getAllSettings = (): UserSettings => {
     theme: getTheme(),
     isAnimationPaused: getAnimationPaused(),
     isSettingsOpen: getSettingsOpen(),
+    matrixSpeed: (() => {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEYS.MATRIX_SPEED);
+        if (saved != null) {
+          const parsed = parseFloat(saved);
+          if (!isNaN(parsed)) return parsed;
+        }
+      } catch {}
+      return DEFAULT_SETTINGS.matrixSpeed;
+    })(),
   };
 };
 

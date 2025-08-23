@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { TimelineEvent } from "../../data/timelineData";
@@ -13,6 +13,7 @@ interface TimelineItemProps {
 const TimelineItem: React.FC<TimelineItemProps> = ({ data, isLeft }) => {
   const { date, title, description, icon, category, image } = data;
   const [isFlipped, setIsFlipped] = useState(false);
+  const [loadedImageUrl, setLoadedImageUrl] = useState<string | null>(null);
   const { theme } = useTheme();
 
   const itemVariants = {
@@ -30,25 +31,60 @@ const TimelineItem: React.FC<TimelineItemProps> = ({ data, isLeft }) => {
   };
 
   const handleMouseEnter = () => {
-    if (image) {
+    if (loadedImageUrl) {
       setIsFlipped(true);
     }
   };
 
   const handleMouseLeave = () => {
-    if (image) {
+    if (loadedImageUrl) {
       setIsFlipped(false);
     }
   };
 
-  // Get the appropriate image URL based on theme
-  const getImageUrl = () => {
-    if (!image) return null;
-    if (typeof image === "string") return image;
-    return theme === "dark" ? image.dark : image.light;
-  };
+  // Resolve the preferred and fallback image URLs based on theme
+  const preferredAndFallbackUrls = useMemo(() => {
+    if (!image)
+      return {
+        preferred: null as string | null,
+        fallback: null as string | null,
+      };
+    if (typeof image === "string") {
+      return { preferred: image, fallback: null as string | null };
+    }
+    const preferred = theme === "dark" ? image.dark : image.light;
+    const fallback = theme === "dark" ? image.light : image.dark;
+    return { preferred, fallback };
+  }, [image, theme]);
 
-  const imageUrl = getImageUrl();
+  // Preload image to ensure it is reachable in production; if it fails, try fallback
+  useEffect(() => {
+    setLoadedImageUrl(null);
+    const { preferred, fallback } = preferredAndFallbackUrls;
+    if (!preferred) return;
+
+    let disposed = false;
+    const tryLoad = (url: string, next?: string | null) => {
+      const img = new Image();
+      img.referrerPolicy = "no-referrer";
+      img.onload = () => {
+        if (!disposed) setLoadedImageUrl(url);
+      };
+      img.onerror = () => {
+        if (next) {
+          tryLoad(next, null);
+        } else if (!disposed) {
+          setLoadedImageUrl(null);
+        }
+      };
+      img.src = url;
+    };
+
+    tryLoad(preferred, fallback);
+    return () => {
+      disposed = true;
+    };
+  }, [preferredAndFallbackUrls]);
 
   return (
     <motion.div
@@ -63,9 +99,14 @@ const TimelineItem: React.FC<TimelineItemProps> = ({ data, isLeft }) => {
       </div>
 
       <div
-        className={`timeline-flip-container ${imageUrl ? "has-image" : ""}`}
+        className={`timeline-flip-container ${
+          loadedImageUrl ? "has-image" : ""
+        }`}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
+        onClick={() => {
+          if (loadedImageUrl) setIsFlipped((v) => !v);
+        }}
       >
         <motion.div
           className="timeline-flip-card"
@@ -85,20 +126,32 @@ const TimelineItem: React.FC<TimelineItemProps> = ({ data, isLeft }) => {
           </motion.div>
 
           {/* Back of card */}
-          {imageUrl && (
+          {loadedImageUrl && (
             <motion.div
               className="timeline-content timeline-back"
               style={{
                 backfaceVisibility: "hidden",
                 transform: "rotateY(180deg)",
-                backgroundImage: `url(${imageUrl})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
+                overflow: "hidden",
               }}
-            ></motion.div>
+            >
+              <img
+                src={loadedImageUrl}
+                referrerPolicy="no-referrer"
+                alt="timeline visual"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  display: "block",
+                }}
+                loading="lazy"
+                decoding="async"
+              />
+            </motion.div>
           )}
         </motion.div>
       </div>

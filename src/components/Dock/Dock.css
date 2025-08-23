@@ -215,13 +215,24 @@
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .dock-container {
-        bottom: 10px;
+        bottom: max(10px, env(safe-area-inset-bottom));
         right: 10px;
-        gap: 8px;
-        padding: 6px 8px;
+        gap: 6px;
+        padding: 4px 6px;
         /* Maintain fixed height on mobile */
         min-height: calc(var(--dock-icon-size) + 12px);
         max-height: calc(var(--dock-icon-size) + 12px);
+    }
+
+    /* Reduce backdrop intensity for readability */
+    .dock-container {
+        background: rgba(26, 26, 26, 0.75);
+        box-shadow: 0 6px 20px var(--dock-shadow);
+    }
+
+    /* Hide tooltips on touch devices */
+    .dock-tooltip {
+        display: none;
     }
 }
 

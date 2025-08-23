@@ -26,8 +26,14 @@ const Dock = () => {
   } = useDock();
 
   const { isSettingsOpen, toggleSettings, closeSettings } = useSettings();
-  const { isAnimationPaused, setIsAnimationPaused } = useLayoutContext();
+  const {
+    isAnimationPaused,
+    setIsAnimationPaused,
+    matrixSpeed,
+    setMatrixSpeed,
+  } = useLayoutContext();
   const { width: windowWidth } = useWindowSize();
+  const isMobile = windowWidth <= 768;
 
   // State for settings panel shift animation
   const [settingsShiftAmount, setSettingsShiftAmount] = useState(0);
@@ -36,8 +42,12 @@ const Dock = () => {
   useEffect(() => {
     const calculateShift = () => {
       if (!isSettingsOpen) return 0;
-      if (windowWidth > 1200) return -385; // Increased to account for 400px panel + margin
-      if (windowWidth > 768) return -250; // Increased for better clearance
+      const PANEL_WIDTH = 400;
+      const GUTTER = 20; // px, match dots gutter
+      const RIGHT_OFFSET = windowWidth > 768 ? 20 : 10; // matches .dock-container right
+      if (windowWidth > 1200) return -(PANEL_WIDTH + GUTTER + RIGHT_OFFSET); // full panel + gutter + offset
+      if (windowWidth > 768)
+        return -(Math.round(PANEL_WIDTH * 0.85) + GUTTER + RIGHT_OFFSET);
       return 0;
     };
 
@@ -47,6 +57,10 @@ const Dock = () => {
 
   // Combine dock shift and settings shift
   const totalShiftAmount = dockShiftAmount + settingsShiftAmount;
+
+  // Mobile-specific presentation adjustments
+  const effectiveMagnification = isMobile ? 0 : magnification;
+  const effectiveDockSize = isMobile ? Math.min(dockSize, 36) : dockSize;
 
   return (
     <>
@@ -77,15 +91,15 @@ const Dock = () => {
             {...item}
             mouseX={mouseX}
             stiffness={dockStiffness}
-            magnification={magnification}
-            baseSize={dockSize} // Pass down the base size
+            magnification={effectiveMagnification}
+            baseSize={effectiveDockSize} // Pass down the base size
           />
         ))}
         <div className="dock-icon-container">
           <DockSettingsButton
             isOpen={isSettingsOpen}
             onClick={toggleSettings}
-            baseSize={dockSize} // Pass down the base size
+            baseSize={effectiveDockSize} // Pass down the base size
           />
         </div>
       </motion.div>
@@ -101,6 +115,8 @@ const Dock = () => {
         onAnimationToggle={setIsAnimationPaused}
         isOpen={isSettingsOpen}
         onClose={closeSettings}
+        matrixSpeed={matrixSpeed}
+        onMatrixSpeedChange={setMatrixSpeed}
       />
     </>
   );

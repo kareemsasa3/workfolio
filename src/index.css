@@ -25,7 +25,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--background-color);
   color: var(--text-color);
-  transition: background-color 0.4s ease, color 0.4s ease;
+  transition: background-color 0.4s ease, color 0.4s ease, filter 0.2s ease;
   /* CORRECT: Let body scroll */
   overflow-y: auto;
   overflow-x: hidden;

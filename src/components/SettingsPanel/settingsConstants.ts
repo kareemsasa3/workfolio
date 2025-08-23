@@ -17,3 +17,9 @@ export const MAGNIFICATION_CONFIG = {
   max: 100,
   step: 10,
 };
+
+export const MATRIX_SPEED_CONFIG = {
+  min: 0.5,
+  max: 2.0,
+  step: 0.1,
+};

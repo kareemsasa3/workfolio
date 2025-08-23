@@ -120,8 +120,11 @@ const GlobalSectionNavigation = ({
   useEffect(() => {
     const calculateShift = () => {
       if (!isSettingsOpen) return 0;
-      if (windowWidth > 1200) return -385; // Increased to account for 400px panel + margin
-      if (windowWidth > 768) return -250; // Increased for better clearance
+      // Settings panel is 400px wide on desktop. Add extra gutter so dots fully clear it.
+      const PANEL_WIDTH = 400;
+      const GUTTER = 42; // px
+      if (windowWidth > 1200) return -(PANEL_WIDTH + GUTTER + 16); // ~ -448px
+      if (windowWidth > 768) return -(Math.round(PANEL_WIDTH * 0.85) + GUTTER); // ~ -372px
       return 0;
     };
 

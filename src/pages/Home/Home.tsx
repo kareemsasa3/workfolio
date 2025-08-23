@@ -3,6 +3,7 @@ import { useNavigation } from "../../hooks/useNavigation";
 import { useState, useRef, useEffect, useMemo } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useLayoutContext, PageSection } from "../../contexts/LayoutContext";
+import { useIsMobile } from "../../hooks/useIsMobile";
 
 import {
   HeroSection,
@@ -65,9 +66,10 @@ const Home = () => {
 
   // Map scroll progress to different parallax effects for each section
   // These ranges are approximate and can be fine-tuned based on actual content
-  const heroY = useTransform(scrollYProgress, [0, 0.2], [0, -100]);
-  const projectsY = useTransform(scrollYProgress, [0.2, 0.4], [0, -50]);
-  const skillsY = useTransform(scrollYProgress, [0.4, 0.6], [0, -50]);
+  const isMobile = useIsMobile();
+  const heroYMotion = useTransform(scrollYProgress, [0, 0.2], [0, -100]);
+  const projectsYMotion = useTransform(scrollYProgress, [0.2, 0.4], [0, -50]);
+  const skillsYMotion = useTransform(scrollYProgress, [0.4, 0.6], [0, -50]);
 
   // Navigation handlers - simplified and more robust
   const handleNavigateToProjects = () => {
@@ -84,7 +86,11 @@ const Home = () => {
     <div className="page-content home-page" ref={containerRef}>
       <div className="home-container">
         {/* Hero Section */}
-        <motion.div id="hero" ref={getSectionRef("hero")} style={{ y: heroY }}>
+        <motion.div
+          id="hero"
+          ref={getSectionRef("hero")}
+          style={{ y: isMobile ? 0 : heroYMotion }}
+        >
           <HeroSection
             hasShownHomeIntro={hasShownHomeIntro}
             onIntroComplete={handleIntroComplete}
@@ -97,7 +103,7 @@ const Home = () => {
         <motion.div
           id="projects"
           ref={getSectionRef("projects")}
-          style={{ y: projectsY }}
+          style={{ y: isMobile ? 0 : projectsYMotion }}
         >
           <FeaturedProjectsSection
             onNavigateToProjects={handleNavigateToProjects}
@@ -109,7 +115,7 @@ const Home = () => {
         <motion.div
           id="skills"
           ref={getSectionRef("skills")}
-          style={{ y: skillsY }}
+          style={{ y: isMobile ? 0 : skillsYMotion }}
         >
           <SkillsSection />
         </motion.div>

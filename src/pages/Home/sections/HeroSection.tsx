@@ -34,7 +34,7 @@ export const HeroSection = forwardRef(
             className="hero-title"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true, margin: "0px" }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             {!hasShownHomeIntro ? (
@@ -52,7 +52,7 @@ export const HeroSection = forwardRef(
             role="doc-subtitle"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true, margin: "0px" }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
             {!hasShownHomeIntro ? (
@@ -70,7 +70,7 @@ export const HeroSection = forwardRef(
             className="hero-description"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true, margin: "0px" }}
             transition={{ duration: 0.6, delay: 0.6 }}
           >
             I specialize in creating scalable, high-performance applications
@@ -84,7 +84,7 @@ export const HeroSection = forwardRef(
             aria-label="Primary actions"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true, margin: "0px" }}
             transition={{ duration: 0.6, delay: 0.8 }}
           >
             <button

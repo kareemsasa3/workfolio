@@ -44,6 +44,11 @@ TABLE OF CONTENTS
   container-name: home;
 }
 
+/* Consistent vertical spacing between sections */
+.home-container>*+* {
+  margin-top: clamp(16px, 4vw, 48px);
+}
+
 /* Override default page margin for a full-bleed home page */
 .page-content.home-page {
   min-height: 100vh;
@@ -273,10 +278,22 @@ TABLE OF CONTENTS
   justify-content: center;
   align-items: center;
   position: relative;
-  min-height: 100vh;
+  /* Section height rules are applied per-section below */
+  overflow-x: hidden;
+  overflow-y: visible;
+}
+
+/* Only keep full-viewport height where it makes sense */
+.hero-section,
+.social-links-section {
   min-height: 100svh;
-  /* Modern viewport height for mobile */
-  overflow: hidden;
+}
+
+/* Content-heavy sections should start at the top, not centered */
+.featured-projects-section,
+.skills-section,
+.about-section {
+  justify-content: flex-start;
 }
 
 .section-title {
@@ -312,7 +329,7 @@ TABLE OF CONTENTS
 .hero-title {
   margin: 0 0 1rem 0;
   color: var(--text-color);
-  font-size: 3.5rem;
+  font-size: clamp(2rem, 6vw, 3.5rem);
   font-weight: 700;
   line-height: 1.2;
   text-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
@@ -321,7 +338,7 @@ TABLE OF CONTENTS
 .hero-subtitle {
   margin: 0 0 2rem 0;
   color: var(--primary-color);
-  font-size: 1.5rem;
+  font-size: clamp(1.1rem, 3.5vw, 1.5rem);
   font-weight: 600;
   text-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
 }
@@ -330,7 +347,7 @@ TABLE OF CONTENTS
   max-width: 600px;
   margin: 0 auto 3rem auto;
   color: var(--text-secondary);
-  font-size: 1.2rem;
+  font-size: clamp(1rem, 2.7vw, 1.2rem);
   line-height: 1.7;
 }
 
@@ -658,28 +675,34 @@ TABLE OF CONTENTS
   }
 
   /* General Section Adjustments */
+  /* Full-height only for hero and social on mobile */
   .hero-section,
+  .social-links-section {
+    min-height: 100svh;
+    padding: 0;
+  }
+
+  /* Give other sections breathing room on mobile */
   .featured-projects-section,
   .skills-section,
   .about-section,
-  .social-links-section,
   .cta-section {
-    min-height: 70svh;
-    /* Slightly smaller on mobile */
+    min-height: auto;
     padding: 1rem 0;
+    justify-content: flex-start;
   }
 
   /* Hero Adjustments */
   .hero-title {
-    font-size: 2.5rem;
+    font-size: clamp(1.75rem, 7vw, 2.5rem);
   }
 
   .hero-subtitle {
-    font-size: 1.25rem;
+    font-size: clamp(1rem, 4.5vw, 1.25rem);
   }
 
   .hero-description {
-    font-size: 1rem;
+    font-size: clamp(0.95rem, 4vw, 1rem);
   }
 
   .hero-buttons {
@@ -741,14 +764,18 @@ TABLE OF CONTENTS
 
   /* General Section Adjustments */
   .hero-section,
+  .social-links-section {
+    min-height: 100svh;
+    padding: 0;
+  }
+
   .featured-projects-section,
   .skills-section,
   .about-section,
-  .social-links-section,
   .cta-section {
-    min-height: 60svh;
-    /* Even smaller on very small screens */
-    padding: 0.5rem 0;
+    min-height: auto;
+    padding: 0.75rem 0;
+    justify-content: flex-start;
   }
 
   .social-content {
@@ -757,11 +784,11 @@ TABLE OF CONTENTS
 
   /* Hero Adjustments */
   .hero-title {
-    font-size: 2rem;
+    font-size: clamp(1.5rem, 8vw, 2rem);
   }
 
   .hero-subtitle {
-    font-size: 1.1rem;
+    font-size: clamp(0.95rem, 4.5vw, 1.1rem);
   }
 
   /* Project Card Adjustments */
