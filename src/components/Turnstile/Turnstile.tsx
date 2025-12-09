@@ -50,7 +50,7 @@ const Turnstile: React.FC<TurnstileProps> = ({
           } else {
             setError("Dev token request failed");
           }
-        } catch (e) {
+        } catch {
           setError("Dev token request error");
         }
       })();
@@ -95,7 +95,7 @@ const Turnstile: React.FC<TurnstileProps> = ({
                 const data = await resp.json();
                 if (data.sessionToken) onVerified(data.sessionToken);
                 else setError("Missing session token");
-              } catch (e) {
+              } catch {
                 setError("Verification error");
               }
             },

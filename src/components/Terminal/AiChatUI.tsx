@@ -30,7 +30,7 @@ export const AiChatUI: React.FC<AiChatUIProps> = ({
         const { testAiConnection } = await import("../../services/aiApi");
         const connected = await testAiConnection();
         setIsConnected(connected);
-      } catch (error) {
+      } catch {
         setIsConnected(false);
       }
     };

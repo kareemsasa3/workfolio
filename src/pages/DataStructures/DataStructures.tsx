@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import React, { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Tree from "../../components/DataStructureVisualizer/Tree";
 import { bstInsertSteps, BstNode, InsertStep } from "../../algorithms/bst";
 import "./DataStructures.css";
@@ -61,7 +61,7 @@ const DataStructures = () => {
     stepIterRef.current = bstInsertSteps(root, key, (a, b) => a - b);
   }
 
-  function stepOnce(now?: number) {
+  function stepOnce() {
     if (!stepIterRef.current) return;
     const res = stepIterRef.current.next();
     if (!res.done) {
@@ -91,7 +91,7 @@ const DataStructures = () => {
     if (!lastTickRef.current) lastTickRef.current = now;
     const elapsed = now - lastTickRef.current;
     if (elapsed >= speedMsRef.current) {
-      stepOnce(now);
+      stepOnce();
       lastTickRef.current = now;
     }
     if (isPlaying && stepIterRef.current) {

@@ -195,7 +195,9 @@ export const getAllSettings = (): UserSettings => {
           const parsed = parseFloat(saved);
           if (!isNaN(parsed)) return parsed;
         }
-      } catch {}
+    } catch {
+      // ignore localStorage read failures
+    }
       return DEFAULT_SETTINGS.matrixSpeed;
     })(),
   };

@@ -33,6 +33,7 @@ const MatrixBackground = () => {
   const requestRef = useRef<number | null>(null);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
+  const [canvasOpacity, setCanvasOpacity] = useState(1);
   const columnsRef = useRef<MatrixColumn[]>([]);
 
   // Matrix characters (numbers and some symbols)
@@ -59,6 +60,12 @@ const MatrixBackground = () => {
     return () =>
       document.removeEventListener("visibilitychange", handleVisibilityChange);
   }, []);
+
+  useEffect(() => {
+    setCanvasOpacity(0.25);
+    const timeoutId = setTimeout(() => setCanvasOpacity(1), 200);
+    return () => clearTimeout(timeoutId);
+  }, [theme]);
 
   // Initialize matrix columns
   const initializeColumns = useCallback((canvas: HTMLCanvasElement) => {
@@ -248,14 +255,6 @@ const MatrixBackground = () => {
   if (prefersReducedMotion) {
     return null;
   }
-
-  // Soften theme switches by briefly fading the canvas on theme change
-  const [canvasOpacity, setCanvasOpacity] = useState(1);
-  useEffect(() => {
-    setCanvasOpacity(0.25);
-    const timeoutId = setTimeout(() => setCanvasOpacity(1), 200);
-    return () => clearTimeout(timeoutId);
-  }, [theme]);
 
   return (
     <motion.canvas
