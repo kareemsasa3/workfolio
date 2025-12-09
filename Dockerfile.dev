@@ -1,29 +1,10 @@
-# Use Node.js 20 for development (not Alpine to avoid crypto issues)
+# services/workfolio/Dockerfile.dev
+# Vite dev server, same simple pattern: root user, host-mounted code.
+
 FROM node:20
 
-# Set working directory
+ENV NODE_ENV=development
+
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
-
-# Install all dependencies (including dev dependencies)
-RUN npm ci
-
-# Create non-root user and group for security (Debian-compatible)
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 --gid 1001 nodejs
-
-# Change ownership of the app directory
-RUN chown -R nodejs:nodejs /app
-USER nodejs
-
-# Expose port
-EXPOSE 3000
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:3000 || exit 1
-
-# Start in development mode (will be overridden by docker-compose.dev.yml)
-CMD ["npm", "run", "dev"] 
+CMD ["npm", "run", "dev", "--", "--host", "--no-open"]

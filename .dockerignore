@@ -1,0 +1,38 @@
+# Dependencies (installed fresh in container)
+node_modules
+
+# Build artifacts (created during docker build)
+dist
+build
+
+# Environment files (secrets should come from compose/orchestrator)
+.env
+.env.*
+!.env.example
+
+# Development files
+Dockerfile.dev
+*.log
+logs
+
+# Git
+.git
+.gitignore
+
+# IDE/Editor
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test artifacts
+coverage
+.nyc_output
+
+# Vite cache
+.vite
+
