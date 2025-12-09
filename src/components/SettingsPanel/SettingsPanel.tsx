@@ -102,7 +102,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
         "Settings Reset",
         "All settings have been reset to defaults. The theme will update on the next page refresh."
       );
-    } catch (error) {
+    } catch {
       showError("Reset Failed", "Failed to reset settings. Please try again.");
     }
   };
@@ -128,8 +128,8 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
         "Settings Exported",
         "Your settings have been exported successfully."
       );
-    } catch (error) {
-      console.error("Failed to export settings:", error);
+    } catch (_error) {
+      console.error("Failed to export settings:", _error);
       showError(
         "Export Failed",
         "Failed to export settings. Please try again."

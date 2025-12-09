@@ -102,7 +102,7 @@ export async function testAiConnection(): Promise<boolean> {
     });
 
     return response.ok;
-  } catch (error) {
+  } catch {
     return false;
   }
 }

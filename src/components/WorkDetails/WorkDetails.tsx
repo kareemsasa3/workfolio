@@ -2,7 +2,7 @@ import React from "react";
 import "./WorkDetails.css";
 import { WorkExperience } from "../../data/workExperience";
 
-interface WorkDetailsProps extends WorkExperience {}
+type WorkDetailsProps = WorkExperience;
 
 const WorkDetails: React.FC<WorkDetailsProps> = ({
   company,
