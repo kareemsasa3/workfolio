@@ -17,6 +17,14 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({
     return false;
   });
 
+  const [osMode, setOsModeState] = useState<boolean>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("workfolio-os-mode");
+      return saved ? JSON.parse(saved) : false;
+    }
+    return false;
+  });
+
   // Save to localStorage whenever the state changes
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -27,12 +35,27 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({
     }
   }, [isSettingsOpen]);
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("workfolio-os-mode", JSON.stringify(osMode));
+    }
+  }, [osMode]);
+
   const toggleSettings = () => setIsSettingsOpen((prev: boolean) => !prev);
   const closeSettings = () => setIsSettingsOpen(false);
+  const setOsMode = (enabled: boolean) => setOsModeState(enabled);
+  const toggleOsMode = () => setOsModeState((prev) => !prev);
 
   return (
     <SettingsContext.Provider
-      value={{ isSettingsOpen, toggleSettings, closeSettings }}
+      value={{
+        isSettingsOpen,
+        toggleSettings,
+        closeSettings,
+        osMode,
+        setOsMode,
+        toggleOsMode,
+      }}
     >
       {children}
     </SettingsContext.Provider>

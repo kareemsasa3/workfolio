@@ -61,6 +61,8 @@
     max-height: calc(var(--dock-icon-size) + 16px);
 }
 
+/* OS mode badge moved to DesktopOverlay */
+
 /* Dock Tooltip Styles */
 .dock-tooltip {
     position: fixed;
@@ -104,13 +106,22 @@
 }
 
 .dock-nav-link {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--dock-icon-size);
+    height: var(--dock-icon-size);
+    padding: 0;
+    margin: 0;
+    border: 0;
+    background: transparent;
     color: var(--dock-text);
     transition: color 0.2s ease-in-out;
     text-decoration: none;
     pointer-events: auto;
-    /* Allow the link to overflow for magnification */
+    /* Allow the icon to magnify beyond the clickable area */
     overflow: visible;
+    cursor: pointer;
 }
 
 .dock-nav-link.active {

@@ -26,6 +26,7 @@ import {
 } from "../../utils/settings";
 import { Modal, useToast } from "../common";
 import "./SettingsPanel.css";
+import { useSettings } from "../../contexts/SettingsContext";
 
 interface SettingsPanelProps {
   onDockSizeChange: (size: number) => void;
@@ -57,6 +58,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
   onMatrixSpeedChange,
 }) => {
   const { showSuccess, showError } = useToast();
+  const { osMode, toggleOsMode } = useSettings();
   const [showResetModal, setShowResetModal] = useState(false);
 
   const handleDockSizeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -231,46 +233,74 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.1, duration: 0.2 }}
               >
-                <div className="settings-row">
-                  <div className="setting-group">
-                    <label className="setting-label">
-                      Background Animation
-                    </label>
-                    <div className="setting-control">
-                      <motion.button
-                        className={`animation-toggle ${
-                          isAnimationPaused ? "paused" : "playing"
-                        }`}
-                        onClick={handleAnimationToggle}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        aria-label={
-                          isAnimationPaused
-                            ? "Resume animation"
-                            : "Pause animation"
-                        }
-                      >
-                        <FontAwesomeIcon
-                          icon={isAnimationPaused ? faPlay : faPause}
-                        />
-                        <span>{isAnimationPaused ? "Resume" : "Pause"}</span>
-                      </motion.button>
-                    </div>
-                    <div className="setting-description">
-                      {isAnimationPaused
-                        ? "Background animation is currently paused."
-                        : "Background animation is currently running."}
+                {/* About at top */}
+                <div className="setting-group">
+                  <label className="setting-label">About</label>
+                  <div className="setting-control">
+                    <div
+                      className="setting-inline-description"
+                      style={{ marginLeft: 0 }}
+                    >
+                      <strong>Workfolio v1.0</strong> — A Mac-inspired portfolio
+                      with interactive dock navigation. Built with React,
+                      TypeScript, and Framer Motion.
                     </div>
                   </div>
+                </div>
+                <div className="setting-group">
+                  <label className="setting-label">Background Animation</label>
+                  <div className="setting-control setting-control-row">
+                    <motion.button
+                      className={`animation-toggle ${
+                        isAnimationPaused ? "paused" : "playing"
+                      }`}
+                      onClick={handleAnimationToggle}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      aria-label={
+                        isAnimationPaused
+                          ? "Resume animation"
+                          : "Pause animation"
+                      }
+                    >
+                      <FontAwesomeIcon
+                        icon={isAnimationPaused ? faPlay : faPause}
+                      />
+                      <span>{isAnimationPaused ? "Resume" : "Pause"}</span>
+                    </motion.button>
+                    <span className="setting-inline-description">
+                      {isAnimationPaused
+                        ? "Animation is paused"
+                        : "Animation is running"}
+                    </span>
+                  </div>
+                </div>
 
-                  <div className="setting-group">
-                    <label className="setting-label">Theme</label>
-                    <div className="setting-control">
-                      <ThemeToggle />
-                    </div>
-                    <div className="setting-description">
-                      Switch between light and dark themes.
-                    </div>
+                <div className="setting-group">
+                  <label className="setting-label">Theme</label>
+                  <div className="setting-control setting-control-row">
+                    <ThemeToggle />
+                    <span className="setting-inline-description">
+                      Switch between light and dark themes
+                    </span>
+                  </div>
+                </div>
+
+                <div className="setting-group">
+                  <label className="setting-label">OS Mode</label>
+                  <div className="setting-control setting-control-row">
+                    <label className="toggle-switch">
+                      <input
+                        type="checkbox"
+                        checked={osMode}
+                        onChange={toggleOsMode}
+                        aria-label="Toggle OS Mode"
+                      />
+                      <span className="slider" />
+                    </label>
+                    <span className="setting-inline-description">
+                      Replace route pages with windowed apps
+                    </span>
                   </div>
                 </div>
 
@@ -400,17 +430,6 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   <div className="setting-description">
                     Export your current settings to a file or import previously
                     saved settings.
-                  </div>
-                </div>
-
-                <div className="setting-group">
-                  <label className="setting-label">About</label>
-                  <div className="setting-description">
-                    <strong>Workfolio v1.0</strong>
-                    <br />
-                    A Mac-inspired portfolio with interactive dock navigation.
-                    <br />
-                    Built with React, TypeScript, and Framer Motion.
                   </div>
                 </div>
 

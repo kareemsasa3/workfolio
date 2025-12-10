@@ -1,0 +1,115 @@
+.desktop-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 32px;
+    z-index: 10002;
+    /* Above Dock (10001) and windows */
+    pointer-events: none;
+}
+
+.desktop-topbar {
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    background: var(--background-color-transparent);
+    border-bottom: 1px solid var(--border-color);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    pointer-events: auto;
+}
+
+/* Stage area (left side) */
+.desktop-stage {
+    position: fixed;
+    top: 40px;
+    left: 8px;
+    bottom: 8px;
+    width: 56px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: auto;
+    justify-content: center;
+    /* center items vertically */
+}
+
+.stage-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 10px;
+    border: 1px solid var(--dock-border);
+    background: var(--background-color-transparent);
+    color: var(--text-color);
+    cursor: pointer;
+    padding: 0;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.stage-item:hover {
+    filter: brightness(1.05);
+}
+
+.stage-item-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-size: 24px;
+    /* larger icon for better balance in 56px tile */
+    color: var(--dock-text);
+}
+
+.stage-item-title {
+    font-size: 10px;
+    font-weight: 600;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    position: absolute;
+    left: 50%;
+    bottom: -16px;
+    transform: translateX(-50%);
+    pointer-events: none;
+}
+
+.stage-item:hover .stage-item-title {
+    opacity: 1;
+}
+
+.desktop-left, .desktop-center, .desktop-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.desktop-center {
+    flex: 1;
+    justify-content: center;
+}
+
+.desktop-os-badge {
+    padding: 2px 8px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--dock-text);
+    background: var(--dock-primary);
+    border: 1px solid var(--dock-border);
+    border-radius: 6px;
+    box-shadow: 0 2px 8px var(--dock-shadow);
+    cursor: pointer;
+}
+
+.desktop-date, .desktop-time {
+    color: var(--text-color);
+    font-size: 12px;
+    font-weight: 600;
+}

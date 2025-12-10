@@ -6,10 +6,12 @@ import {
   MotionValue,
   AnimatePresence,
 } from "framer-motion";
-import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import "./Dock.css";
+import { useWindowManager } from "../../contexts/WindowManagerContext";
+import { useSettings } from "../../contexts/SettingsContext";
 
 const MAGNIFICATION_RANGE = 100; // How far from the center the magnification extends
 
@@ -32,7 +34,10 @@ const DockIcon: React.FC<DockIconProps> = ({
   magnification,
   baseSize,
 }) => {
-  const ref = useRef<HTMLAnchorElement>(null);
+  const ref = useRef<HTMLButtonElement>(null);
+  const { openWindow } = useWindowManager();
+  const { osMode } = useSettings();
+  const navigate = useNavigate();
 
   // State to hold the measured position of the icon's center
   const [iconCenter, setIconCenter] = useState<number | null>(null);
@@ -88,12 +93,38 @@ const DockIcon: React.FC<DockIconProps> = ({
 
   return (
     <div className="dock-icon-container">
-      <NavLink
+      <button
         ref={ref}
-        to={path}
         className="dock-nav-link"
+        aria-label={label}
+        type="button"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
+        onClick={() => {
+          if (osMode) {
+            const appId =
+              path === "/"
+                ? "home"
+                : path === "/terminal"
+                ? "terminal"
+                : path === "/projects"
+                ? "projects"
+                : path === "/work"
+                ? "work"
+                : path === "/journey"
+                ? "journey"
+                : path === "/games"
+                ? "games"
+                : path === "/ai-conversations"
+                ? "ai"
+                : path === "/visualizer"
+                ? "visualizer"
+                : undefined;
+            if (appId) openWindow(appId);
+          } else {
+            navigate(path);
+          }
+        }}
       >
         <motion.div
           className="dock-icon"
@@ -105,7 +136,7 @@ const DockIcon: React.FC<DockIconProps> = ({
         >
           <FontAwesomeIcon icon={icon} />
         </motion.div>
-      </NavLink>
+      </button>
 
       {/* Tooltip */}
       <AnimatePresence>

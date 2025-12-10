@@ -34,6 +34,19 @@ body {
   min-height: 100vh;
 }
 
+/* Hide UI layers when an app is in fullscreen (maximized) */
+body.os-fullscreen .dock-container {
+  display: none !important;
+}
+
+body.os-fullscreen .desktop-topbar {
+  display: none !important;
+}
+
+body.os-fullscreen .desktop-stage {
+  display: none !important;
+}
+
 /* Root container - no overflow rules to avoid nested scrolling */
 #root {
   isolation: isolate;

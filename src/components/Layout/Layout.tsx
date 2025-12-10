@@ -10,6 +10,8 @@ import ErrorBoundary from "../common/ErrorBoundary";
 import { useLayoutContext } from "../../contexts/LayoutContext";
 import { useSettings } from "../../contexts/SettingsContext";
 import "./Layout.css";
+import WindowLayer from "../WindowManager/WindowLayer";
+import DesktopOverlay from "./DesktopOverlay";
 
 const pageVariants = {
   initial: {
@@ -35,21 +37,24 @@ const pageTransition = {
 const Layout = () => {
   const location = useLocation();
   const { mainContentAreaRef } = useLayoutContext();
-  const { isSettingsOpen } = useSettings();
+  const { isSettingsOpen, osMode } = useSettings();
   const [isLoading, setIsLoading] = useState(false);
 
   // Memoize the key to prevent unnecessary re-renders
   const pageKey = useMemo(() => location.pathname, [location.pathname]);
 
-  // Show loading state on route change
+  // Show loading state on route change (disabled in OS mode)
   useEffect(() => {
+    if (osMode) {
+      setIsLoading(false);
+      return;
+    }
     setIsLoading(true);
-    // Hide loading after at least 500ms to ensure consistent loading experience
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 500);
     return () => clearTimeout(timer);
-  }, [location.pathname]);
+  }, [location.pathname, osMode]);
 
   // Route-aware document title
   useEffect(() => {
@@ -67,16 +72,38 @@ const Layout = () => {
     if (document.title !== title) document.title = title;
   }, [location.pathname]);
 
+  // Disable body scroll when OS mode is enabled
+  useEffect(() => {
+    if (osMode) {
+      const prevOverflow = document.body.style.overflow;
+      const prevOverflowY = document.body.style.overflowY;
+      const prevOverflowX = document.body.style.overflowX;
+      const prevOverscroll = (document.body.style as any).overscrollBehavior;
+      document.body.style.overflow = "hidden";
+      document.body.style.overflowY = "hidden";
+      document.body.style.overflowX = "hidden";
+      (document.body.style as any).overscrollBehavior = "none";
+      return () => {
+        document.body.style.overflow = prevOverflow;
+        document.body.style.overflowY = prevOverflowY;
+        document.body.style.overflowX = prevOverflowX;
+        (document.body.style as any).overscrollBehavior = prevOverscroll;
+      };
+    }
+  }, [osMode]);
+
   return (
     // Use a simple fragment, or a div with NO positioning/transform styles
     <>
       <MatrixBackground />
 
       {/* This is now the top-level container for all INTERACTIVE content */}
-      <div className="layout-foreground">
-        <GlobalScrollProgress />
+      <div className={`layout-foreground ${osMode ? "os-mode" : ""}`}>
+        <DesktopOverlay />
+        {!osMode && <GlobalScrollProgress />}
         <Dock />
-        <GlobalSectionNavigation isSettingsOpen={isSettingsOpen} />
+        {!osMode && <GlobalSectionNavigation isSettingsOpen={isSettingsOpen} />}
+        <WindowLayer />
 
         <main
           ref={mainContentAreaRef}
@@ -86,7 +113,7 @@ const Layout = () => {
           <ErrorBoundary>
             {isLoading ? (
               <PageLoader />
-            ) : (
+            ) : !osMode ? (
               <AnimatePresence mode="wait" initial={false}>
                 <motion.div
                   key={pageKey}
@@ -102,6 +129,8 @@ const Layout = () => {
                   </Suspense>
                 </motion.div>
               </AnimatePresence>
+            ) : (
+              <div style={{ width: "100%", minHeight: "100%" }} />
             )}
           </ErrorBoundary>
         </main>

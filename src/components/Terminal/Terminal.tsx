@@ -13,9 +13,15 @@ import TerminalErrorBoundary from "./TerminalErrorBoundary";
 
 interface TerminalProps {
   isIntro: boolean;
+  onCloseOverride?: () => void;
+  useExternalChrome?: boolean;
 }
 
-const Terminal: React.FC<TerminalProps> = ({ isIntro }) => {
+const Terminal: React.FC<TerminalProps> = ({
+  isIntro,
+  onCloseOverride,
+  useExternalChrome = false,
+}) => {
   const navigate = useNavigate();
 
   // State initialization
@@ -59,19 +65,27 @@ const Terminal: React.FC<TerminalProps> = ({ isIntro }) => {
   const handleTerminalClose = useCallback(() => {
     // Reset terminal state when closing
     coreHandlers.resetTerminal();
+    if (onCloseOverride) {
+      onCloseOverride();
+      return;
+    }
     navigate(isIntro ? "/home" : "/");
-  }, [coreHandlers, navigate, isIntro]);
+  }, [coreHandlers, navigate, isIntro, onCloseOverride]);
 
-  // Use the new window management hook
-  const windowManagement = useWindowManagement({
-    initialWidth: getTerminalDimensions().width,
-    initialHeight: getTerminalDimensions().height,
-    isIntro,
-    onClose: handleTerminalClose,
-  });
+  // Use the new window management hook only when rendering with internal chrome
+  const windowManagement = useExternalChrome
+    ? null
+    : useWindowManagement({
+        initialWidth: getTerminalDimensions().width,
+        initialHeight: getTerminalDimensions().height,
+        isIntro,
+        onClose: handleTerminalClose,
+      });
 
-  // Use the body scroll lock hook
-  useLockBodyScroll(isIntro);
+  // Use the body scroll lock hook only for intro route mode
+  if (!useExternalChrome) {
+    useLockBodyScroll(isIntro);
+  }
 
   // Mark state as loaded after terminal state is initialized
   useEffect(() => {
@@ -188,16 +202,70 @@ const Terminal: React.FC<TerminalProps> = ({ isIntro }) => {
     }
   };
 
+  const overlays = (
+    <TerminalOverlays
+      // Man page props
+      isManPage={coreState.isManPage}
+      currentManPage={coreState.currentManPage}
+      manPageScrollPosition={coreState.manPageScrollPosition}
+      onHideManPage={coreHandlers.hideManPage}
+      onSetManPageScroll={coreHandlers.setManPageScroll}
+      // Top command props
+      isTopCommand={topState.isTopCommand}
+      topProcesses={topState.topProcesses}
+      topSortBy={topState.topSortBy}
+      topSortOrder={topState.topSortOrder}
+      topRefreshRate={topState.topRefreshRate}
+      topSelectedPid={topState.topSelectedPid}
+      onHideTopCommand={topHandlers.hideTopCommand}
+      onSetTopSort={topHandlers.setTopSort}
+      onKillTopProcess={topHandlers.killTopProcess}
+      onSetTopSelectedPid={topHandlers.setTopSelectedPid}
+      // Scrape results props
+      showScrapeResults={scrapingState.showScrapeResults}
+      scrapeResults={scrapingState.scrapeResults}
+      onHideScrapeResults={scrapingHandlers.hideScrapeResults}
+    />
+  );
+
+  if (useExternalChrome) {
+    return (
+      <TerminalErrorBoundary>
+        {overlays}
+        <div className="terminal-body" ref={coreHandlers.terminalRef as any}>
+          <TerminalView
+            commandHistory={coreState.commandHistory}
+            currentCommand={coreState.currentCommand}
+            showPrompt={coreState.showPrompt}
+            currentDirectory={coreState.currentDirectory}
+            hasShownIntro={hasShownIntro}
+            isReverseSearch={coreState.isReverseSearch}
+            reverseSearchTerm={coreState.reverseSearchTerm}
+            reverseSearchResults={coreState.reverseSearchResults}
+            reverseSearchIndex={coreState.reverseSearchIndex}
+            autocompleteSuggestions={coreState.autocompleteSuggestions}
+            autocompleteIndex={coreState.autocompleteIndex}
+            onCommandChange={handleCommandChange}
+            onCommandSubmit={handleCommandSubmit}
+            onKeyDown={handleKeyDown}
+            onIntroComplete={handleIntroComplete}
+            terminalRef={coreHandlers.terminalRef}
+          />
+        </div>
+      </TerminalErrorBoundary>
+    );
+  }
+
   return (
     <TerminalErrorBoundary>
       <div
         className={`terminal-screen ${isIntro ? "intro-mode" : "route-mode"}`}
       >
         {/* The sidecar for minimized state - NOW a BUTTON */}
-        {isStateLoaded && windowManagement.showSidecar && (
+        {isStateLoaded && windowManagement!.showSidecar && (
           <button
             className="terminal-sidecar"
-            onClick={windowManagement.handleMinimize}
+            onClick={windowManagement!.handleMinimize}
             aria-label="Restore terminal window"
           >
             <span className="sidecar-icon" aria-hidden="true">
@@ -206,41 +274,18 @@ const Terminal: React.FC<TerminalProps> = ({ isIntro }) => {
           </button>
         )}
 
-        {/* Overlays */}
-        <TerminalOverlays
-          // Man page props
-          isManPage={coreState.isManPage}
-          currentManPage={coreState.currentManPage}
-          manPageScrollPosition={coreState.manPageScrollPosition}
-          onHideManPage={coreHandlers.hideManPage}
-          onSetManPageScroll={coreHandlers.setManPageScroll}
-          // Top command props
-          isTopCommand={topState.isTopCommand}
-          topProcesses={topState.topProcesses}
-          topSortBy={topState.topSortBy}
-          topSortOrder={topState.topSortOrder}
-          topRefreshRate={topState.topRefreshRate}
-          topSelectedPid={topState.topSelectedPid}
-          onHideTopCommand={topHandlers.hideTopCommand}
-          onSetTopSort={topHandlers.setTopSort}
-          onKillTopProcess={topHandlers.killTopProcess}
-          onSetTopSelectedPid={topHandlers.setTopSelectedPid}
-          // Scrape results props
-          showScrapeResults={scrapingState.showScrapeResults}
-          scrapeResults={scrapingState.scrapeResults}
-          onHideScrapeResults={scrapingHandlers.hideScrapeResults}
-        />
+        {overlays}
 
         {/* Main terminal window */}
         <TerminalWindow
-          containerStyles={windowManagement.containerStyles}
-          isMaximized={windowManagement.isMaximized}
-          isDragging={windowManagement.isDragging}
+          containerStyles={windowManagement!.containerStyles}
+          isMaximized={windowManagement!.isMaximized}
+          isDragging={windowManagement!.isDragging}
           currentDirectory={coreState.currentDirectory}
-          onMouseDown={windowManagement.handleMouseDown}
-          onClose={windowManagement.handleClose}
-          onMinimize={windowManagement.handleMinimize}
-          onMaximize={windowManagement.handleMaximize}
+          onMouseDown={windowManagement!.handleMouseDown}
+          onClose={windowManagement!.handleClose}
+          onMinimize={windowManagement!.handleMinimize}
+          onMaximize={windowManagement!.handleMaximize}
         >
           <TerminalView
             commandHistory={coreState.commandHistory}

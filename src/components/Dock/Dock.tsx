@@ -25,7 +25,13 @@ const Dock = () => {
     handleMagnificationChange,
   } = useDock();
 
-  const { isSettingsOpen, toggleSettings, closeSettings } = useSettings();
+  const {
+    isSettingsOpen,
+    toggleSettings,
+    closeSettings,
+    osMode,
+    toggleOsMode,
+  } = useSettings();
   const {
     isAnimationPaused,
     setIsAnimationPaused,
@@ -85,6 +91,7 @@ const Dock = () => {
           x: { type: "spring", damping: 30, stiffness: 220 },
         }}
       >
+        {/* OS mode badge moved to DesktopOverlay */}
         {navItems.map((item) => (
           <DockIcon
             key={item.path}

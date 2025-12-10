@@ -15,7 +15,10 @@ interface WindowState {
 }
 
 type WindowAction =
-  | { type: "INITIALIZE"; payload: { width: number; height: number } }
+  | {
+      type: "INITIALIZE";
+      payload: { width: number; height: number; position?: Position };
+    }
   | { type: "DRAG_START"; payload: { clientX: number; clientY: number } }
   | { type: "DRAG_MOVE"; payload: { clientX: number; clientY: number } }
   | { type: "DRAG_END" }
@@ -29,6 +32,15 @@ interface UseWindowManagementOptions {
   initialHeight: number;
   isIntro?: boolean;
   onClose?: () => void;
+  initialPosition?: Position;
+  dragHandleSelector?: string;
+  dragCancelSelector?: string;
+  maximizeOffsets?: {
+    top?: number;
+    right?: number;
+    bottom?: number;
+    left?: number;
+  };
 }
 
 const windowReducer = (
@@ -37,8 +49,8 @@ const windowReducer = (
 ): WindowState => {
   switch (action.type) {
     case "INITIALIZE": {
-      const { width, height } = action.payload;
-      const position = {
+      const { width, height, position: providedPosition } = action.payload;
+      const position = providedPosition ?? {
         x: (window.innerWidth - width) / 2,
         y: (window.innerHeight - height) / 2,
       };
@@ -117,7 +129,16 @@ const initialState: WindowState = {
 };
 
 export const useWindowManagement = (options: UseWindowManagementOptions) => {
-  const { initialWidth, initialHeight, isIntro = false, onClose } = options;
+  const {
+    initialWidth,
+    initialHeight,
+    isIntro = false,
+    onClose,
+    initialPosition,
+    dragHandleSelector = ".terminal-header, .app-window-header",
+    dragCancelSelector = ".terminal-button, .app-window-button",
+    maximizeOffsets,
+  } = options;
   const [state, dispatch] = useReducer(windowReducer, initialState);
   const dimensionsRef = useRef({ width: initialWidth, height: initialHeight });
 
@@ -126,10 +147,14 @@ export const useWindowManagement = (options: UseWindowManagementOptions) => {
     if (typeof window !== "undefined") {
       dispatch({
         type: "INITIALIZE",
-        payload: { width: initialWidth, height: initialHeight },
+        payload: {
+          width: initialWidth,
+          height: initialHeight,
+          position: initialPosition ?? undefined,
+        },
       });
     }
-  }, [initialWidth, initialHeight]);
+  }, [initialWidth, initialHeight, initialPosition]);
 
   // Debounced resize handler
   const debouncedResize = useCallback(() => {
@@ -205,8 +230,8 @@ export const useWindowManagement = (options: UseWindowManagementOptions) => {
 
       const target = e.target as HTMLElement;
       if (
-        !target.closest(".terminal-header") ||
-        target.closest(".terminal-button")
+        !target.closest(dragHandleSelector) ||
+        target.closest(dragCancelSelector)
       ) {
         return;
       }
@@ -216,18 +241,28 @@ export const useWindowManagement = (options: UseWindowManagementOptions) => {
         payload: { clientX: e.clientX, clientY: e.clientY },
       });
     },
-    [state.isMaximized, state.position]
+    [state.isMaximized, state.position, dragHandleSelector, dragCancelSelector]
   );
 
   // Calculate container styles
   const getContainerStyles = useCallback(() => {
     if (state.isMaximized) {
+      const topOffset = maximizeOffsets?.top ?? 0;
+      const rightOffset = maximizeOffsets?.right ?? 0;
+      const bottomOffset = maximizeOffsets?.bottom ?? 0;
+      const leftOffset = maximizeOffsets?.left ?? 0;
       return {
         position: "fixed" as const,
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100vh",
+        top: topOffset,
+        left: leftOffset,
+        width:
+          leftOffset === 0 && rightOffset === 0
+            ? "100%"
+            : `calc(100vw - ${leftOffset + rightOffset}px)`,
+        height:
+          topOffset === 0 && bottomOffset === 0
+            ? "100vh"
+            : `calc(100vh - ${topOffset + bottomOffset}px)`,
         transform: "none",
         opacity: 1,
         pointerEvents: "auto" as const,
@@ -292,5 +327,23 @@ export const useWindowManagement = (options: UseWindowManagementOptions) => {
 
     // For sidecar (minimized state indicator)
     showSidecar: state.isMinimized,
+
+    // Expose a way to sync current dimensions for bounds calculations
+    setDimensions: (width: number, height: number) => {
+      dimensionsRef.current = { width, height };
+      dispatch({ type: "RESIZE", payload: { width, height } });
+    },
+
+    // Programmatic positioning (for tiling)
+    setPosition: (x: number, y: number) => {
+      // Directly move within bounds based on current dimensions
+      const { width, height } = dimensionsRef.current;
+      const maxX = Math.max(0, window.innerWidth - width);
+      const maxY = Math.max(0, window.innerHeight - height);
+      const clampedX = Math.max(0, Math.min(x, maxX));
+      const clampedY = Math.max(0, Math.min(y, maxY));
+      // Emulate move result
+      (state as any).position = { x: clampedX, y: clampedY };
+    },
   };
 };
