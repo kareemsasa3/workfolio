@@ -47,7 +47,7 @@ export interface Project {
 
 export const projectsData: Project[] = [
   {
-    id: "arachne",
+    id: "Arachne",
     category: "Backend Systems",
     date: "2024",
     title: "Arachne",
@@ -71,8 +71,8 @@ export const projectsData: Project[] = [
     ],
     complexity: "Expert",
     status: "Live",
-    url: "https://github.com/kareemsasa3/arachne",
-    githubUrl: "https://github.com/kareemsasa3/arachne",
+    url: "https://github.com/kareemsasa3/Arachne",
+    githubUrl: "https://github.com/kareemsasa3/Arachne",
     highlights: [
       "Production-grade Go service",
       "Scalable worker model",
@@ -145,7 +145,7 @@ export const projectsData: Project[] = [
       "Production automation system",
       "Advanced state persistence",
       "Slack slash commands",
-      "Integration with Arachne service",
+      "Cross-service integration work",
     ],
   },
   {

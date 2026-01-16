@@ -60,7 +60,6 @@ const Layout = () => {
       "/games/snake": "Snake Game — Kareem Sasa",
       "/work": "Work — Kareem Sasa",
       "/journey": "Journey — Kareem Sasa",
-      "/ai-conversations": "AI Conversations — Kareem Sasa",
       "/terminal": "Terminal — Kareem Sasa",
     };
     const title = routeTitles[location.pathname] || "Kareem Sasa — Portfolio";

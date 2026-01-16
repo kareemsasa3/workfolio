@@ -1,7 +1,6 @@
 import React from "react";
 import ManPageUI from "./ManPageUI";
 import TopUI from "./TopUI";
-import { ScrapeResults, ScrapedData } from "../ScrapeResults";
 import { manPages } from "../../data/manPages";
 import { ProcessInfo } from "../../types/terminal";
 
@@ -28,10 +27,6 @@ interface TerminalOverlaysProps {
   onKillTopProcess: (pid: number) => void;
   onSetTopSelectedPid: (pid: number | null) => void;
 
-  // Scrape results overlay
-  showScrapeResults: boolean;
-  scrapeResults: ScrapedData[];
-  onHideScrapeResults: () => void;
 }
 
 const TerminalOverlays: React.FC<TerminalOverlaysProps> = ({
@@ -54,10 +49,6 @@ const TerminalOverlays: React.FC<TerminalOverlaysProps> = ({
   onKillTopProcess,
   onSetTopSelectedPid,
 
-  // Scrape results props
-  showScrapeResults,
-  scrapeResults,
-  onHideScrapeResults,
 }) => {
   return (
     <>
@@ -86,10 +77,6 @@ const TerminalOverlays: React.FC<TerminalOverlaysProps> = ({
         />
       )}
 
-      {/* Scrape Results Modal */}
-      {showScrapeResults && scrapeResults.length > 0 && (
-        <ScrapeResults results={scrapeResults} onClose={onHideScrapeResults} />
-      )}
     </>
   );
 };

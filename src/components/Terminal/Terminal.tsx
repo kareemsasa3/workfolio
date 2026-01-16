@@ -50,8 +50,6 @@ const Terminal: React.FC<TerminalProps> = ({ isIntro }) => {
     coreHandlers,
     topState,
     topHandlers,
-    scrapingState,
-    scrapingHandlers,
     executeCommand,
   } = useTerminal(fileSystem, handleRouteNavigation, !isIntro);
 
@@ -225,10 +223,6 @@ const Terminal: React.FC<TerminalProps> = ({ isIntro }) => {
           onSetTopSort={topHandlers.setTopSort}
           onKillTopProcess={topHandlers.killTopProcess}
           onSetTopSelectedPid={topHandlers.setTopSelectedPid}
-          // Scrape results props
-          showScrapeResults={scrapingState.showScrapeResults}
-          scrapeResults={scrapingState.scrapeResults}
-          onHideScrapeResults={scrapingHandlers.hideScrapeResults}
         />
 
         {/* Main terminal window */}

@@ -362,108 +362,23 @@ Interactive controls:
   },
 
   curl: {
-    name: "curl - submit web scraping job",
+    name: "curl - transfer data from URLs",
     synopsis: "curl [URL]...",
-    description: `Submit a web scraping job to the Arachne service for the specified URLs.
+    description: `Transfer data from or to a server using a supported protocol.
 
-The curl command submits URLs to the Arachne web scraping service, which will 
-extract content from the specified web pages. The scraping job runs asynchronously, 
-and you can monitor its progress in real-time through the terminal.
-
-The command returns a job ID immediately and updates the status as the scraping 
-progresses. Once completed, the results are saved as a JSON file that can be 
-viewed using the cat command or processed with other terminal commands like grep.
-
-This integration demonstrates full-stack capabilities by connecting the terminal 
-interface to a deployed backend service.`,
+The curl command fetches the contents of a URL and prints it to the terminal.
+It can be used to quickly inspect HTTP responses or fetch text content.`,
     options: [],
     examples: [
       {
         command: "curl https://example.com",
-        description: "Submit a scraping job for example.com",
+        description: "Fetch the contents of example.com",
       },
       {
-        command: "curl https://google.com https://github.com",
-        description: "Submit a scraping job for multiple URLs",
-      },
-      {
-        command: "curl https://news.ycombinator.com",
-        description: "Scrape Hacker News homepage",
-      },
-      {
-        command: "cat scraping_results/job_abc123.json | grep 'title'",
-        description: "View scraping results and search for titles",
+        command: "curl https://jsonplaceholder.typicode.com/todos/1",
+        description: "Fetch a JSON response and print it to the terminal",
       },
     ],
     seeAlso: ["cat", "grep", "wc"],
-  },
-
-  arachne: {
-    name: "arachne - web scraping service with real-time tracking",
-    synopsis: "arachne [COMMAND] [ARGUMENTS]...",
-    description: `Arachne is a powerful web scraping service that provides real-time progress 
-tracking, concurrent scraping, and comprehensive result management.
-
-The arachne command offers a complete web scraping solution with subcommands 
-for submitting jobs, monitoring progress, and managing active scraping tasks. 
-It integrates with a deployed Arachne service that handles the actual web 
-scraping operations asynchronously.
-
-Key features:
-- Real-time progress tracking with visual indicators
-- Concurrent scraping of multiple URLs
-- Comprehensive error handling and retry mechanisms
-- Results storage and export capabilities
-- Metrics and analytics for scraping performance
-- Integration with terminal-based workflow
-
-The service uses Redis for job persistence and provides detailed metrics 
-including response times, success rates, and domain-specific statistics.`,
-    options: [
-      {
-        flag: "scrape",
-        description: "Submit URLs for web scraping",
-      },
-      {
-        flag: "status",
-        description: "Check job status and retrieve results",
-      },
-      {
-        flag: "jobs",
-        description: "List all active scraping jobs",
-      },
-      {
-        flag: "help",
-        description: "Display detailed help information",
-      },
-    ],
-    examples: [
-      {
-        command: "arachne scrape https://example.com",
-        description: "Submit a single URL for scraping",
-      },
-      {
-        command:
-          "arachne scrape https://google.com https://github.com https://stackoverflow.com",
-        description: "Submit multiple URLs for concurrent scraping",
-      },
-      {
-        command: "arachne status 2c424e7e-18dc-44b2-a37a-cd757916febc",
-        description: "Check status of a specific job by ID",
-      },
-      {
-        command: "arachne jobs",
-        description: "List all currently active scraping jobs",
-      },
-      {
-        command: "arachne help",
-        description: "Display comprehensive help and usage information",
-      },
-      {
-        command: "arachne scrape https://news.ycombinator.com && arachne jobs",
-        description: "Submit a job and immediately check active jobs",
-      },
-    ],
-    seeAlso: ["curl", "cat", "grep", "wc"],
   },
 };

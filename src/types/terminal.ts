@@ -1,6 +1,3 @@
-import { ChatMessage } from "../services/aiApi";
-import { ScrapedData } from "../components/ScrapeResults";
-
 export interface FileSystemItem {
   name: string;
   type: "directory" | "file";
@@ -31,18 +28,6 @@ export interface PipeResult {
 }
 
 export type CommandResult = HistoryEntry[] | TypewriterEffect | PipeResult;
-
-export interface ActiveScrapeJob {
-  jobId: string;
-  command: string; // The command that was executed
-  status: "submitted" | "running" | "completed" | "failed";
-  progress?: number;
-  historyEntryId: number; // The ID of the history line to update
-  urls: string[];
-  startTime: number; // Timestamp when job was started
-  results?: ScrapedData[]; // Final results when completed
-  error?: string; // Error message if failed
-}
 
 export interface ProcessInfo {
   pid: number;
@@ -85,54 +70,6 @@ export type TopAction =
   | { type: "SET_TOP_REFRESH_RATE"; payload: number }
   | { type: "SET_TOP_SELECTED_PID"; payload: number | null }
   | { type: "KILL_TOP_PROCESS"; payload: number };
-
-// Scraping Feature State
-export interface ScrapingState {
-  activeScrapeJobs: Record<string, ActiveScrapeJob>;
-  showScrapeResults: boolean;
-  scrapeResults: ScrapedData[];
-  currentScrapeJobId: string;
-}
-
-// Scraping Feature Actions
-export type ScrapingAction =
-  | { type: "ADD_SCRAPE_JOB"; payload: ActiveScrapeJob }
-  | {
-      type: "UPDATE_SCRAPE_JOB";
-      payload: { jobId: string; updates: Partial<ActiveScrapeJob> };
-    }
-  | { type: "REMOVE_SCRAPE_JOB"; payload: string }
-  | {
-      type: "SHOW_SCRAPE_RESULTS";
-      payload: { results: ScrapedData[]; jobId: string };
-    }
-  | { type: "HIDE_SCRAPE_RESULTS" };
-
-// AI Chat Feature State
-export interface AiChatState {
-  isAiChatting: boolean;
-  aiChatHistory: ChatMessage[];
-  isAiTyping: boolean;
-  aiInputValue: string;
-}
-
-// AI Chat Feature Actions
-export type AiChatAction =
-  | { type: "START_AI_CHAT" }
-  | { type: "EXIT_AI_CHAT" }
-  | { type: "ADD_AI_MESSAGE"; payload: ChatMessage }
-  | { type: "SET_AI_TYPING"; payload: boolean }
-  | { type: "SET_AI_INPUT_VALUE"; payload: string }
-  | { type: "CLEAR_AI_CHAT_HISTORY" }
-  | {
-      type: "SET_AI_CHAT_STATE";
-      payload: {
-        isChatting: boolean;
-        history?: ChatMessage[];
-        isTyping?: boolean;
-        inputValue?: string;
-      };
-    };
 
 // Core Terminal State (without feature-specific state)
 export interface CoreTerminalState {
@@ -215,49 +152,6 @@ export type CoreTerminalAction =
   | { type: "SET_TOP_REFRESH_RATE"; payload: number }
   | { type: "SET_TOP_SELECTED_PID"; payload: number | null }
   | { type: "KILL_TOP_PROCESS"; payload: number }
-  // Scraping actions
-  | { type: "ADD_SCRAPE_JOB"; payload: ActiveScrapeJob }
-  | {
-      type: "UPDATE_SCRAPE_JOB";
-      payload: { jobId: string; updates: Partial<ActiveScrapeJob> };
-    }
-  | { type: "REMOVE_SCRAPE_JOB"; payload: string }
-  | {
-      type: "SHOW_SCRAPE_RESULTS";
-      payload: { results: ScrapedData[]; jobId: string };
-    }
-  | { type: "HIDE_SCRAPE_RESULTS" }
-  // AI Chat actions
-  | { type: "START_AI_CHAT" }
-  | { type: "EXIT_AI_CHAT" }
-  | { type: "ADD_AI_MESSAGE"; payload: ChatMessage }
-  | { type: "SET_AI_TYPING"; payload: boolean }
-  | { type: "SET_AI_INPUT_VALUE"; payload: string }
-  | { type: "CLEAR_AI_CHAT_HISTORY" }
-  | {
-      type: "SET_AI_CHAT_STATE";
-      payload: {
-        isChatting: boolean;
-        history?: ChatMessage[];
-        isTyping?: boolean;
-        inputValue?: string;
-      };
-    };
-
-// Combined state for backward compatibility (will be removed after refactor)
-export interface TerminalState
-  extends CoreTerminalState,
-    TopState,
-    ScrapingState,
-    AiChatState {}
-
-// Combined action for backward compatibility (will be removed after refactor)
-export type TerminalAction =
-  | CoreTerminalAction
-  | TopAction
-  | ScrapingAction
-  | AiChatAction;
-
 export interface Command {
   name: string;
   execute: (

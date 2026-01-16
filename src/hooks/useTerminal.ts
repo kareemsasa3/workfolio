@@ -9,8 +9,6 @@ import {
 } from "../types/terminal";
 import { useTerminalCore } from "./useTerminalCore";
 import { useTopCommand } from "./useTopCommand";
-import { useScraping } from "./useScraping";
-import { useAiChat } from "./useAiChat";
 import { getFileContentByPath } from "../data/fileContents";
 
 // Helper function to create properly typed history entries
@@ -355,165 +353,6 @@ class CurlCommand implements Command {
   }
 }
 
-class ArachneCommand implements Command {
-  name = "arachne";
-
-  async execute(
-    args: string[],
-    history: HistoryEntry[],
-    _fileSystem: FileSystemItem[],
-    dispatch: React.Dispatch<CoreTerminalAction>,
-    _currentDirectory: string,
-    _onNavigate?: (route: string) => void,
-    _state?: CoreTerminalState
-  ): Promise<HistoryEntry[]> {
-    if (args.length === 0) {
-      return [...history, createHistoryEntry("arachne: missing URL", "error")];
-    }
-
-    const url = args[0];
-    const jobId = `arachne_${Date.now()}`;
-
-    // Add job to active jobs
-    dispatch({
-      type: "ADD_SCRAPE_JOB",
-      payload: {
-        jobId,
-        command: `arachne ${url}`,
-        status: "running",
-        progress: 0,
-        historyEntryId: 0,
-        urls: [url],
-        startTime: Date.now(),
-      },
-    });
-
-    try {
-      const response = await fetch("/api/arachne/scrape", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ url, jobId }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      await response.json();
-
-      return [
-        ...history,
-        createHistoryEntry(`Started scraping job: ${jobId}`, "info"),
-        createHistoryEntry(`Job ID: ${jobId}`, "info"),
-        createHistoryEntry("Use 'arachne status' to check progress", "info"),
-      ];
-    } catch (error) {
-      // Update job status
-      dispatch({
-        type: "UPDATE_SCRAPE_JOB",
-        payload: {
-          jobId,
-          updates: {
-            status: "failed",
-            error: error instanceof Error ? error.message : String(error),
-          },
-        },
-      });
-
-      return [
-        ...history,
-        createHistoryEntry(
-          `arachne: ${error instanceof Error ? error.message : String(error)}`,
-          "error"
-        ),
-      ];
-    }
-  }
-
-  getSuggestions(input: string): string[] {
-    const suggestions = ["https://", "http://", "status", "jobs"];
-    return suggestions.filter((s) => s.startsWith(input));
-  }
-}
-
-class AiCommand implements Command {
-  name = "ai";
-
-  async execute(
-    args: string[],
-    _history: HistoryEntry[],
-    _fileSystem: FileSystemItem[],
-    dispatch: React.Dispatch<CoreTerminalAction>,
-    _currentDirectory: string,
-    _onNavigate?: (route: string) => void
-  ): Promise<CommandResult> {
-    if (args.length === 0) {
-      // Start AI chat mode
-      dispatch({
-        type: "SET_AI_CHAT_STATE",
-        payload: {
-          isChatting: true,
-          history: [],
-          isTyping: false,
-          inputValue: "",
-        },
-      });
-
-      return {
-        _effect: "TYPEWRITER",
-        lines: ["AI Chat mode activated. Type your message and press Enter."],
-      };
-    }
-
-    // Handle AI chat message
-    const message = args.join(" ");
-
-    // Add user message to chat
-    dispatch({
-      type: "ADD_AI_MESSAGE",
-      payload: {
-        role: "user",
-        content: message,
-        timestamp: Date.now(),
-      },
-    });
-
-    // Simulate AI response
-    dispatch({
-      type: "SET_AI_TYPING",
-      payload: true,
-    });
-
-    // Simulate typing delay
-    setTimeout(() => {
-      dispatch({
-        type: "ADD_AI_MESSAGE",
-        payload: {
-          role: "assistant",
-          content: `I received your message: "${message}". This is a simulated response.`,
-          timestamp: Date.now(),
-        },
-      });
-      dispatch({
-        type: "SET_AI_TYPING",
-        payload: false,
-      });
-    }, 1000);
-
-    return {
-      _effect: "TYPEWRITER",
-      lines: [],
-    };
-  }
-
-  getSuggestions(input: string): string[] {
-    const suggestions = ["hello", "help", "exit"];
-    return suggestions.filter((s) => s.startsWith(input));
-  }
-}
-
 // Extended command registry with advanced commands
 const advancedCommands = [
   new TopCommand(),
@@ -521,8 +360,6 @@ const advancedCommands = [
   new GrepCommand(),
   new WcCommand(),
   new CurlCommand(),
-  new ArachneCommand(),
-  new AiCommand(),
 ];
 
 export const useTerminal = (
@@ -535,8 +372,6 @@ export const useTerminal = (
 
   // Feature-specific hooks - these need to be updated to accept the correct parameters
   const topCommand = useTopCommand();
-  const scraping = useScraping();
-  const aiChat = useAiChat();
 
   // Enhanced command execution with advanced commands
   const executeCommand = useCallback(
@@ -650,28 +485,6 @@ export const useTerminal = (
       setTopSort: topCommand.setTopSort,
       setTopRefreshRate: topCommand.setTopRefreshRate,
       setTopSelectedPid: topCommand.setTopSelectedPid,
-    },
-
-    // Scraping state and handlers
-    scrapingState: scraping.scrapingState,
-    scrapingHandlers: {
-      addScrapeJob: scraping.addScrapeJob,
-      updateScrapeJob: scraping.updateScrapeJob,
-      removeScrapeJob: scraping.removeScrapeJob,
-      showScrapeResults: scraping.showScrapeResults,
-      hideScrapeResults: scraping.hideScrapeResults,
-    },
-
-    // AI Chat state and handlers
-    aiChatState: aiChat.aiChatState,
-    aiChatHandlers: {
-      startAiChat: aiChat.startAiChat,
-      exitAiChat: aiChat.exitAiChat,
-      addAiMessage: aiChat.addAiMessage,
-      setAiTyping: aiChat.setAiTyping,
-      setAiInputValue: aiChat.setAiInputValue,
-      clearAiChatHistory: aiChat.clearAiChatHistory,
-      setAiChatState: aiChat.setAiChatState,
     },
 
     // Combined execute command

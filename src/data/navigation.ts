@@ -5,7 +5,6 @@ import {
   faRoute,
   faGamepad,
   faTerminal,
-  faComments,
   faSitemap,
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -16,7 +15,6 @@ const baseNavItems = [
   { path: "/work", label: "Work", icon: faBriefcase },
   { path: "/journey", label: "Journey", icon: faRoute },
   { path: "/games", label: "Games", icon: faGamepad },
-  { path: "/ai-conversations", label: "AI Chat", icon: faComments },
 ];
 
 export const navItems = import.meta.env.PROD

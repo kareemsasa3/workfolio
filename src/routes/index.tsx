@@ -18,9 +18,6 @@ const Work = lazyWithMinTime(() => import("../pages/Work"));
 const Journey = lazyWithMinTime(() => import("../pages/Journey"));
 const DataStructures = lazyWithMinTime(() => import("../pages/DataStructures"));
 
-const AiConversations = lazyWithMinTime(
-  () => import("../pages/AiConversations")
-);
 const NotFound = lazyWithMinTime(() => import("../pages/NotFound"));
 
 // Main routes that use the Layout component
@@ -31,7 +28,6 @@ const routes: AppRoute[] = [
   { path: "work", element: React.createElement(Work) },
   { path: "journey", element: React.createElement(Journey) },
 
-  { path: "ai-conversations", element: React.createElement(AiConversations) },
   {
     path: "terminal",
     element: React.createElement(Terminal, { isIntro: false }),
