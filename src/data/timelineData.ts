@@ -26,9 +26,18 @@ export interface TimelineEvent {
 export const timelineData: TimelineEvent[] = [
   // --- Era: Present & Future ---
   {
-    id: 13,
+    id: 15,
+    date: "2025 - Present",
+    title: "Erebus: Systems That Understand Themselves",
+    description: `My current focus is Erebus OS: an event-driven coordination layer for Linux that transforms reactive troubleshooting into proactive system understanding. It's the embodiment of everything I believe about software: systems should surface what's happening, track confidence in their own state, and adapt based on evidence. Currently at v0.6.3 with belief engines, session tracking, and real-time emitters.`,
+    icon: faRocket,
+    category: "milestone",
+    era: "Present & Future",
+  },
+  {
+    id: 14,
     date: "Present",
-    title: "Building Workfolio: A Terminal for My Timeline",
+    title: "Expanding Workfolio: A Terminal for My Timeline",
     description: `This portfolio is not just a website; it's a developer simulation. A living OS in the browser that reflects how I think and build. It's the culmination of everything I've learned—from failures to rebuilds—and my playground for pushing the limits of what a portfolio can be. This is my story, on my own terms.`,
     icon: faRocket,
     category: "milestone",
@@ -41,10 +50,19 @@ export const timelineData: TimelineEvent[] = [
   },
   // --- Era: Redemption Arc ---
   {
+    id: 13,
+    date: "Dec 2025",
+    title: "Aether: Sound as Infrastructure",
+    description: `I built Aether: a real-time audio visualization engine with lock-free IPC and zero-copy shared memory. It publishes acoustic state that any process can consume without blocking the analysis pipeline. The architecture got recognition on Reddit and taught me that the best systems are the ones that don't need to know who's listening.`,
+    icon: faCode,
+    category: "milestone",
+    era: "Redemption Arc",
+  },
+  {
     id: 12,
-    date: "June 2025 - Present",
+    date: "06/2025",
     title: "Engineering with Empathy",
-    description: `I joined an accessible AI platform for a nonprofit supporting individuals with disabilities. Building for neurodiverse users, caregivers, and low-bandwidth devices taught me that the highest form of engineering is empathy. Every line of code feels like it matters—because it does.`,
+    description: `I joined an accessible AI platform for a nonprofit supporting individuals with disabilities. Building for neurodiverse users, caregivers, and low-bandwidth devices taught me that the highest form of engineering is empathy. The role was brief, but the perspective was permanent.`,
     icon: faHeartPulse,
     category: "career",
     era: "Redemption Arc",
@@ -55,7 +73,7 @@ export const timelineData: TimelineEvent[] = [
     id: 11,
     date: "06/2025",
     title: "Arachne: Engineering Credibility in Go",
-    description: `To prove my skills for the Chat4AI role, I built Arachne: a scalable, production-ready web scraping service in Go with an async job API, Redis persistence, and full CI/CD. It was my way of saying, "You won't need to babysit me—I think in systems." It landed me the job.`,
+    description: `To prove my skills for the Chat4AI role, I built Arachne: a scalable, production-ready web scraping service in Go with an async job API, Redis persistence, and full CI/CD. It was my way of saying, "You won't need to babysit me, I think in systems."`,
     icon: faCode,
     category: "milestone",
     era: "Redemption Arc",

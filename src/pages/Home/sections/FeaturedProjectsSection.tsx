@@ -1,32 +1,11 @@
 import { motion, MotionStyle } from "framer-motion";
 import { forwardRef, ForwardedRef } from "react";
+import { projectsData } from "../../../data/projects";
+import { featuredProjectIds } from "../../../data/siteContent";
 
-// Define project data here
-const featuredProjects = [
-  {
-    title: "Arachne",
-    description:
-      "Production-ready web scraping service with 92.5% success rate",
-    tech: ["Go", "Redis", "Docker"],
-    complexity: "Expert",
-    status: "Live",
-  },
-  {
-    title: "Digital Garage",
-    description:
-      "Complete car management platform with real-time authentication",
-    tech: ["Next.js", "TypeScript", "Supabase"],
-    complexity: "Advanced",
-    status: "Development",
-  },
-  {
-    title: "Pop Mart Bot",
-    description: "Sophisticated e-commerce monitoring with Slack integration",
-    tech: ["Python", "Playwright", "Redis"],
-    complexity: "Expert",
-    status: "Live",
-  },
-];
+const featuredProjects = featuredProjectIds
+  .map(id => projectsData.find(p => p.id === id))
+  .filter((project): project is NonNullable<typeof project> => project !== undefined);
 
 interface FeaturedProjectsSectionProps {
   onNavigateToProjects: () => void;
@@ -94,7 +73,9 @@ export const FeaturedProjectsSection = forwardRef(
               </div>
               <p className="project-description">{project.description}</p>
               <div className="project-tech">
-                {project.tech.map((tech, techIndex) => (
+                {project.techStack
+                  .slice(0, 3)
+                  .map((tech: string, techIndex: number) => (
                   <span key={techIndex} className="tech-tag">
                     {tech}
                   </span>

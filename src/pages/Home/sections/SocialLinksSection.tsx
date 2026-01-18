@@ -1,6 +1,7 @@
 import { motion, MotionStyle } from "framer-motion";
 import { forwardRef, ForwardedRef } from "react";
 import TypeWriterText from "../../../components/TypeWriterText";
+import { socialContent } from "../../../data/siteContent";
 
 interface SocialLinksSectionProps {
   style?: MotionStyle; // Framer Motion style prop
@@ -8,19 +9,6 @@ interface SocialLinksSectionProps {
 
 export const SocialLinksSection = forwardRef(
   ({ style }: SocialLinksSectionProps, ref: ForwardedRef<HTMLElement>) => {
-    const socialLinks = [
-      {
-        name: "GitHub",
-        url: "https://github.com/kareemsasa3",
-        icon: "🐙",
-      },
-      {
-        name: "LinkedIn",
-        url: "https://linkedin.com/in/kareem-sasa",
-        icon: "💼",
-      },
-    ];
-
     return (
       <motion.section
         ref={ref}
@@ -38,7 +26,7 @@ export const SocialLinksSection = forwardRef(
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <TypeWriterText text="Connect With Me" delay={0} speed={80} />
+            <TypeWriterText text={socialContent.title} delay={0} speed={80} />
           </motion.div>
           <motion.div
             className="social-links-grid"
@@ -48,7 +36,7 @@ export const SocialLinksSection = forwardRef(
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            {socialLinks.map((link, index) => (
+            {socialContent.links.map((link: { name: string; url: string; icon: string }, index: number) => (
               <motion.a
                 key={index}
                 href={link.url}

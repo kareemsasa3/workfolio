@@ -16,7 +16,6 @@ const Games = lazyWithMinTime(() => import("../pages/Games"));
 const SnakeGame = lazyWithMinTime(() => import("../pages/SnakeGame"));
 const Work = lazyWithMinTime(() => import("../pages/Work"));
 const Journey = lazyWithMinTime(() => import("../pages/Journey"));
-const DataStructures = lazyWithMinTime(() => import("../pages/DataStructures"));
 
 const NotFound = lazyWithMinTime(() => import("../pages/NotFound"));
 
@@ -33,13 +32,6 @@ const routes: AppRoute[] = [
     element: React.createElement(Terminal, { isIntro: false }),
   },
 ];
-
-if (!import.meta.env.PROD) {
-  routes.push({
-    path: "visualizer",
-    element: React.createElement(DataStructures),
-  });
-}
 
 export const mainRoutes: AppRoute[] = routes;
 

@@ -1,33 +1,6 @@
 import { motion, MotionStyle } from "framer-motion";
 import { forwardRef, ForwardedRef } from "react";
-
-// Define about data here
-const aboutItems = [
-  {
-    icon: "⚙️",
-    title: "Backend & Systems Architecture",
-    description:
-      "Designing scalable architectures with Go, Python, and .NET. Building production-ready services with Redis, PostgreSQL, and automated CI/CD pipelines. Creating HIPAA-compliant systems and enterprise integrations.",
-  },
-  {
-    icon: "🎨",
-    title: "Frontend & User Experience",
-    description:
-      "Crafting modern web applications with React, TypeScript, and Next.js. Implementing responsive designs with Tailwind CSS, smooth animations with Framer Motion, and interactive 3D experiences with Three.js.",
-  },
-  {
-    icon: "🚀",
-    title: "DevOps & Infrastructure",
-    description:
-      "Deploying with Docker, GitHub Actions, and cloud platforms. Managing production environments with Nginx, monitoring systems, and automated testing. Ensuring high availability and performance optimization.",
-  },
-  {
-    icon: "🤖",
-    title: "Automation & AI",
-    description:
-      "Building sophisticated automation systems with Python and Playwright. Creating intelligent bots with state management, Slack integration, and advanced retry logic for reliable production systems.",
-  },
-];
+import { aboutContent } from "../../../data/siteContent";
 
 interface AboutSectionProps {
   style?: MotionStyle; // Framer Motion style prop
@@ -52,7 +25,7 @@ export const AboutSection = forwardRef(
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            What I Do
+            {aboutContent.title}
           </motion.h2>
           <motion.ul
             className="about-grid"
@@ -62,7 +35,7 @@ export const AboutSection = forwardRef(
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            {aboutItems.map((item, index) => (
+            {aboutContent.items.map((item, index) => (
               <motion.li
                 key={index}
                 className="about-card interactive-card"

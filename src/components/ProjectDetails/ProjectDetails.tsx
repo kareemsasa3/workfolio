@@ -137,14 +137,18 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({ project }) => {
                 🌐 Live Demo
               </a>
             )}
-            <a
-              href={project.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="project-link primary-link"
-            >
-              🔗 View Project
-            </a>
+            {project.url &&
+              project.url !== "#" &&
+              project.url !== project.githubUrl && (
+                <a
+                  href={project.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="project-link primary-link"
+                >
+                  🔗 View Project
+                </a>
+              )}
           </div>
         </div>
       )}

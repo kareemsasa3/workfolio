@@ -1,6 +1,7 @@
 import { motion, MotionStyle } from "framer-motion";
 import { forwardRef, ForwardedRef } from "react";
 import TypeWriterText from "../../../components/TypeWriterText";
+import { heroContent } from "../../../data/siteContent";
 
 interface HeroSectionProps {
   hasShownHomeIntro: boolean;
@@ -39,12 +40,12 @@ export const HeroSection = forwardRef(
           >
             {!hasShownHomeIntro ? (
               <TypeWriterText
-                text="Hello, I'm a Full-Stack Developer"
+                text={heroContent.title}
                 speed={80}
                 onComplete={onIntroComplete}
               />
             ) : (
-              "Hello, I'm a Full-Stack Developer"
+              heroContent.title
             )}
           </motion.h1>
           <motion.div
@@ -57,13 +58,13 @@ export const HeroSection = forwardRef(
           >
             {!hasShownHomeIntro ? (
               <TypeWriterText
-                text="Building production-ready systems with modern technologies"
+                text={heroContent.subtitle}
                 delay={2000}
                 speed={60}
                 onComplete={onIntroComplete}
               />
             ) : (
-              "Building production-ready systems with modern technologies"
+              heroContent.subtitle
             )}
           </motion.div>
           <motion.p
@@ -73,10 +74,7 @@ export const HeroSection = forwardRef(
             viewport={{ once: true, margin: "0px" }}
             transition={{ duration: 0.6, delay: 0.6 }}
           >
-            I specialize in creating scalable, high-performance applications
-            across the full stack. From enterprise-grade Go services to modern
-            React applications, I bring ideas to life with clean code, robust
-            architecture, and exceptional user experiences.
+            {heroContent.description}
           </motion.p>
           <motion.div
             className="hero-buttons"
@@ -93,7 +91,7 @@ export const HeroSection = forwardRef(
               disabled={isNavigatingToProjects}
               aria-label="View my projects and work portfolio"
             >
-              {isNavigatingToProjects ? "Loading..." : "View My Work"}
+              {isNavigatingToProjects ? "Loading..." : heroContent.cta}
             </button>
           </motion.div>
         </div>
