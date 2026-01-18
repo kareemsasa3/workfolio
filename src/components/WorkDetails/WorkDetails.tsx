@@ -12,7 +12,6 @@ const WorkDetails: React.FC<WorkDetailsProps> = ({
   techStack,
   location,
   highlights,
-  achievements,
   projects,
 }) => {
   return (
@@ -25,32 +24,17 @@ const WorkDetails: React.FC<WorkDetailsProps> = ({
           {location && <div className="work-location">{location}</div>}
         </div>
       </div>
-
       <div className="work-content">
         <div className="work-description">
           <h4 className="section-title">Key Responsibilities</h4>
           <ul className="work-achievements">
-            {description.map((achievement, index) => (
+            {description.map((desc, index) => (
               <li key={index} className="achievement-item">
-                {achievement}
+                {desc}
               </li>
             ))}
           </ul>
         </div>
-
-        {achievements && achievements.length > 0 && (
-          <div className="work-achievements-section">
-            <h4 className="section-title">Key Achievements</h4>
-            <ul className="work-achievements">
-              {achievements.map((achievement, index) => (
-                <li key={index} className="achievement-item">
-                  {achievement}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
         {projects && projects.length > 0 && (
           <div className="work-projects-section">
             <h4 className="section-title">Notable Projects</h4>
@@ -63,7 +47,6 @@ const WorkDetails: React.FC<WorkDetailsProps> = ({
             </ul>
           </div>
         )}
-
         <div className="work-tech-stack">
           <h4 className="tech-stack-title">Technologies</h4>
           <div className="tech-tags">
@@ -74,7 +57,6 @@ const WorkDetails: React.FC<WorkDetailsProps> = ({
             ))}
           </div>
         </div>
-
         {highlights && highlights.length > 0 && (
           <div className="work-highlights">
             <h4 className="highlights-title">Key Highlights</h4>
