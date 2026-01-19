@@ -57,11 +57,16 @@ const devBannerPlugin = (
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
-  const env = loadEnv(mode, process.cwd(), "");
+  const fileEnv = loadEnv(mode, process.cwd(), "");
+  const env = { ...fileEnv, ...process.env } as Record<string, string>;
+
   const devHost = resolveDevHost(env);
   const devPort = resolveDevPort(env);
   const tailscaleIp = resolveTailscaleIp(env);
-  const hmrHost = env.HMR_HOST?.trim() || tailscaleIp || "localhost";
+  
+  const hmrHost = env.HMR_HOST?.trim() || tailscaleIp; // no localhost fallback
+  const clientPortRaw = env.VITE_HMR_CLIENT_PORT?.trim();
+  const clientPort = clientPortRaw ? Number(clientPortRaw) : undefined;
 
   return {
     plugins:
@@ -75,24 +80,10 @@ export default defineConfig(({ command, mode }) => {
             host: devHost, // Allow external connections
             open: true,
             hmr: {
+              protocol: "ws",
               port: devPort,
-              host: hmrHost,
-              // Use nginx port in dockerized env; otherwise default to dev server port
-              clientPort: Number(
-                // Guarded access without relying on Node types or `any`
-                typeof globalThis !== "undefined" &&
-                  typeof (
-                    globalThis as unknown as {
-                      process?: { env?: Record<string, string> };
-                    }
-                  ).process?.env?.VITE_HMR_CLIENT_PORT !== "undefined"
-                  ? (
-                      globalThis as unknown as {
-                        process?: { env?: Record<string, string> };
-                      }
-                    ).process!.env!.VITE_HMR_CLIENT_PORT
-                  : devPort
-              ),
+              ...(hmrHost ? { host: hmrHost } : {}),
+              ...(clientPort && Number.isFinite(clientPort) ? { clientPort } : {}),
             },
             watch: {
               usePolling: true, // Use polling for Docker environments
