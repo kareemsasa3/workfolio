@@ -25,6 +25,8 @@ interface GameStateObject {
   score: number;
   highScore: number;
   gameState: GameState;
+  gridWidth: number;
+  gridHeight: number;
 }
 
 type GameAction =
@@ -33,36 +35,36 @@ type GameAction =
   | { type: "GAME_OVER" }
   | { type: "SET_HIGH_SCORE"; payload: number }
   | { type: "RESET" }
-  | { type: "PAUSE_TOGGLE" };
+  | { type: "PAUSE_TOGGLE" }
+  | { type: "UPDATE_GRID"; payload: { width: number; height: number } };
 
-const GRID_WIDTH = 40;
-const GRID_HEIGHT = 30;
-const INITIAL_SPEED = 150;
+const INITIAL_SPEED = 100;
 
-const initialGameState: GameStateObject = {
-  snake: [{ x: 20, y: 15 }],
-  food: { x: 30, y: 15 },
-  direction: { x: 1, y: 0 }, // Start moving right
+const createInitialState = (gridWidth: number, gridHeight: number): GameStateObject => ({
+  snake: [{ x: Math.floor(gridWidth / 2), y: Math.floor(gridHeight / 2) }],
+  food: { x: Math.floor(gridWidth * 0.75), y: Math.floor(gridHeight / 2) },
+  direction: { x: 1, y: 0 },
   speed: INITIAL_SPEED,
   score: 0,
   highScore: 0,
-  gameState: "playing" as GameState,
-};
+  gameState: "playing",
+  gridWidth,
+  gridHeight,
+});
 
 // Function to generate food in a valid position (not on snake)
-const generateFood = (currentSnake: SnakeSegment[]): Food => {
+const generateFood = (currentSnake: SnakeSegment[], gridWidth: number, gridHeight: number): Food => {
   let newFood: Food;
   do {
     newFood = {
-      x: Math.floor(Math.random() * GRID_WIDTH),
-      y: Math.floor(Math.random() * GRID_HEIGHT),
+      x: Math.floor(Math.random() * gridWidth),
+      y: Math.floor(Math.random() * gridHeight),
     };
   } while (
     currentSnake.some(
       (segment) => segment.x === newFood.x && segment.y === newFood.y
     )
   );
-
   return newFood;
 };
 
@@ -82,33 +84,56 @@ function gameReducer(
   action: GameAction
 ): GameStateObject {
   switch (action.type) {
+    case "UPDATE_GRID": {
+      const { width, height } = action.payload;
+      // Only update if dimensions actually changed
+      if (width === state.gridWidth && height === state.gridHeight) {
+        return state;
+      }
+      
+      // Clamp snake and food positions to new grid
+      const clampedSnake = state.snake.map(segment => ({
+        x: Math.min(segment.x, width - 1),
+        y: Math.min(segment.y, height - 1),
+      }));
+      
+      const clampedFood = {
+        x: Math.min(state.food.x, width - 1),
+        y: Math.min(state.food.y, height - 1),
+      };
+      
+      return {
+        ...state,
+        gridWidth: width,
+        gridHeight: height,
+        snake: clampedSnake,
+        food: clampedFood,
+      };
+    }
+
     case "MOVE_SNAKE": {
       if (
         state.gameState !== "playing" ||
         (state.direction.x === 0 && state.direction.y === 0)
       ) {
-        return state; // Don't move if paused or direction is not set
+        return state;
       }
 
-      // Create a mutable copy of the snake for this turn's logic
       const newSnake = [...state.snake];
       const currentHead = newSnake[0];
 
-      // 1. Calculate the new head's position
       const newHead = {
         x: currentHead.x + state.direction.x,
         y: currentHead.y + state.direction.y,
       };
 
-      // Wrap around logic
-      if (newHead.x < 0) newHead.x = GRID_WIDTH - 1;
-      if (newHead.x >= GRID_WIDTH) newHead.x = 0;
-      if (newHead.y < 0) newHead.y = GRID_HEIGHT - 1;
-      if (newHead.y >= GRID_HEIGHT) newHead.y = 0;
+      // Wrap around logic using dynamic grid dimensions
+      if (newHead.x < 0) newHead.x = state.gridWidth - 1;
+      if (newHead.x >= state.gridWidth) newHead.x = 0;
+      if (newHead.y < 0) newHead.y = state.gridHeight - 1;
+      if (newHead.y >= state.gridHeight) newHead.y = 0;
 
-      // 2. Check for game-ending self-collision
-      // The new head's position cannot be on any part of the *current* snake body
-      // EXCEPT the last segment (tail), because the tail will move away on the next frame
+      // Check for self-collision
       for (let i = 0; i < newSnake.length - 1; i++) {
         const segment = newSnake[i];
         if (segment.x === newHead.x && segment.y === newHead.y) {
@@ -122,13 +147,11 @@ function gameReducer(
         }
       }
 
-      // If we are here, there was no collision. Now add the new head.
       newSnake.unshift(newHead);
 
-      // 3. Check for food collision (eating)
+      // Check for food collision
       if (newHead.x === state.food.x && newHead.y === state.food.y) {
-        // The snake grows, so we DON'T remove the tail.
-        const newFood = generateFood(newSnake);
+        const newFood = generateFood(newSnake, state.gridWidth, state.gridHeight);
         const newScore = state.score + 1;
         const newSpeed =
           newScore % 5 === 0 ? Math.max(50, state.speed - 10) : state.speed;
@@ -141,8 +164,6 @@ function gameReducer(
           speed: newSpeed,
         };
       } else {
-        // 4. Just a normal move (no food eaten)
-        // Remove the tail segment to keep the snake the same length
         newSnake.pop();
         return {
           ...state,
@@ -164,14 +185,12 @@ function gameReducer(
     }
 
     case "GAME_OVER": {
-      // This case can now be simplified or removed, as the logic is in MOVE_SNAKE
-      // For now, we can leave it in case it's used elsewhere, but it's now redundant for self-collision.
       const newHighScore =
         state.score > state.highScore ? state.score : state.highScore;
       return {
         ...state,
         highScore: newHighScore,
-        gameState: "gameOver" as GameState,
+        gameState: "gameOver",
       };
     }
 
@@ -183,10 +202,14 @@ function gameReducer(
     }
 
     case "RESET": {
-      const newSnake = [{ x: 20, y: 15 }];
+      const newSnake = [{ 
+        x: Math.floor(state.gridWidth / 2), 
+        y: Math.floor(state.gridHeight / 2) 
+      }];
       return {
-        ...initialGameState,
-        food: generateFood(newSnake),
+        ...createInitialState(state.gridWidth, state.gridHeight),
+        food: generateFood(newSnake, state.gridWidth, state.gridHeight),
+        highScore: state.highScore,
       };
     }
 
@@ -194,7 +217,7 @@ function gameReducer(
       const newGameState = state.gameState === "playing" ? "paused" : "playing";
       return {
         ...state,
-        gameState: newGameState as GameState,
+        gameState: newGameState,
       };
     }
 
@@ -203,20 +226,32 @@ function gameReducer(
   }
 }
 
-export const useSnakeGame = () => {
-  const [gameState, dispatch] = useReducer(gameReducer, initialGameState);
+interface UseSnakeGameOptions {
+  gridWidth: number;
+  gridHeight: number;
+}
+
+export const useSnakeGame = ({ gridWidth, gridHeight }: UseSnakeGameOptions) => {
+  const [gameState, dispatch] = useReducer(
+    gameReducer,
+    { gridWidth, gridHeight },
+    ({ gridWidth, gridHeight }) => createInitialState(gridWidth, gridHeight)
+  );
 
   // Refs for game loop and input handling
   const lastUpdateTimeRef = useRef<number>(0);
   const animationFrameRef = useRef<number | null>(null);
   const directionQueueRef = useRef<Direction[]>([]);
 
-  // === THE FIX: Use a ref to hold a stable reference to the state ===
   const gameStateRef = useRef(gameState);
   useEffect(() => {
     gameStateRef.current = gameState;
   }, [gameState]);
-  // ===================================================================
+
+  // Update grid dimensions when they change
+  useEffect(() => {
+    dispatch({ type: "UPDATE_GRID", payload: { width: gridWidth, height: gridHeight } });
+  }, [gridWidth, gridHeight]);
 
   // Load high score from localStorage on mount
   useEffect(() => {
@@ -232,14 +267,11 @@ export const useSnakeGame = () => {
   // Save high score to localStorage whenever it changes
   useEffect(() => {
     if (gameState.highScore > 0) {
-      localStorage.setItem(
-        "snakeGameHighScore",
-        gameState.highScore.toString()
-      );
+      localStorage.setItem("snakeGameHighScore", gameState.highScore.toString());
     }
   }, [gameState.highScore]);
 
-  // Game loop using requestAnimationFrame
+  // Game loop
   const gameLoop = useCallback((currentTime: number) => {
     animationFrameRef.current = requestAnimationFrame(gameLoop);
 
@@ -257,23 +289,19 @@ export const useSnakeGame = () => {
     }
   }, []);
 
-  // === THE CORRECTED AND SIMPLIFIED GAME LOOP MANAGER ===
+  // Game loop manager
   useEffect(() => {
-    // If the game is in a state that should have a running loop, start it.
     if (gameState.gameState === "playing") {
       animationFrameRef.current = requestAnimationFrame(gameLoop);
     }
-    // The cleanup function will always run when the dependency [gameState.gameState] changes.
-    // This will correctly stop the loop when pausing, or on game over.
     return () => {
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
   }, [gameState.gameState, gameLoop]);
-  // =======================================================
 
-  // Input handling with queue
+  // Input handling
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (
@@ -314,13 +342,19 @@ export const useSnakeGame = () => {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, []); // <-- Empty dependency array makes this stable as well
+  }, []);
 
   const resetGame = useCallback(() => {
     dispatch({ type: "RESET" });
     directionQueueRef.current = [];
     lastUpdateTimeRef.current = 0;
-    animationFrameRef.current = null; // Ensure ref is cleared on reset
+    animationFrameRef.current = null;
+  }, []);
+
+  const changeDirection = useCallback((direction: { x: number; y: number }) => {
+    if (directionQueueRef.current.length < 3) {
+      directionQueueRef.current.push(direction);
+    }
   }, []);
 
   return {
@@ -329,6 +363,9 @@ export const useSnakeGame = () => {
     score: gameState.score,
     highScore: gameState.highScore,
     gameState: gameState.gameState,
+    gridWidth: gameState.gridWidth,
+    gridHeight: gameState.gridHeight,
     resetGame,
+    changeDirection,
   };
 };

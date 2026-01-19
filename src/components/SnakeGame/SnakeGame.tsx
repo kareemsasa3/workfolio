@@ -1,53 +1,68 @@
-// src/components/SnakeGame.js
-import React, { useMemo, useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useSnakeGame } from "./useSnakeGame";
 import "./SnakeGame.css";
 
+const CELL_SIZE = 20; // Fixed cell size, grid dimensions become dynamic
+
 const SnakeGame: React.FC = () => {
-  const { snake, food, score, highScore, gameState, resetGame } =
-    useSnakeGame();
+  const [dimensions, setDimensions] = useState(() => ({
+    width: Math.ceil(window.innerWidth / CELL_SIZE),
+    height: Math.ceil(window.innerHeight / CELL_SIZE),
+  }));
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
 
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const { snake, food, score, highScore, gameState, resetGame, changeDirection } = useSnakeGame({
+    gridWidth: dimensions.width,
+    gridHeight: dimensions.height,
+  });
 
-  // Refs for high-performance rendering
   const segmentRefs = useRef<Map<number, HTMLDivElement>>(new Map());
   const foodElementRef = useRef<HTMLDivElement>(null);
 
-  // Handle window resize
+  // Detect touch device
+  useEffect(() => {
+    const checkTouch = () => {
+      setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
+    };
+    checkTouch();
+    window.addEventListener('touchstart', () => setIsTouchDevice(true), { once: true });
+  }, []);
+
+  // Recalculate grid dimensions on resize
   useEffect(() => {
     const handleResize = () => {
-      setWindowWidth(window.innerWidth);
+      setDimensions({
+        width: Math.ceil(window.innerWidth / CELL_SIZE),
+        height: Math.ceil(window.innerHeight / CELL_SIZE),
+      });
     };
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Calculate dynamic cell size based on viewport
-  const cellSize = useMemo(() => {
-    const isMobile = windowWidth <= 768;
-    const isSmallMobile = windowWidth <= 480;
-
-    if (isSmallMobile) return 14;
-    if (isMobile) return 16;
-    return 20;
-  }, [windowWidth]);
+  // Touch control handlers
+  const handleDirection = useCallback((direction: 'up' | 'down' | 'left' | 'right') => {
+    const directionMap = {
+      up: { x: 0, y: -1 },
+      down: { x: 0, y: 1 },
+      left: { x: -1, y: 0 },
+      right: { x: 1, y: 0 },
+    };
+    changeDirection(directionMap[direction]);
+  }, [changeDirection]);
 
   // High-performance animation loop for snake segments
   useEffect(() => {
     let animationFrameId: number;
 
     const animate = () => {
-      // Update snake segments directly on DOM
       snake.forEach((segment, index) => {
         const element = segmentRefs.current.get(index);
         if (element) {
-          element.style.transform = `translate(${segment.x * cellSize}px, ${
-            segment.y * cellSize
-          }px)`;
+          element.style.transform = `translate(${segment.x * CELL_SIZE}px, ${segment.y * CELL_SIZE}px)`;
         }
       });
-
       animationFrameId = requestAnimationFrame(animate);
     };
 
@@ -60,25 +75,30 @@ const SnakeGame: React.FC = () => {
         cancelAnimationFrame(animationFrameId);
       }
     };
-  }, [snake, cellSize, gameState]);
+  }, [snake, gameState]);
 
-  // Separate effect for food positioning to avoid animation loop interference
+  // Update food position
   useEffect(() => {
     if (foodElementRef.current) {
-      foodElementRef.current.style.left = `${food.x * cellSize}px`;
-      foodElementRef.current.style.top = `${food.y * cellSize}px`;
+      foodElementRef.current.style.left = `${food.x * CELL_SIZE}px`;
+      foodElementRef.current.style.top = `${food.y * CELL_SIZE}px`;
     }
-  }, [food, cellSize]);
+  }, [food]);
+
+  // Memoize board dimensions
+  const boardStyle = useMemo(() => ({
+    width: dimensions.width * CELL_SIZE,
+    height: dimensions.height * CELL_SIZE,
+  }), [dimensions]);
 
   return (
     <div className="snake-game-container">
       <div className="game-scores">
         <p className="game-score">Score: {score}</p>
-        <p className="game-high-score">High Score: {highScore}</p>
+        <p className="game-high-score">High: {highScore}</p>
       </div>
 
-      <div className="game-board">
-        {/* Render snake segments with refs for direct DOM manipulation */}
+      <div className="game-board" style={boardStyle}>
         {snake.map((_segment, index) => (
           <div
             key={index}
@@ -87,29 +107,25 @@ const SnakeGame: React.FC = () => {
               if (el) segmentRefs.current.set(index, el);
             }}
             style={{
-              width: `${cellSize}px`,
-              height: `${cellSize}px`,
+              width: CELL_SIZE,
+              height: CELL_SIZE,
             }}
-          ></div>
+          />
         ))}
 
-        {/* Food with ref for direct DOM manipulation */}
         <div
           className="food"
           ref={foodElementRef}
           style={{
-            width: `${cellSize}px`,
-            height: `${cellSize}px`,
-            left: `${food.x * cellSize}px`,
-            top: `${food.y * cellSize}px`,
+            width: CELL_SIZE,
+            height: CELL_SIZE,
           }}
-        ></div>
+        />
 
-        {/* Game Over Overlay */}
         {gameState === "gameOver" && (
           <div className="game-over-overlay">
             <div className="game-over-content">
-              <h2>Game Over!</h2>
+              <h2>Game Over</h2>
               <p>Final Score: {score}</p>
               <button onClick={resetGame} className="play-again-button">
                 Play Again
@@ -118,20 +134,51 @@ const SnakeGame: React.FC = () => {
           </div>
         )}
 
-        {/* Pause Overlay */}
         {gameState === "paused" && (
           <div className="game-overlay">
             <div className="game-over-content">
-              <h2>Game Paused</h2>
-              <p>Press Spacebar to resume</p>
+              <h2>Paused</h2>
+              <p>Press Space to resume</p>
             </div>
           </div>
         )}
       </div>
 
-      <p className="game-description">
-        Use arrow keys to control the snake. Press Spacebar to pause.
-      </p>
+      {/* Mobile touch controls */}
+      {isTouchDevice && (
+        <div className="touch-controls">
+          <button
+            className="touch-btn touch-up"
+            onTouchStart={(e) => { e.preventDefault(); handleDirection('up'); }}
+            aria-label="Move up"
+          >
+            ▲
+          </button>
+          <div className="touch-middle-row">
+            <button
+              className="touch-btn touch-left"
+              onTouchStart={(e) => { e.preventDefault(); handleDirection('left'); }}
+              aria-label="Move left"
+            >
+              ◀
+            </button>
+            <button
+              className="touch-btn touch-right"
+              onTouchStart={(e) => { e.preventDefault(); handleDirection('right'); }}
+              aria-label="Move right"
+            >
+              ▶
+            </button>
+          </div>
+          <button
+            className="touch-btn touch-down"
+            onTouchStart={(e) => { e.preventDefault(); handleDirection('down'); }}
+            aria-label="Move down"
+          >
+            ▼
+          </button>
+        </div>
+      )}
     </div>
   );
 };

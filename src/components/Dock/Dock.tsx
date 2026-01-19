@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { navItems } from "../../data/navigation";
 import DockIcon from "./DockIcon";
 import DockSettingsButton from "./DockSettingsButton";
@@ -11,6 +12,7 @@ import { useWindowSize } from "../../hooks";
 import "./Dock.css";
 
 const Dock = () => {
+  const location = useLocation();
   const {
     // State
     dockSize,
@@ -34,6 +36,7 @@ const Dock = () => {
   } = useLayoutContext();
   const { width: windowWidth } = useWindowSize();
   const isMobile = windowWidth <= 768;
+  const isGameRoute = location.pathname.includes("/games/");
 
   // State for settings panel shift animation
   const [settingsShiftAmount, setSettingsShiftAmount] = useState(0);
@@ -61,6 +64,10 @@ const Dock = () => {
   // Mobile-specific presentation adjustments
   const effectiveMagnification = isMobile ? 0 : magnification;
   const effectiveDockSize = isMobile ? Math.min(dockSize, 36) : dockSize;
+  const dockItems = useMemo(() => {
+    if (!isGameRoute) return navItems;
+    return navItems.filter((item) => item.path === "/games");
+  }, [isGameRoute]);
 
   return (
     <>
@@ -85,7 +92,7 @@ const Dock = () => {
           x: { type: "spring", damping: 30, stiffness: 220 },
         }}
       >
-        {navItems.map((item) => (
+        {dockItems.map((item) => (
           <DockIcon
             key={item.path}
             {...item}
