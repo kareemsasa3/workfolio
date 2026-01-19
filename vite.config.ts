@@ -1,4 +1,5 @@
 import { defineConfig, loadEnv } from "vite";
+import type { Plugin, ViteDevServer } from "vite";
 import react from "@vitejs/plugin-react";
 import * as os from "node:os";
 
@@ -33,9 +34,12 @@ const resolveTailscaleIp = (env: Record<string, string>): string | undefined => 
   return undefined;
 };
 
-const devBannerPlugin = (tailscaleIp: string | undefined, port: number) => ({
+const devBannerPlugin = (
+  tailscaleIp: string | undefined,
+  port: number
+): Plugin => ({
   name: "dev-banner",
-  configureServer(server: { httpServer?: { once: Function }; config: any }) {
+  configureServer(server: ViteDevServer) {
     server.httpServer?.once("listening", () => {
       const localUrl = `http://localhost:${port}`;
       if (tailscaleIp) {
