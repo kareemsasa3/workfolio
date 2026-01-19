@@ -58,6 +58,7 @@ const Layout = () => {
       "/projects": "Projects — Kareem Sasa",
       "/games": "Games — Kareem Sasa",
       "/games/snake": "Snake Game — Kareem Sasa",
+      "/games/spider": "Spider Solitaire — Kareem Sasa",
       "/work": "Work — Kareem Sasa",
       "/journey": "Journey — Kareem Sasa",
       "/terminal": "Terminal — Kareem Sasa",

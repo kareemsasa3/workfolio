@@ -14,6 +14,7 @@ const Home = lazyWithMinTime(() => import("../pages/Home"));
 const Projects = lazyWithMinTime(() => import("../pages/Projects"));
 const Games = lazyWithMinTime(() => import("../pages/Games"));
 const SnakeGame = lazyWithMinTime(() => import("../pages/SnakeGame"));
+const SpiderSolitaire = lazyWithMinTime(() => import("../pages/SpiderSolitaire"));
 const Work = lazyWithMinTime(() => import("../pages/Work"));
 const Journey = lazyWithMinTime(() => import("../pages/Journey"));
 
@@ -24,6 +25,7 @@ const routes: AppRoute[] = [
   { path: "projects", element: React.createElement(Projects) },
   { path: "games", element: React.createElement(Games) },
   { path: "games/snake", element: React.createElement(SnakeGame) },
+  { path: "games/spider", element: React.createElement(SpiderSolitaire) },
   { path: "work", element: React.createElement(Work) },
   { path: "journey", element: React.createElement(Journey) },
 

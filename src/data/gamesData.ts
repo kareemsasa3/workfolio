@@ -16,6 +16,14 @@ export const gamesData: GameData[] = [
     previewType: "snake",
     isAvailable: true,
   },
+  {
+    id: "spider-solitaire",
+    title: "Spider Solitaire",
+    description: "One-suit Spider Solitaire with smooth card play",
+    path: "/games/spider",
+    previewType: "spider",
+    isAvailable: true,
+  },
   // Future games will be added here
   // Example:
   // {

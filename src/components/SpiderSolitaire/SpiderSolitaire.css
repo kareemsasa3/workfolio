@@ -1,0 +1,179 @@
+.spider-solitaire {
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  padding: 1.5rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  color: var(--text-color, #ffffff);
+  font-family: var(--terminal-font, "Courier New", Monaco, monospace);
+}
+
+.spider-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.spider-stats {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 0.95rem;
+}
+
+.spider-actions {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.spider-button {
+  background: rgba(0, 0, 0, 0.6);
+  color: var(--terminal-primary, #4caf50);
+  border: 1px solid var(--terminal-primary, #4caf50);
+  padding: 0.5rem 1rem;
+  border-radius: 0.4rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.spider-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 0 12px rgba(76, 175, 80, 0.5);
+}
+
+.spider-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.spider-win-banner {
+  padding: 0.75rem 1rem;
+  background: rgba(76, 175, 80, 0.15);
+  border: 1px solid rgba(76, 175, 80, 0.6);
+  border-radius: 0.5rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+.spider-board {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(10, minmax(72px, 1fr));
+  gap: 0.75rem;
+  min-height: 60vh;
+  padding-bottom: 2rem;
+}
+
+.spider-column {
+  position: relative;
+  min-height: 100%;
+  border-radius: 0.5rem;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px dashed rgba(76, 175, 80, 0.3);
+  overflow: visible;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+/* Valid drop target highlight - removed to preserve game challenge */
+/* .spider-column.valid-target { } */
+/* .spider-column.drag-over { } */
+
+.spider-card {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 96px;
+  border-radius: 0.45rem;
+  font-weight: 700;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+  cursor: default;
+}
+
+.spider-card.face-up {
+  background: rgba(10, 10, 10, 0.85);
+  border: 1px solid rgba(76, 175, 80, 0.6);
+  color: var(--terminal-primary, #4caf50);
+  cursor: grab;
+}
+
+.spider-card.face-up:active {
+  cursor: grabbing;
+}
+
+.spider-card.face-down {
+  background: linear-gradient(
+    135deg,
+    rgba(20, 20, 20, 0.9),
+    rgba(0, 0, 0, 0.9)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.spider-card.selected {
+  transform: translateY(-6px);
+  box-shadow: 0 0 14px rgba(76, 175, 80, 0.7);
+}
+
+/* Visual break when a card doesn't continue the run above it */
+.spider-card.run-start {
+  border-top: 2px solid rgba(255, 200, 50, 0.6);
+  box-shadow: 0 -2px 8px rgba(255, 200, 50, 0.2), 0 8px 18px rgba(0, 0, 0, 0.35);
+}
+
+/* Cards being dragged */
+.spider-card.dragging {
+  opacity: 0.5;
+  transform: scale(0.98);
+}
+
+.spider-card-rank {
+  position: absolute;
+  top: 3px;
+  left: 5px;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.spider-card-back {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60%;
+  height: 60%;
+  border-radius: 0.3rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.15);
+}
+
+@media (max-width: 1024px) {
+  .spider-board {
+    grid-template-columns: repeat(10, 1fr);
+    gap: 0.4rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .spider-solitaire {
+    padding: 0.5rem;
+  }
+
+  .spider-board {
+    grid-template-columns: repeat(10, 1fr);
+    gap: 0.25rem;
+  }
+
+  .spider-card {
+    height: 72px;
+  }
+
+  .spider-card-rank {
+    font-size: 0.8rem;
+  }
+}

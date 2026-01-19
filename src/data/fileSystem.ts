@@ -219,6 +219,14 @@ export const fileSystem: FileSystemItem[] = [
         route: "games/snake",
       },
       {
+        name: "spider-solitaire",
+        type: "file",
+        permissions: "-rw-r--r--",
+        size: "20K",
+        date: "Dec 15 10:30",
+        route: "games/spider",
+      },
+      {
         name: "tetris",
         type: "file",
         permissions: "-rw-r--r--",
