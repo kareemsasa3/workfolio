@@ -14,7 +14,7 @@ import {
 } from "./sections";
 
 const Home = () => {
-  const { navigateToProjects } = useNavigation();
+  const { navigateTo, navigateToProjects } = useNavigation();
   const { setSections } = useLayoutContext();
 
   // Define the sections for this page
@@ -55,6 +55,7 @@ const Home = () => {
   // Consolidated loading states for navigation buttons
   const [loadingStates, setLoadingStates] = useState({
     projects: false,
+    work: false,
   });
 
   // Optimized parallax implementation using a single scroll container
@@ -77,6 +78,11 @@ const Home = () => {
     navigateToProjects();
   };
 
+  const handleNavigateToWork = () => {
+    setLoadingStates((prev) => ({ ...prev, work: true }));
+    navigateTo("/work");
+  };
+
   const handleIntroComplete = () => {
     setHasShownHomeIntro(true);
     localStorage.setItem("home-intro-shown", "true");
@@ -95,7 +101,9 @@ const Home = () => {
             hasShownHomeIntro={hasShownHomeIntro}
             onIntroComplete={handleIntroComplete}
             onNavigateToProjects={handleNavigateToProjects}
+            onNavigateToWork={handleNavigateToWork}
             isNavigatingToProjects={loadingStates.projects}
+            isNavigatingToWork={loadingStates.work}
           />
         </motion.div>
 

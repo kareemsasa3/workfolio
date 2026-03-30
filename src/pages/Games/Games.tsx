@@ -7,9 +7,9 @@ const Games = () => {
     <div className="page-content">
       <div className="games-container">
         <div className="games-header">
-          <h1 className="games-title">Mini Games</h1>
+          <h1 className="games-title">Games & Experiments</h1>
           <p className="games-subtitle">
-            Interactive games and experiences built with modern web technologies
+            A lighter side area for interactive experiments, gameplay ideas, and frontend exploration outside the main portfolio proof path.
           </p>
         </div>
         

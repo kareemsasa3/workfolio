@@ -48,7 +48,7 @@ export const projectsData: Project[] = [
     date: "2025",
     title: "Erebus OS",
     description:
-      "Event-driven coordination layer for Linux that transforms reactive troubleshooting into proactive system understanding. A system that remembers what you know and acts accordingly.",
+      "Event-driven coordination layer for Linux that captures system context, tracks inferred state, and turns reactive troubleshooting into auditable operational understanding.",
     techStack: ["Python", "SQLite", "systemd", "FTS5", "Wayland", "D-Bus"],
     features: [
       "Real-time system emitters (GPU, network, window focus, screen lock)",
@@ -61,9 +61,9 @@ export const projectsData: Project[] = [
     status: "Development",
     url: "#",
     highlights: [
-      "Systems that understand themselves",
-      "Epistemic discipline in software",
-      "Currently at v0.6.3",
+      "Belief-driven system state modeling",
+      "Replayable operational history",
+      "Active development, v0.6.3",
     ],
   },
   {
@@ -72,7 +72,7 @@ export const projectsData: Project[] = [
     date: "2024",
     title: "Aether",
     description:
-      "Real-time audio attention infrastructure for Linux. A high-performance daemon that publishes live acoustic state to lock-free shared memory using optimistic concurrency control.",
+      "Real-time audio infrastructure for Linux that publishes live acoustic state through lock-free shared memory for low-latency cross-process consumers.",
     techStack: ["Python", "PipeWire", "Shared Memory", "OpenRGB", "systemd"],
     features: [
       "Lock-free IPC via memory-mapped files",
@@ -87,8 +87,8 @@ export const projectsData: Project[] = [
     githubUrl: "https://github.com/kareemsasa3/aether",
     highlights: [
       "Lock-free concurrent design",
-      "Ignorance as design philosophy",
-      "Reddit recognition for architecture",
+      "Low-latency shared-memory pipeline",
+      "Architecture recognized publicly",
     ],
   },
   {
@@ -97,7 +97,7 @@ export const projectsData: Project[] = [
     date: "2025",
     title: "Arachne",
     description:
-      "Autonomous web research platform that searches, scrapes, indexes, and synthesizes web content. Continuously detects changes, keeps version history, and offers full-text search across collected documents.",
+      "Autonomous web research platform that searches, scrapes, versions, indexes, and synthesizes web content through a production-oriented Go and Next.js pipeline.",
     techStack: ["Go", "Next.js", "SQLite FTS5", "Redis", "Docker", "Chromedp"],
     features: [
       "Search → scrape → index → AI synthesis pipeline",
@@ -112,8 +112,8 @@ export const projectsData: Project[] = [
     githubUrl: "https://github.com/kareemsasa3/arachne",
     highlights: [
       "Autonomous research workflows",
-      "Content-addressable storage",
-      "Production-grade Go + Next.js",
+      "Change tracking with searchable history",
+      "Production-grade Go + Next.js architecture",
     ],
   },
   {
@@ -122,7 +122,7 @@ export const projectsData: Project[] = [
     date: "2024",
     title: "Workfolio",
     description:
-      "Interactive developer portfolio with terminal interface and virtual file system. The site you're looking at right now.",
+      "Interactive developer portfolio built in React and TypeScript to present projects, work history, and systems thinking through a distinctive UI.",
     techStack: ["React 18", "TypeScript", "Vite", "Framer Motion"],
     features: [
       "Terminal emulator with virtual filesystem",
@@ -135,9 +135,9 @@ export const projectsData: Project[] = [
     url: "https://github.com/kareemsasa3/workfolio",
     githubUrl: "https://github.com/kareemsasa3/workfolio",
     highlights: [
-      "Creative developer experience",
-      "Modern React patterns",
-      "This site",
+      "Portfolio-first interactive UX",
+      "Modern React architecture",
+      "Custom terminal-inspired navigation",
     ],
   },
 ];

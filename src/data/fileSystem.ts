@@ -14,7 +14,6 @@ export const fileSystem: FileSystemItem[] = [
         permissions: "-rw-r--r--",
         size: "2.1K",
         date: "Dec 15 10:30",
-        route: "info/personal",
       },
       {
         name: "skills",
@@ -22,7 +21,6 @@ export const fileSystem: FileSystemItem[] = [
         permissions: "-rw-r--r--",
         size: "1.8K",
         date: "Dec 15 10:30",
-        route: "info/skills",
       },
       {
         name: "interests",
@@ -30,7 +28,6 @@ export const fileSystem: FileSystemItem[] = [
         permissions: "-rw-r--r--",
         size: "1.5K",
         date: "Dec 15 10:30",
-        route: "info/interests",
       },
     ],
   },
@@ -40,6 +37,7 @@ export const fileSystem: FileSystemItem[] = [
     permissions: "drwxr-xr-x",
     size: "4096",
     date: "Dec 15 10:30",
+    route: "/projects",
     children: [
       {
         name: "workfolio",
@@ -47,7 +45,6 @@ export const fileSystem: FileSystemItem[] = [
         permissions: "drwxr-xr-x",
         size: "4096",
         date: "Dec 15 10:30",
-        route: "projects/workfolio",
         githubUrl: "https://github.com/kareemsasa3/workfolio",
         children: [
           {
@@ -58,7 +55,7 @@ export const fileSystem: FileSystemItem[] = [
             date: "Dec 15 10:30",
           },
           {
-            name: "package.json",
+            name: "BUILD-OVERVIEW.md",
             type: "file",
             permissions: "-rw-r--r--",
             size: "0.8K",
@@ -86,7 +83,7 @@ export const fileSystem: FileSystemItem[] = [
                     date: "Dec 15 10:30",
                     children: [
                       {
-                        name: "Terminal.tsx",
+                        name: "TERMINAL-ARCHITECTURE.md",
                         type: "file",
                         permissions: "-rw-r--r--",
                         size: "15.2K",
@@ -101,22 +98,22 @@ export const fileSystem: FileSystemItem[] = [
         ],
       },
       {
-        name: "Arachne",
+        name: "arachne",
         type: "directory",
         permissions: "drwxr-xr-x",
         size: "4096",
         date: "Dec 15 10:30",
-        route: "projects/Arachne",
         githubUrl: "https://github.com/kareemsasa3/Arachne",
       },
     ],
   },
   {
-    name: "experience",
+    name: "work",
     type: "directory",
     permissions: "drwxr-xr-x",
     size: "4096",
     date: "Dec 15 10:30",
+    route: "/work",
     children: [
       {
         name: "resolute consulting group",
@@ -124,7 +121,6 @@ export const fileSystem: FileSystemItem[] = [
         permissions: "-rw-r--r--",
         size: "3.2K",
         date: "Dec 15 10:30",
-        route: "work/resolute",
       },
       {
         name: "capgemini",
@@ -132,7 +128,6 @@ export const fileSystem: FileSystemItem[] = [
         permissions: "-rw-r--r--",
         size: "2.8K",
         date: "Dec 15 10:30",
-        route: "work/capgemini",
       },
       {
         name: "freelance",
@@ -140,7 +135,6 @@ export const fileSystem: FileSystemItem[] = [
         permissions: "-rw-r--r--",
         size: "2.5K",
         date: "Dec 15 10:30",
-        route: "work/freelance",
       },
       {
         name: "outlier ai",
@@ -148,7 +142,6 @@ export const fileSystem: FileSystemItem[] = [
         permissions: "-rw-r--r--",
         size: "1.9K",
         date: "Dec 15 10:30",
-        route: "work/outlier",
       },
       {
         name: "varsity tutors",
@@ -156,9 +149,17 @@ export const fileSystem: FileSystemItem[] = [
         permissions: "-rw-r--r--",
         size: "1.9K",
         date: "Dec 15 10:30",
-        route: "work/varsity",
       },
     ],
+  },
+  {
+    name: "journey",
+    type: "directory",
+    permissions: "drwxr-xr-x",
+    size: "4096",
+    date: "Dec 15 10:30",
+    route: "/journey",
+    children: [],
   },
   {
     name: "education",
@@ -173,7 +174,6 @@ export const fileSystem: FileSystemItem[] = [
         permissions: "-rw-r--r--",
         size: "2.3K",
         date: "Dec 15 10:30",
-        route: "education/bachelor",
       },
       {
         name: "courses",
@@ -198,7 +198,6 @@ export const fileSystem: FileSystemItem[] = [
         permissions: "-rw-r--r--",
         size: "1.4K",
         date: "Dec 15 10:30",
-        route: "education/workshops",
       },
     ],
   },
@@ -209,38 +208,25 @@ export const fileSystem: FileSystemItem[] = [
     permissions: "drwxr-xr-x",
     size: "4096",
     date: "Dec 15 10:30",
+    route: "/games",
     children: [
       {
-        name: "snake-game",
-        type: "file",
-        permissions: "-rw-r--r--",
-        size: "15K",
+        name: "snake",
+        type: "directory",
+        permissions: "drwxr-xr-x",
+        size: "4096",
         date: "Dec 15 10:30",
-        route: "games/snake",
+        route: "/games/snake",
+        children: [],
       },
       {
-        name: "spider-solitaire",
-        type: "file",
-        permissions: "-rw-r--r--",
-        size: "20K",
+        name: "spider",
+        type: "directory",
+        permissions: "drwxr-xr-x",
+        size: "4096",
         date: "Dec 15 10:30",
-        route: "games/spider",
-      },
-      {
-        name: "tetris",
-        type: "file",
-        permissions: "-rw-r--r--",
-        size: "22K",
-        date: "Dec 15 10:30",
-        route: "games/tetris",
-      },
-      {
-        name: "puzzle-game",
-        type: "file",
-        permissions: "-rw-r--r--",
-        size: "18K",
-        date: "Dec 15 10:30",
-        route: "games/puzzle",
+        route: "/games/spider",
+        children: [],
       },
     ],
   },

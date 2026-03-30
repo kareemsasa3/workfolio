@@ -53,11 +53,11 @@ const Journey = () => {
     >
       <header id="journey-intro" className="journey-header">
         <h1 className="journey-title">
-          <TypeWriterText text="MY JOURNEY" speed={80} delay={200} />
+          <TypeWriterText text="Background & Journey" speed={80} delay={200} />
         </h1>
         <p className="journey-subtitle">
           <TypeWriterText
-            text="A timeline of the key moments that have shaped my path as a developer and individual, from present to past."
+            text="Context behind the work: a timeline of the experiences, decisions, and turning points that shaped how I build software."
             speed={50}
             delay={1000}
           />

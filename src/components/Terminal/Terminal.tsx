@@ -41,7 +41,7 @@ const Terminal: React.FC<TerminalProps> = ({ isIntro }) => {
 
   // The navigation handler
   const handleRouteNavigation = (route: string) => {
-    navigate(route);
+    navigate(route.startsWith("/") ? route : `/${route}`);
   };
 
   // Use the terminal logic hook
@@ -57,8 +57,8 @@ const Terminal: React.FC<TerminalProps> = ({ isIntro }) => {
   const handleTerminalClose = useCallback(() => {
     // Reset terminal state when closing
     coreHandlers.resetTerminal();
-    navigate(isIntro ? "/home" : "/");
-  }, [coreHandlers, navigate, isIntro]);
+    navigate("/");
+  }, [coreHandlers, navigate]);
 
   // Use the new window management hook
   const windowManagement = useWindowManagement({

@@ -20,10 +20,10 @@ export const workExperienceData: WorkExperience[] = [
     dates: "Oct 2024 - Present",
     location: "Remote",
     description: [
-      "Help organizations evolve business-critical systems by making complexity visible, decisions traceable, and production behavior predictable",
-      "Take ownership of systems where feature velocity has outpaced architectural structure",
-      "Stabilize frontend behavior by replacing ad-hoc state with explicit models",
-      "Consolidate and modernize backend services into maintainable domain models",
+      "Lead modernization work on business-critical software where complexity, reliability, and maintainability are active delivery risks",
+      "Take ownership of systems whose feature growth has outpaced architectural clarity",
+      "Stabilize frontend behavior by replacing ad-hoc state with explicit models and clearer interaction flows",
+      "Consolidate backend services into maintainable domain models and more predictable operational boundaries",
     ],
     techStack: [
       "ASP.NET Core",
@@ -40,15 +40,15 @@ export const workExperienceData: WorkExperience[] = [
     ],
     highlights: [
       "Systems modernization",
-      "Platform stabilization",
+      "Architecture stabilization",
       "Production reliability",
-      "Architecture clarity",
+      "Cross-stack technical leadership",
     ],
     projects: [
-      "Insurance Platform: Led architecture stabilization, replacing tightly coupled UI state with explicit models and consolidating backend into coherent ASP.NET Core API",
-      "Renewable Energy Platform: Reverse-engineered 15+ microservice system across 18 repos, clarified environment parity and reduced onboarding friction",
-      "Energy Forecasting: Replaced manual forecasting workflows with structured Oracle pipeline for financial reporting",
-      "Mining Finance: Modernized spreadsheet-driven processes into auditable data structures",
+      "Insurance Platform: Stabilized a tightly coupled product by replacing brittle UI state with explicit models and consolidating backend behavior into a coherent ASP.NET Core API",
+      "Renewable Energy Platform: Reverse-engineered a 15+ microservice system across 18 repositories, clarified environment parity, and reduced onboarding friction for contributors",
+      "Energy Forecasting: Replaced manual forecasting workflows with a structured Oracle-backed pipeline for financial reporting",
+      "Mining Finance: Modernized spreadsheet-driven operations into auditable data structures and more reliable business workflows",
     ],
   },
   {
@@ -59,10 +59,10 @@ export const workExperienceData: WorkExperience[] = [
     dates: "2021 - 2022",
     location: "Remote",
     description: [
-      "Developed enterprise applications for global clients",
-      "Built web applications using modern frameworks",
-      "Collaborated with international teams across time zones",
-      "Participated in agile development methodologies",
+      "Built enterprise software for large client engagements across frontend and backend stacks",
+      "Worked with modern web frameworks in delivery environments shaped by scale, process, and client requirements",
+      "Collaborated across distributed teams and cross-functional stakeholders",
+      "Contributed within agile delivery cycles for production-facing applications",
     ],
     techStack: [
       "React",
@@ -77,9 +77,9 @@ export const workExperienceData: WorkExperience[] = [
       "Git",
     ],
     highlights: [
-      "Enterprise development",
-      "Global collaboration",
-      "Agile methodology",
+      "Enterprise application delivery",
+      "Distributed team collaboration",
+      "Full-stack product work",
     ],
   },
   {
@@ -90,10 +90,10 @@ export const workExperienceData: WorkExperience[] = [
     dates: "Oct 2023 - Oct 2024",
     location: "Remote",
     description: [
-      "Provide personalized programming instruction to students of all skill levels",
-      "Teach Python, JavaScript, React, and data structures/algorithms",
-      "Help students prepare for technical interviews",
-      "Adapt teaching methods to individual learning styles",
+      "Provided individualized programming instruction across beginner to advanced skill levels",
+      "Taught Python, JavaScript, React, and data structures and algorithms",
+      "Helped students prepare for technical interviews and practical software engineering work",
+      "Adapted explanations and exercises to different learning styles and experience levels",
     ],
     techStack: [
       "Python",
@@ -106,7 +106,7 @@ export const workExperienceData: WorkExperience[] = [
     highlights: [
       "Technical interview prep",
       "Personalized instruction",
-      "Fundamentals teaching",
+      "Strong fundamentals coaching",
     ],
   },
   {
@@ -117,15 +117,15 @@ export const workExperienceData: WorkExperience[] = [
     dates: "2022 - 2023",
     location: "Remote",
     description: [
-      "Evaluated AI model responses for reasoning quality and accuracy",
-      "Identified flaws in multi-step reasoning chains",
-      "Provided corrections and feedback to improve model behavior",
+      "Evaluated model outputs for reasoning quality, factual accuracy, and instruction adherence",
+      "Identified failure modes in multi-step reasoning and ambiguous responses",
+      "Provided corrective feedback to improve model behavior and output quality",
     ],
     techStack: ["AI/ML", "Reasoning Analysis", "Quality Evaluation"],
     highlights: [
       "AI response evaluation",
-      "Reasoning chain analysis",
-      "Model feedback",
+      "Reasoning quality analysis",
+      "Model feedback loops",
     ],
   }
 ];

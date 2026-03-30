@@ -297,22 +297,16 @@ class CdCommand implements Command {
 
       const parts = path.split("/").filter(Boolean);
       let currentItems = fileSystem;
+      let currentItem: FileSystemItem | null = null;
 
       for (const part of parts) {
-        const found = currentItems.find((item) => item.name === part);
-        if (!found) return null;
-        if (found.type !== "directory") return found;
-        currentItems = found.children || [];
+        currentItem = currentItems.find((item) => item.name === part) || null;
+        if (!currentItem) return null;
+        if (currentItem.type !== "directory") return currentItem;
+        currentItems = currentItem.children || [];
       }
 
-      return {
-        name: parts[parts.length - 1],
-        type: "directory",
-        permissions: "drwxr-xr-x",
-        size: "0",
-        date: "",
-        children: currentItems,
-      };
+      return currentItem;
     };
 
     const targetItem = findItemByPath(newPath);

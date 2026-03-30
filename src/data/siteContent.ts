@@ -3,9 +3,9 @@
 
 export const heroContent = {
     title: "Kareem Sasa",
-    subtitle: "Systems engineer. I build software that understands itself—and why.",
-    description: "I build software with self-awareness baked in—systems that understand what's happening, why it matters, and how to adapt. My current focus is Erebus, an event-driven coordination layer for Linux that helps systems evolve with purpose.",
-    cta: "View My Work",
+    subtitle: "Systems engineer building production software across backend, infrastructure, and product experience.",
+    description: "I design and ship systems that make behavior visible, decisions traceable, and complex software easier to operate. My recent work spans consulting on business-critical platforms and building systems-focused products like Erebus, an event-driven coordination layer for Linux.",
+    cta: "View Projects",
 } as const;
 
 // In siteContent.ts
@@ -51,27 +51,27 @@ export const aboutContent = {
     items: [
       {
         icon: "🧠",
-        title: "Systems That Understand Themselves",
+        title: "System Design For Real Operating Conditions",
         description:
-          "I build software with self-awareness at its core—event-driven architectures that surface what's happening, track confidence in their own state, and adapt based on evidence rather than assumptions.",
+          "I build systems that expose state clearly, preserve operational context, and make production behavior easier to reason about when complexity increases.",
       },
       {
         icon: "⚙️",
         title: "Backend & Infrastructure",
         description:
-          "Production services in Go and Python. Event fabrics, belief engines, and coordination layers. SQLite with FTS5 for fast, searchable history. systemd integration for reliable operation.",
+          "I work in Go and Python on backend services, platform tooling, and infrastructure concerns including observability, process supervision, search, and operational reliability.",
       },
       {
         icon: "🎨",
-        title: "Frontend & Experience",
+        title: "Frontend That Clarifies Complex Systems",
         description:
-          "Modern interfaces with React, TypeScript, and Next.js. Clean component architecture, smooth animations, and responsive design. The same attention to clarity I bring to backend systems.",
+          "I use React, TypeScript, and Next.js to turn dense workflows into interfaces that are understandable, maintainable, and credible for real users.",
       },
       {
         icon: "🔧",
-        title: "Infrastructure & Tooling",
+        title: "Tooling That Fits Existing Environments",
         description:
-          "Docker, Linux, Nginx, Wayland. Real-time audio with PipeWire and lock-free IPC. I build tools that fit into existing ecosystems rather than replacing them.",
+          "I build with Docker, Linux, Nginx, Wayland, PipeWire, and IPC primitives, with a bias toward tools that integrate cleanly into the environments teams already run.",
       },
     ],
 } as const;

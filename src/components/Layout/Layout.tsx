@@ -32,6 +32,12 @@ const pageTransition = {
   duration: 0.4, // Slightly longer duration to allow sections to settle
 };
 
+interface RouteMeta {
+  title: string;
+  description: string;
+  canonicalPath: string;
+}
+
 const Layout = () => {
   const location = useLocation();
   const { mainContentAreaRef } = useLayoutContext();
@@ -51,20 +57,87 @@ const Layout = () => {
     return () => clearTimeout(timer);
   }, [location.pathname]);
 
-  // Route-aware document title
+  // Route-aware metadata
   useEffect(() => {
-    const routeTitles: Record<string, string> = {
-      "/": "Kareem Sasa — Portfolio",
-      "/projects": "Projects — Kareem Sasa",
-      "/games": "Games — Kareem Sasa",
-      "/games/snake": "Snake Game — Kareem Sasa",
-      "/games/spider": "Spider Solitaire — Kareem Sasa",
-      "/work": "Work — Kareem Sasa",
-      "/journey": "Journey — Kareem Sasa",
-      "/terminal": "Terminal — Kareem Sasa",
+    const baseUrl = "https://kareemsasa.dev";
+    const defaultMeta: RouteMeta = {
+      title: "Kareem Sasa — Systems Engineer",
+      description:
+        "Systems engineer and consultant building production software across backend, infrastructure, and product experience.",
+      canonicalPath: "/",
     };
-    const title = routeTitles[location.pathname] || "Kareem Sasa — Portfolio";
-    if (document.title !== title) document.title = title;
+
+    const routeMeta: Record<string, RouteMeta> = {
+      "/": defaultMeta,
+      "/projects": {
+        title: "Projects — Kareem Sasa",
+        description:
+          "Flagship systems and backend projects spanning Linux infrastructure, autonomous research workflows, and interactive product engineering.",
+        canonicalPath: "/projects",
+      },
+      "/work": {
+        title: "Work — Kareem Sasa",
+        description:
+          "Professional work across consulting, platform modernization, frontend stabilization, and backend architecture for business-critical software.",
+        canonicalPath: "/work",
+      },
+      "/journey": {
+        title: "Background & Journey — Kareem Sasa",
+        description:
+          "Context behind the work: the experiences and turning points that shaped how Kareem Sasa approaches software engineering.",
+        canonicalPath: "/journey",
+      },
+      "/games": {
+        title: "Games & Experiments — Kareem Sasa",
+        description:
+          "A lighter side area for interactive experiments, gameplay ideas, and frontend exploration outside the main portfolio proof path.",
+        canonicalPath: "/games",
+      },
+      "/games/snake": {
+        title: "Snake Game — Kareem Sasa",
+        description:
+          "A browser-based Snake implementation from the games and experiments section of Kareem Sasa's portfolio.",
+        canonicalPath: "/games/snake",
+      },
+      "/games/spider": {
+        title: "Spider Solitaire — Kareem Sasa",
+        description:
+          "A browser-based Spider Solitaire implementation from the games and experiments section of Kareem Sasa's portfolio.",
+        canonicalPath: "/games/spider",
+      },
+      "/terminal": {
+        title: "Terminal — Kareem Sasa",
+        description:
+          "An interactive terminal layer for exploring portfolio content, projects, and work history through a command-driven interface.",
+        canonicalPath: "/terminal",
+      },
+    };
+
+    const meta = routeMeta[location.pathname] || defaultMeta;
+    const canonicalUrl = `${baseUrl}${meta.canonicalPath}`;
+
+    if (document.title !== meta.title) document.title = meta.title;
+
+    const setMetaContent = (selector: string, content: string) => {
+      const element = document.querySelector<HTMLMetaElement>(selector);
+      if (element && element.content !== content) {
+        element.content = content;
+      }
+    };
+
+    const canonicalElement = document.querySelector<HTMLLinkElement>(
+      'link[rel="canonical"]'
+    );
+    if (canonicalElement && canonicalElement.href !== canonicalUrl) {
+      canonicalElement.href = canonicalUrl;
+    }
+
+    setMetaContent('meta[name="description"]', meta.description);
+    setMetaContent('meta[property="og:title"]', meta.title);
+    setMetaContent('meta[property="og:description"]', meta.description);
+    setMetaContent('meta[property="og:url"]', canonicalUrl);
+    setMetaContent('meta[name="twitter:title"]', meta.title);
+    setMetaContent('meta[name="twitter:description"]', meta.description);
   }, [location.pathname]);
 
   return (
