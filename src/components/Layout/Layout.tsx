@@ -38,6 +38,10 @@ interface RouteMeta {
   canonicalPath: string;
 }
 
+const BASE_URL = "https://kareemsasa.dev";
+const DEFAULT_IMAGE_URL = `${BASE_URL}/src/assets/logo.svg`;
+const DEFAULT_IMAGE_ALT = "Kareem Sasa logo";
+
 const Layout = () => {
   const location = useLocation();
   const { mainContentAreaRef } = useLayoutContext();
@@ -59,7 +63,6 @@ const Layout = () => {
 
   // Route-aware metadata
   useEffect(() => {
-    const baseUrl = "https://kareemsasa.dev";
     const defaultMeta: RouteMeta = {
       title: "Kareem Sasa — Systems Engineer",
       description:
@@ -114,7 +117,7 @@ const Layout = () => {
     };
 
     const meta = routeMeta[location.pathname] || defaultMeta;
-    const canonicalUrl = `${baseUrl}${meta.canonicalPath}`;
+    const canonicalUrl = `${BASE_URL}${meta.canonicalPath}`;
 
     if (document.title !== meta.title) document.title = meta.title;
 
@@ -136,8 +139,12 @@ const Layout = () => {
     setMetaContent('meta[property="og:title"]', meta.title);
     setMetaContent('meta[property="og:description"]', meta.description);
     setMetaContent('meta[property="og:url"]', canonicalUrl);
+    setMetaContent('meta[property="og:image"]', DEFAULT_IMAGE_URL);
+    setMetaContent('meta[property="og:image:alt"]', DEFAULT_IMAGE_ALT);
     setMetaContent('meta[name="twitter:title"]', meta.title);
     setMetaContent('meta[name="twitter:description"]', meta.description);
+    setMetaContent('meta[name="twitter:image"]', DEFAULT_IMAGE_URL);
+    setMetaContent('meta[name="twitter:image:alt"]', DEFAULT_IMAGE_ALT);
   }, [location.pathname]);
 
   return (
