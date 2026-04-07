@@ -17,12 +17,17 @@
 }
 
 .project-header {
+    width: 100%;
     padding: 1.5rem;
+    border: none;
     cursor: pointer;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: left;
     transition: background 0.3s ease;
 }
 

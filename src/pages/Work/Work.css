@@ -67,7 +67,7 @@
     margin: 0 auto;
 }
 
-.timeline-item {
+.work-timeline-item {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -147,12 +147,12 @@
 }
 
 /* The content card */
-.timeline-content {
+.work-timeline-content {
     padding: 1rem 0;
     position: relative;
 }
 
-.timeline-content::before {
+.work-timeline-content::before {
     content: '';
     position: absolute;
     left: -1rem;
@@ -186,7 +186,7 @@
         margin-top: 1.5rem;
     }
 
-    .timeline-content::before {
+    .work-timeline-content::before {
         left: -0.75rem;
     }
 }

@@ -8,6 +8,7 @@ interface ProjectDetailsProps {
 
 const ProjectDetails: React.FC<ProjectDetailsProps> = ({ project }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const detailsId = `project-details-${project.id}`;
 
   const getComplexityColor = (complexity: string) => {
     switch (complexity) {
@@ -52,8 +53,11 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({ project }) => {
 
   return (
     <div className={`project-card ${isExpanded ? "expanded" : ""}`}>
-      <div
+      <button
+        type="button"
         className="project-header"
+        aria-expanded={isExpanded}
+        aria-controls={detailsId}
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="project-main-info">
@@ -75,12 +79,14 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({ project }) => {
           >
             {project.complexity}
           </span>
-          <button className="expand-btn">{isExpanded ? "−" : "+"}</button>
+          <span className="expand-btn" aria-hidden="true">
+            {isExpanded ? "−" : "+"}
+          </span>
         </div>
-      </div>
+      </button>
 
       {isExpanded && (
-        <div className="project-details">
+        <div id={detailsId} className="project-details">
           <p className="project-description">{project.description}</p>
 
           <div className="project-tech-stack">
