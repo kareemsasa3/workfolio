@@ -28,6 +28,7 @@ const Work = () => {
   // Announce our sections when the component mounts
   useEffect(() => {
     setSections(workSections);
+    return () => setSections([]);
   }, [setSections]); // workSections is stable (defined outside component)
 
   // Check if data is available
@@ -66,7 +67,7 @@ const Work = () => {
       <div className="work-timeline-container">
         {workExperienceData.map((exp, index) => (
           <React.Fragment key={exp.id}>
-            <div className="timeline-item">
+            <div className="work-timeline-item">
               <div
                 className={`timeline-node ${exp.type
                   .toLowerCase()
@@ -76,7 +77,7 @@ const Work = () => {
                 <div className="timeline-line"></div>
               )}
             </div>
-            <div id={`work-${exp.id}`} className="timeline-content">
+            <div id={`work-${exp.id}`} className="work-timeline-content">
               <WorkDetails {...exp} />
             </div>
           </React.Fragment>
