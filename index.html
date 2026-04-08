@@ -26,6 +26,7 @@
     <meta name="twitter:image" content="https://kareemsasa.dev/src/assets/logo.svg" />
     <meta name="twitter:image:alt" content="Kareem Sasa logo" />
     <style>
+      .route-fallback,
       .homepage-fallback {
         max-width: 72rem;
         margin: 0 auto;
@@ -35,10 +36,12 @@
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       }
 
+      .route-fallback a,
       .homepage-fallback a {
         color: #81c784;
       }
 
+      .route-fallback__eyebrow,
       .homepage-fallback__eyebrow {
         margin: 0 0 0.75rem;
         font-size: 0.9rem;
@@ -47,12 +50,14 @@
         color: #81c784;
       }
 
+      .route-fallback__title,
       .homepage-fallback__title {
         margin: 0;
         font-size: clamp(2.5rem, 7vw, 4.5rem);
         line-height: 1.05;
       }
 
+      .route-fallback__summary,
       .homepage-fallback__summary {
         max-width: 56rem;
         margin: 1.25rem 0 0;
@@ -61,33 +66,112 @@
         color: #d7dde4;
       }
 
+      .route-fallback__section {
+        margin: 2rem 0 0;
+      }
+
+      .route-fallback__section h2 {
+        margin: 0 0 0.75rem;
+        font-size: 1.35rem;
+      }
+
+      .route-fallback__section p,
+      .route-fallback__section li {
+        line-height: 1.75;
+        color: #d7dde4;
+      }
+
+      .route-fallback__section ul {
+        margin: 0.75rem 0 0;
+        padding-left: 1.25rem;
+      }
+
+      .route-fallback__section li + li {
+        margin-top: 0.6rem;
+      }
+
+      .route-fallback__grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1rem;
+        margin: 1rem 0 0;
+      }
+
+      .route-fallback__card {
+        padding: 1rem 1.1rem;
+        border: 1px solid rgba(129, 199, 132, 0.35);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .route-fallback__card h3 {
+        margin: 0 0 0.6rem;
+        font-size: 1rem;
+      }
+
+      .route-fallback__meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin: 1.25rem 0 0;
+      }
+
+      .route-fallback__pill {
+        display: inline-flex;
+        padding: 0.35rem 0.7rem;
+        border: 1px solid rgba(129, 199, 132, 0.35);
+        border-radius: 999px;
+        color: #d7dde4;
+        font-size: 0.9rem;
+      }
+
+      .route-fallback__link-list,
       .homepage-fallback__links,
       .homepage-fallback__projects {
         margin: 2rem 0 0;
       }
 
+      .route-fallback__link-list ul,
       .homepage-fallback__links ul,
       .homepage-fallback__projects ul {
         margin: 0.75rem 0 0;
         padding-left: 1.25rem;
       }
 
+      .route-fallback__link-list li + li,
       .homepage-fallback__projects li + li,
       .homepage-fallback__links li + li {
         margin-top: 0.75rem;
       }
 
+      .route-fallback__label,
       .homepage-fallback__project-title {
         font-weight: 600;
       }
 
+      .route-fallback__breadcrumbs {
+        margin: 0 0 1rem;
+        color: #d7dde4;
+      }
+
+      .route-fallback__breadcrumbs a {
+        color: #81c784;
+      }
+
+      .route-fallback__card-link {
+        display: inline-block;
+        margin-top: 0.75rem;
+        font-weight: 600;
+      }
+
+      .app-mounted .route-fallback,
       .app-mounted .homepage-fallback {
         display: none;
       }
     </style>
   </head>
   <body>
-    <main class="homepage-fallback" aria-label="Homepage overview">
+    <main class="route-fallback homepage-fallback" aria-label="Homepage overview">
       <p class="homepage-fallback__eyebrow">Systems Engineer</p>
       <h1 class="homepage-fallback__title">Kareem Sasa</h1>
       <p class="homepage-fallback__summary">
