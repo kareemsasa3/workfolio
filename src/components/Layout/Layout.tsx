@@ -9,6 +9,7 @@ import { PageLoader } from "../common";
 import ErrorBoundary from "../common/ErrorBoundary";
 import { useLayoutContext } from "../../contexts/LayoutContext";
 import { useSettings } from "../../contexts/SettingsContext";
+import { caseStudiesData } from "../../data/caseStudies";
 import "./Layout.css";
 
 const pageVariants = {
@@ -70,6 +71,18 @@ const Layout = () => {
       canonicalPath: "/",
     };
 
+    const caseStudyMeta = caseStudiesData.reduce<Record<string, RouteMeta>>(
+      (accumulator, caseStudy) => {
+        accumulator[`/case-studies/${caseStudy.slug}`] = {
+          title: `${caseStudy.title} Case Study — Kareem Sasa`,
+          description: caseStudy.shortDescription,
+          canonicalPath: `/case-studies/${caseStudy.slug}`,
+        };
+        return accumulator;
+      },
+      {}
+    );
+
     const routeMeta: Record<string, RouteMeta> = {
       "/": defaultMeta,
       "/projects": {
@@ -77,6 +90,12 @@ const Layout = () => {
         description:
           "Flagship systems and backend projects spanning Linux infrastructure, autonomous research workflows, and interactive product engineering.",
         canonicalPath: "/projects",
+      },
+      "/case-studies": {
+        title: "Case Studies — Kareem Sasa",
+        description:
+          "Engineering case studies documenting system architecture, constraints, and implementation decisions across flagship projects.",
+        canonicalPath: "/case-studies",
       },
       "/work": {
         title: "Work — Kareem Sasa",
@@ -114,6 +133,7 @@ const Layout = () => {
           "An interactive terminal layer for exploring portfolio content, projects, and work history through a command-driven interface.",
         canonicalPath: "/terminal",
       },
+      ...caseStudyMeta,
     };
 
     const meta = routeMeta[location.pathname] || defaultMeta;

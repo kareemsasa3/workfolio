@@ -1,21 +1,26 @@
 import { motion, MotionStyle } from "framer-motion";
 import { forwardRef, ForwardedRef } from "react";
-import { projectsData } from "../../../data/projects";
+import { Link } from "react-router-dom";
+import { caseStudyCards } from "../../../data/caseStudies";
 import { featuredProjectIds } from "../../../data/siteContent";
 
 const featuredProjects = featuredProjectIds
-  .map(id => projectsData.find(p => p.id === id))
-  .filter((project): project is NonNullable<typeof project> => project !== undefined);
+  .map((id) => caseStudyCards.find((caseStudy) => caseStudy.projectId === id))
+  .filter((caseStudy): caseStudy is NonNullable<typeof caseStudy> => caseStudy !== undefined);
 
 interface FeaturedProjectsSectionProps {
-  onNavigateToProjects: () => void;
+  onNavigateToCaseStudies: () => void;
   isNavigating: boolean;
-  style?: MotionStyle; // Framer Motion style prop
+  style?: MotionStyle;
 }
 
 export const FeaturedProjectsSection = forwardRef(
   (
-    { onNavigateToProjects, isNavigating, style }: FeaturedProjectsSectionProps,
+    {
+      onNavigateToCaseStudies,
+      isNavigating,
+      style,
+    }: FeaturedProjectsSectionProps,
     ref: ForwardedRef<HTMLElement>
   ) => {
     return (
@@ -34,7 +39,7 @@ export const FeaturedProjectsSection = forwardRef(
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          Featured Projects
+          Featured Systems
         </motion.h2>
         <motion.div
           className="featured-projects-grid"
@@ -43,10 +48,9 @@ export const FeaturedProjectsSection = forwardRef(
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6, delay: 0.4 }}
         >
-          {featuredProjects.map((project, index) => (
-            <motion.div
-              key={project.title}
-              className="featured-project-card interactive-card"
+          {featuredProjects.map((caseStudy, index) => (
+            <motion.article
+              key={caseStudy.slug}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
@@ -56,32 +60,43 @@ export const FeaturedProjectsSection = forwardRef(
                 transition: { duration: 0.3 },
               }}
             >
-              <div className="project-header">
-                <h3 className="project-title">{project.title}</h3>
-                <div className="project-badges">
-                  <span
-                    className={`complexity-badge ${project.complexity.toLowerCase()}`}
-                  >
-                    {project.complexity}
-                  </span>
-                  <span
-                    className={`status-badge ${project.status.toLowerCase()}`}
-                  >
-                    {project.status}
+              <Link
+                to={`/case-studies/${caseStudy.slug}`}
+                className="featured-project-card interactive-card featured-project-link"
+                aria-label={`Read the ${caseStudy.title} case study`}
+              >
+                <div className="project-header">
+                  <h3 className="project-title">{caseStudy.title}</h3>
+                  <div className="project-badges">
+                    <span
+                      className={`complexity-badge ${caseStudy.project.complexity.toLowerCase()}`}
+                    >
+                      {caseStudy.project.complexity}
+                    </span>
+                    <span
+                      className={`status-badge ${caseStudy.project.status.toLowerCase()}`}
+                    >
+                      {caseStudy.project.status}
+                    </span>
+                  </div>
+                </div>
+                <p className="project-description">
+                  {caseStudy.shortDescription}
+                </p>
+                <div className="project-tech">
+                  {caseStudy.focusAreas.map((focusArea) => (
+                    <span key={focusArea} className="tech-tag">
+                      {focusArea}
+                    </span>
+                  ))}
+                </div>
+                <div className="featured-project-footer">
+                  <span className="featured-project-link-text">
+                    Read case study →
                   </span>
                 </div>
-              </div>
-              <p className="project-description">{project.description}</p>
-              <div className="project-tech">
-                {project.techStack
-                  .slice(0, 3)
-                  .map((tech: string, techIndex: number) => (
-                  <span key={techIndex} className="tech-tag">
-                    {tech}
-                  </span>
-                ))}
-              </div>
-            </motion.div>
+              </Link>
+            </motion.article>
           ))}
         </motion.div>
         <motion.div
@@ -93,11 +108,11 @@ export const FeaturedProjectsSection = forwardRef(
         >
           <button
             className="btn btn-outline"
-            onClick={onNavigateToProjects}
+            onClick={onNavigateToCaseStudies}
             disabled={isNavigating}
-            aria-label="View all projects"
+            aria-label="View all case studies"
           >
-            {isNavigating ? "Loading..." : "View All Projects →"}
+            {isNavigating ? "Loading..." : "View All Case Studies →"}
           </button>
         </motion.div>
       </motion.section>

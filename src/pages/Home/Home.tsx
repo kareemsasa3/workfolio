@@ -21,7 +21,7 @@ const Home = () => {
   const homeSections: PageSection[] = useMemo(
     () => [
       { id: "hero", label: "Hero" },
-      { id: "projects", label: "Projects" },
+      { id: "projects", label: "Systems" },
       { id: "skills", label: "Skills" },
       { id: "about", label: "About" },
       { id: "social", label: "Social" },
@@ -55,6 +55,7 @@ const Home = () => {
   // Consolidated loading states for navigation buttons
   const [loadingStates, setLoadingStates] = useState({
     projects: false,
+    caseStudies: false,
     work: false,
   });
 
@@ -81,6 +82,11 @@ const Home = () => {
   const handleNavigateToWork = () => {
     setLoadingStates((prev) => ({ ...prev, work: true }));
     navigateTo("/work");
+  };
+
+  const handleNavigateToCaseStudies = () => {
+    setLoadingStates((prev) => ({ ...prev, caseStudies: true }));
+    navigateTo("/case-studies");
   };
 
   const handleIntroComplete = () => {
@@ -114,8 +120,8 @@ const Home = () => {
           style={{ y: isMobile ? 0 : projectsYMotion }}
         >
           <FeaturedProjectsSection
-            onNavigateToProjects={handleNavigateToProjects}
-            isNavigating={loadingStates.projects}
+            onNavigateToCaseStudies={handleNavigateToCaseStudies}
+            isNavigating={loadingStates.caseStudies}
           />
         </motion.div>
 
