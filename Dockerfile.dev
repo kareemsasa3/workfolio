@@ -9,7 +9,7 @@ WORKDIR /app
 
 # Install deps (cached)
 COPY package*.json ./
-RUN npm install
+RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
 # Source is bind-mounted in dev; this copy is only for npm install layer
 COPY . .
