@@ -25,8 +25,105 @@
     <meta name="twitter:description" content="Systems engineer and consultant building production software across backend, infrastructure, and product experience." />
     <meta name="twitter:image" content="https://kareemsasa.dev/src/assets/logo.svg" />
     <meta name="twitter:image:alt" content="Kareem Sasa logo" />
+    <style>
+      .homepage-fallback {
+        max-width: 72rem;
+        margin: 0 auto;
+        padding: 4rem 1.5rem 2rem;
+        color: #f8f9fa;
+        background: #111111;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      }
+
+      .homepage-fallback a {
+        color: #81c784;
+      }
+
+      .homepage-fallback__eyebrow {
+        margin: 0 0 0.75rem;
+        font-size: 0.9rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #81c784;
+      }
+
+      .homepage-fallback__title {
+        margin: 0;
+        font-size: clamp(2.5rem, 7vw, 4.5rem);
+        line-height: 1.05;
+      }
+
+      .homepage-fallback__summary {
+        max-width: 56rem;
+        margin: 1.25rem 0 0;
+        font-size: 1.125rem;
+        line-height: 1.7;
+        color: #d7dde4;
+      }
+
+      .homepage-fallback__links,
+      .homepage-fallback__projects {
+        margin: 2rem 0 0;
+      }
+
+      .homepage-fallback__links ul,
+      .homepage-fallback__projects ul {
+        margin: 0.75rem 0 0;
+        padding-left: 1.25rem;
+      }
+
+      .homepage-fallback__projects li + li,
+      .homepage-fallback__links li + li {
+        margin-top: 0.75rem;
+      }
+
+      .homepage-fallback__project-title {
+        font-weight: 600;
+      }
+
+      .app-mounted .homepage-fallback {
+        display: none;
+      }
+    </style>
   </head>
   <body>
+    <main class="homepage-fallback" aria-label="Homepage overview">
+      <p class="homepage-fallback__eyebrow">Systems Engineer</p>
+      <h1 class="homepage-fallback__title">Kareem Sasa</h1>
+      <p class="homepage-fallback__summary">
+        Systems engineer building production software across backend, infrastructure, and product experience.
+        I design and ship systems that make behavior visible, decisions traceable, and complex software easier to operate.
+        Recent work includes consulting on business-critical platforms and building systems-focused products like Erebus, an event-driven coordination layer for Linux.
+      </p>
+
+      <section class="homepage-fallback__links" aria-labelledby="homepage-fallback-links">
+        <h2 id="homepage-fallback-links">Explore</h2>
+        <ul>
+          <li><a href="/projects">Projects</a></li>
+          <li><a href="/work">Work Experience</a></li>
+          <li><a href="/terminal">Terminal Interface</a></li>
+        </ul>
+      </section>
+
+      <section class="homepage-fallback__projects" aria-labelledby="homepage-fallback-projects">
+        <h2 id="homepage-fallback-projects">Featured Work</h2>
+        <ul>
+          <li>
+            <span class="homepage-fallback__project-title">Erebus OS</span>:
+            Event-driven Linux coordination layer for auditable system state and operational context.
+            <a href="/projects">Read more</a>
+          </li>
+          <li>
+            <a class="homepage-fallback__project-title" href="https://github.com/kareemsasa3/arachne">Arachne</a>:
+            Autonomous web research platform built with Go, Next.js, SQLite FTS5, Redis, and Docker.
+          </li>
+          <li>
+            <a class="homepage-fallback__project-title" href="https://github.com/kareemsasa3/aether">Aether</a>:
+            Real-time Linux audio infrastructure using shared memory for low-latency cross-process consumers.
+          </li>
+        </ul>
+      </section>
+    </main>
     <div id="root"></div>
     <div id="portal-root"></div>
     <script type="module" src="/src/index.tsx"></script>
