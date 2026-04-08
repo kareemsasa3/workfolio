@@ -16,6 +16,11 @@ const resolveDevPort = (env: Record<string, string>) => {
     : DEFAULT_DEV_PORT;
 };
 
+const resolveOptionalPort = (value: string | undefined) => {
+  const candidate = Number(value);
+  return Number.isFinite(candidate) && candidate > 0 ? candidate : undefined;
+};
+
 const resolveTailscaleIp = (env: Record<string, string>): string | undefined => {
   const configured = env.TAILSCALE_IP?.trim();
   if (configured) {
@@ -63,10 +68,11 @@ export default defineConfig(({ command, mode }) => {
   const devHost = resolveDevHost(env);
   const devPort = resolveDevPort(env);
   const tailscaleIp = resolveTailscaleIp(env);
-  
-  const hmrHost = env.HMR_HOST?.trim() || tailscaleIp; // no localhost fallback
-  const clientPortRaw = env.VITE_HMR_CLIENT_PORT?.trim();
-  const clientPort = clientPortRaw ? Number(clientPortRaw) : undefined;
+
+  const hmrHost = env.HMR_HOST?.trim() || env.VITE_HMR_HOST?.trim();
+  const hmrClientPort = resolveOptionalPort(
+    env.HMR_CLIENT_PORT?.trim() || env.VITE_HMR_CLIENT_PORT?.trim()
+  );
 
   return {
     plugins:
@@ -77,13 +83,13 @@ export default defineConfig(({ command, mode }) => {
       command === "serve"
         ? {
             port: devPort,
+            strictPort: true,
             host: devHost, // Allow external connections
             open: true,
             hmr: {
               protocol: "ws",
-              port: devPort,
               ...(hmrHost ? { host: hmrHost } : {}),
-              ...(clientPort && Number.isFinite(clientPort) ? { clientPort } : {}),
+              ...(hmrClientPort ? { clientPort: hmrClientPort } : {}),
             },
             watch: {
               usePolling: true, // Use polling for Docker environments
