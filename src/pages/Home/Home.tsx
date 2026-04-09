@@ -8,9 +8,8 @@ import { useIsMobile } from "../../hooks/useIsMobile";
 import {
   HeroSection,
   FeaturedProjectsSection,
-  SkillsSection,
-  AboutSection,
-  SocialLinksSection,
+  CapabilitiesSection,
+  ContactStripSection,
 } from "./sections";
 
 const Home = () => {
@@ -22,9 +21,8 @@ const Home = () => {
     () => [
       { id: "hero", label: "Hero" },
       { id: "projects", label: "Systems" },
-      { id: "skills", label: "Skills" },
-      { id: "about", label: "About" },
-      { id: "social", label: "Social" },
+      { id: "capabilities", label: "Approach" },
+      { id: "contact", label: "Contact" },
     ],
     []
   );
@@ -71,7 +69,7 @@ const Home = () => {
   const isMobile = useIsMobile();
   const heroYMotion = useTransform(scrollYProgress, [0, 0.2], [0, -100]);
   const projectsYMotion = useTransform(scrollYProgress, [0.2, 0.4], [0, -50]);
-  const skillsYMotion = useTransform(scrollYProgress, [0.4, 0.6], [0, -50]);
+  const capabilitiesYMotion = useTransform(scrollYProgress, [0.4, 0.6], [0, -30]);
 
   // Navigation handlers - simplified and more robust
   const handleNavigateToProjects = () => {
@@ -125,23 +123,18 @@ const Home = () => {
           />
         </motion.div>
 
-        {/* Skills Section */}
+        {/* Capabilities Section */}
         <motion.div
-          id="skills"
-          ref={getSectionRef("skills")}
-          style={{ y: isMobile ? 0 : skillsYMotion }}
+          id="capabilities"
+          ref={getSectionRef("capabilities")}
+          style={{ y: isMobile ? 0 : capabilitiesYMotion }}
         >
-          <SkillsSection />
+          <CapabilitiesSection />
         </motion.div>
 
-        {/* About Section */}
-        <div id="about" ref={getSectionRef("about")}>
-          <AboutSection />
-        </div>
-
-        {/* Social Links Section */}
-        <div id="social" ref={getSectionRef("social")}>
-          <SocialLinksSection />
+        {/* Contact Section */}
+        <div id="contact" ref={getSectionRef("contact")}>
+          <ContactStripSection />
         </div>
       </div>
     </div>

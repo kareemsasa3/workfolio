@@ -3,81 +3,45 @@
 
 export const heroContent = {
     title: "Kareem Sasa",
-    subtitle: "Systems engineer building production software across backend, infrastructure, and product experience.",
-    description: "I design and ship systems that make behavior visible, decisions traceable, and complex software easier to operate. My recent work spans consulting on business-critical platforms and building systems-focused products like Erebus, an event-driven coordination layer for Linux.",
-    cta: "View Projects",
+    subtitle: "Systems engineer building production software for Linux, backend, and infrastructure-heavy products.",
+    description: "I design event-driven systems, platform tooling, and interfaces that make complex behavior observable and easier to operate. Recent work includes a replayable Linux coordination layer and a production-oriented autonomous research platform.",
+    cta: "View Systems",
 } as const;
 
-// In siteContent.ts
-export const featuredProjectIds = ["erebus", "arachne", "aether"] as const;
+export const featuredProjectIds = ["erebus", "arachne"] as const;
 
-export const skillCategories = [
-    "Systems & Backend",
-    "Frontend", 
-    "Infrastructure",
-    "Data & Storage",
-] as const;
-  
-export const skills = [
-    // Systems & Backend
-    { name: "Python", icon: "🐍", category: "Systems & Backend" },
-    { name: "Go", icon: "🐹", category: "Systems & Backend" },
-    { name: "systemd", icon: "⚙️", category: "Systems & Backend" },
-    { name: "D-Bus", icon: "🔌", category: "Systems & Backend" },
-    { name: "PipeWire", icon: "🔊", category: "Systems & Backend" },
-    { name: "IPC/Shared Memory", icon: "🧠", category: "Systems & Backend" },
-
-    // Frontend
-    { name: "React", icon: "⚛️", category: "Frontend" },
-    { name: "TypeScript", icon: "📘", category: "Frontend" },
-    { name: "Next.js", icon: "▲", category: "Frontend" },
-    { name: "Vite", icon: "⚡", category: "Frontend" },
-    { name: "Framer Motion", icon: "✨", category: "Frontend" },
-
-    // Infrastructure
-    { name: "Docker", icon: "🐳", category: "Infrastructure" },
-    { name: "Linux", icon: "🐧", category: "Infrastructure" },
-    { name: "Nginx", icon: "🌐", category: "Infrastructure" },
-    { name: "Wayland", icon: "🖥️", category: "Infrastructure" },
-
-    // Data & Storage
-    { name: "SQLite", icon: "🗃️", category: "Data & Storage" },
-    { name: "FTS5", icon: "🔍", category: "Data & Storage" },
-    { name: "Redis", icon: "🔴", category: "Data & Storage" },
-] as const;
-
-export const aboutContent = {
-    title: "What I Do",
+export const capabilitiesContent = {
+    title: "How I Work",
     items: [
       {
         icon: "🧠",
-        title: "System Design For Real Operating Conditions",
+        title: "Systems Architecture",
         description:
-          "I build systems that expose state clearly, preserve operational context, and make production behavior easier to reason about when complexity increases.",
+          "I design software around real operating conditions, failure boundaries, and long-term maintainability.",
       },
       {
         icon: "⚙️",
-        title: "Backend & Infrastructure",
+        title: "Event-Driven Design",
         description:
-          "I work in Go and Python on backend services, platform tooling, and infrastructure concerns including observability, process supervision, search, and operational reliability.",
-      },
-      {
-        icon: "🎨",
-        title: "Frontend That Clarifies Complex Systems",
-        description:
-          "I use React, TypeScript, and Next.js to turn dense workflows into interfaces that are understandable, maintainable, and credible for real users.",
+          "I model state from streams of system activity so behavior can be traced, replayed, and reasoned about later.",
       },
       {
         icon: "🔧",
-        title: "Tooling That Fits Existing Environments",
+        title: "Infrastructure Automation",
         description:
-          "I build with Docker, Linux, Nginx, Wayland, PipeWire, and IPC primitives, with a bias toward tools that integrate cleanly into the environments teams already run.",
+          "I build platform tooling and deployment workflows that reduce manual coordination and keep environments predictable.",
+      },
+      {
+        icon: "📈",
+        title: "Observability and Reliability",
+        description:
+          "I prioritize visibility, auditability, and operational clarity so production behavior is easier to understand under load.",
       },
     ],
 } as const;
 
 export const socialContent = {
-    title: "Connect With Me",
+    title: "Contact",
     links: [
       {
         name: "GitHub",
@@ -88,6 +52,11 @@ export const socialContent = {
         name: "LinkedIn",
         url: "https://linkedin.com/in/kareem-sasa",
         icon: "💼",
+      },
+      {
+        name: "Email",
+        url: "mailto:kareemsasa3@gmail.com",
+        icon: "✉️",
       },
     ],
 } as const;

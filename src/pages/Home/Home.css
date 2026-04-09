@@ -269,9 +269,8 @@ TABLE OF CONTENTS
 /* --- General Section Styling --- */
 .hero-section,
 .featured-projects-section,
-.skills-section,
-.about-section,
-.social-links-section,
+.capabilities-section,
+.contact-strip-section,
 .cta-section {
   display: flex;
   flex-direction: column;
@@ -284,15 +283,13 @@ TABLE OF CONTENTS
 }
 
 /* Only keep full-viewport height where it makes sense */
-.hero-section,
-.social-links-section {
+.hero-section {
   min-height: 100svh;
 }
 
 /* Content-heavy sections should start at the top, not centered */
 .featured-projects-section,
-.skills-section,
-.about-section {
+.capabilities-section {
   justify-content: flex-start;
 }
 
@@ -424,57 +421,26 @@ TABLE OF CONTENTS
   text-align: center;
 }
 
-/* --- Skills Section --- */
-.skills-categories {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 2rem;
+/* --- Capabilities Section --- */
+.capabilities-content {
   width: 100%;
-  max-width: 1200px;
-  margin-top: 2rem;
-  padding: 0 2rem;
-}
-
-.category-title {
-  margin: 0 0 1rem 0;
-  color: var(--primary-color);
-  font-size: 1.3rem;
-  font-weight: 600;
-  text-align: center;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.skills-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.75rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-/* --- About Section --- */
-.about-content {
-  width: 100%;
-  max-width: 1000px;
+  max-width: 1080px;
   margin: 0 auto;
-  padding: 0 0.5rem;
+  padding: 0 1rem;
 }
 
-.about-grid {
+.capabilities-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 2rem;
+  gap: 1.5rem;
   width: 100%;
-  max-width: 1400px;
   margin: 2rem auto 0 auto;
   padding: 0;
   list-style: none;
 }
 
-.about-card {
-  padding: 2.5rem;
+.capability-card {
+  padding: 2rem;
   text-align: center;
 }
 
@@ -487,63 +453,69 @@ TABLE OF CONTENTS
   will-change: transform;
 }
 
-.about-card h3 {
+.capability-card h3 {
   margin: 0 0 1rem 0;
   color: var(--text-color);
   font-size: 1.4rem;
   font-weight: 600;
 }
 
-.about-card p {
+.capability-card p {
   margin: 0;
   color: var(--text-secondary);
   line-height: 1.6;
 }
 
-/* --- Social Links Section --- */
-.social-content {
+/* --- Contact Strip --- */
+.contact-strip-section {
+  min-height: auto;
+  padding: 1rem 0 3rem;
+}
+
+.contact-strip-content {
   width: 100%;
-  max-width: 800px;
+  max-width: 960px;
   margin: 0 auto;
-  padding: 4rem 2rem;
-}
-
-.social-links-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
-  margin-top: 2rem;
-}
-
-.social-link {
+  padding: 1.25rem 1.5rem;
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.contact-strip-title {
+  margin: 0;
+  color: var(--text-color);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.contact-strip-links {
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 1rem;
-  padding: 2rem 1.5rem;
+}
+
+.contact-strip-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   color: var(--text-color);
-  text-align: center;
   text-decoration: none;
-}
-
-.social-icon {
-  display: block;
-  font-size: 2.5rem;
-  text-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
-  animation: float 3s ease-in-out infinite;
-  will-change: transform;
-}
-
-.social-name {
-  color: var(--text-color);
-  font-size: 1.2rem;
   font-weight: 600;
-  transition: color 0.3s ease;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  transition: border-color 0.3s ease, color 0.3s ease, background-color 0.3s ease;
 }
 
-.social-link:hover .social-name {
+.contact-strip-link:hover {
   color: var(--primary-color);
-  text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+  border-color: var(--primary-color);
+  background: rgba(0, 255, 0, 0.05);
 }
 
 /* --- CTA Section --- */
@@ -648,13 +620,8 @@ TABLE OF CONTENTS
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .skills-categories {
+  .capabilities-grid {
     grid-template-columns: repeat(2, 1fr);
-  }
-
-  .about-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2.5rem;
   }
 }
 
@@ -663,11 +630,7 @@ TABLE OF CONTENTS
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   }
 
-  .skills-categories {
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  }
-
-  .about-grid {
+  .capabilities-grid {
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 2rem;
   }
@@ -693,17 +656,15 @@ TABLE OF CONTENTS
   }
 
   /* General Section Adjustments */
-  /* Full-height only for hero and social on mobile */
-  .hero-section,
-  .social-links-section {
+  /* Full-height only for hero on mobile */
+  .hero-section {
     min-height: 100svh;
     padding: 0;
   }
 
   /* Give other sections breathing room on mobile */
   .featured-projects-section,
-  .skills-section,
-  .about-section,
+  .capabilities-section,
   .cta-section {
     min-height: auto;
     padding: 1rem 0;
@@ -730,32 +691,20 @@ TABLE OF CONTENTS
 
   /* Grid Adjustments */
   .featured-projects-grid,
-  .skills-categories,
-  .about-grid {
+  .capabilities-grid {
     gap: 1.5rem;
     padding: 0 1rem;
   }
 
-  /* Social Section Adjustments */
-  .social-content {
-    padding: 3rem 1rem;
+  .contact-strip-section {
+    min-height: auto;
+    padding: 1rem 0 2rem;
   }
 
-  .social-links-grid {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 1rem;
-  }
-
-  .social-link {
-    padding: 1.5rem 1rem;
-  }
-
-  .social-icon {
-    font-size: 2rem;
-  }
-
-  .social-name {
-    font-size: 1rem;
+  .contact-strip-content {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
   }
 
   /* CTA Adjustments */
@@ -781,23 +730,17 @@ TABLE OF CONTENTS
 @media (max-width: 480px) {
 
   /* General Section Adjustments */
-  .hero-section,
-  .social-links-section {
+  .hero-section {
     min-height: 100svh;
     padding: 0;
   }
 
   .featured-projects-section,
-  .skills-section,
-  .about-section,
+  .capabilities-section,
   .cta-section {
     min-height: auto;
     padding: 0.75rem 0;
     justify-content: flex-start;
-  }
-
-  .social-content {
-    padding: 2rem 1rem;
   }
 
   /* Hero Adjustments */
@@ -823,13 +766,7 @@ TABLE OF CONTENTS
     font-size: 1.25rem;
   }
 
-  /* Skills Grid */
-  .skills-grid {
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  }
-
-  /* About Card Adjustments */
-  .about-card {
+  .capability-card {
     padding: 1.5rem;
   }
 
@@ -837,8 +774,12 @@ TABLE OF CONTENTS
     font-size: 2.5rem;
   }
 
-  .about-card h3 {
+  .capability-card h3 {
     font-size: 1.2rem;
+  }
+
+  .contact-strip-links {
+    gap: 0.75rem;
   }
 }
 
