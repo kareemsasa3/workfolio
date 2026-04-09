@@ -3,22 +3,12 @@
     /* Default size variable */
 
     /* Terminal-inspired theme variables */
-    --dock-primary: #4CAF50;
-    --dock-background: rgba(26, 26, 26, 0.85);
-    --dock-border: #4CAF50;
-    --dock-text: #ffffff;
-    --dock-text-muted: #666;
-    --dock-shadow: rgba(0, 0, 0, 0.3);
-}
-
-/* Light theme overrides */
-[data-theme="light"] {
-    --dock-primary: #388E3C;
-    --dock-background: rgba(245, 245, 245, 0.85);
-    --dock-border: #388E3C;
-    --dock-text: #2c2c2c;
-    --dock-text-muted: #5a5a5a;
-    --dock-shadow: rgba(0, 0, 0, 0.1);
+    --dock-primary: var(--brand-primary);
+    --dock-background: var(--app-overlay);
+    --dock-border: var(--brand-primary);
+    --dock-text: var(--app-text);
+    --dock-text-muted: var(--app-text-muted);
+    --dock-shadow: var(--app-shadow);
 }
 
 .dock-container {
@@ -226,7 +216,7 @@
 
     /* Reduce backdrop intensity for readability */
     .dock-container {
-        background: rgba(26, 26, 26, 0.75);
+        background: var(--dock-background);
         box-shadow: 0 6px 20px var(--dock-shadow);
     }
 

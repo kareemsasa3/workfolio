@@ -1,6 +1,4 @@
 import { useRef, useEffect, useState, useCallback } from "react";
-import { motion } from "framer-motion";
-import { useTheme } from "../../contexts/ThemeContext";
 import { useLayoutContext } from "../../contexts/LayoutContext";
 import "./MatrixBackground.css";
 
@@ -14,7 +12,6 @@ const CONFIG = {
   lengthRange: { min: 10, max: 30 },
   fadeRate: 0.1,
   resetOffset: 20,
-  animationDuration: 0.5,
 } as const;
 
 interface MatrixColumn {
@@ -27,14 +24,16 @@ interface MatrixColumn {
 }
 
 const MatrixBackground = () => {
-  const { theme } = useTheme();
   const { isAnimationPaused, matrixSpeed } = useLayoutContext();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const requestRef = useRef<number | null>(null);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
-  const [canvasOpacity, setCanvasOpacity] = useState(1);
   const columnsRef = useRef<MatrixColumn[]>([]);
+  const colorsRef = useRef({
+    fill: "#0f0f0f",
+    glyph: "0, 255, 0",
+  });
 
   // Matrix characters (numbers and some symbols)
   const matrixChars = "0123456789ABCDEF";
@@ -62,10 +61,15 @@ const MatrixBackground = () => {
   }, []);
 
   useEffect(() => {
-    setCanvasOpacity(0.25);
-    const timeoutId = setTimeout(() => setCanvasOpacity(1), 200);
-    return () => clearTimeout(timeoutId);
-  }, [theme]);
+    const rootStyles = getComputedStyle(document.documentElement);
+    const fill = rootStyles.getPropertyValue("--bg-canvas-fill").trim();
+    const glyph = rootStyles.getPropertyValue("--bg-canvas-glyph").trim();
+
+    colorsRef.current = {
+      fill: fill || "#0f0f0f",
+      glyph: glyph || "0, 255, 0",
+    };
+  }, []);
 
   // Initialize matrix columns
   const initializeColumns = useCallback((canvas: HTMLCanvasElement) => {
@@ -107,8 +111,7 @@ const MatrixBackground = () => {
     const context = canvas?.getContext("2d");
     if (!canvas || !context) return;
 
-    const backgroundColor = theme === "light" ? "#f2f4f7" : "#0f0f0f";
-    const charColor = theme === "light" ? "44, 44, 44" : "0, 255, 0";
+    const { fill: backgroundColor, glyph: charColor } = colorsRef.current;
 
     // Clear with theme-appropriate background
     context.fillStyle = backgroundColor;
@@ -155,7 +158,7 @@ const MatrixBackground = () => {
         context.fillText(char, column.x + CONFIG.columnWidth / 2, charY);
       });
     });
-  }, [theme, matrixSpeed]); // React to theme and matrixSpeed changes.
+  }, [matrixSpeed]); // React to matrixSpeed changes.
 
   // **THE FINAL POLISH**: useLatest hook pattern implementation
   // 1. Create a ref to hold the LATEST version of the drawing function
@@ -177,8 +180,7 @@ const MatrixBackground = () => {
     const context = canvas?.getContext("2d");
     if (!canvas || !context) return;
 
-    const backgroundColor = theme === "light" ? "#f8f8f8" : "#0f0f0f";
-    const charColor = theme === "light" ? "44, 44, 44" : "0, 255, 0";
+    const { fill: backgroundColor, glyph: charColor } = colorsRef.current;
 
     context.fillStyle = backgroundColor;
     context.fillRect(0, 0, canvas.width, canvas.height);
@@ -196,7 +198,7 @@ const MatrixBackground = () => {
         context.fillText(char, column.x + CONFIG.columnWidth / 2, charY);
       });
     });
-  }, [theme]);
+  }, []);
 
   // Main setup effect
   useEffect(() => {
@@ -257,14 +259,11 @@ const MatrixBackground = () => {
   }
 
   return (
-    <motion.canvas
+    <canvas
       ref={canvasRef}
       className={`matrix-background ${
         isAnimationPaused ? "animation-paused" : ""
       }`}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: canvasOpacity }}
-      transition={{ duration: CONFIG.animationDuration }}
     />
   );
 };

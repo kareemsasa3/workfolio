@@ -1,0 +1,131 @@
+.static-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--app-bg-secondary) 0%, var(--app-bg) 100%);
+}
+
+.static-background::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at center, var(--bg-center-lift) 0%, transparent 42%),
+    radial-gradient(ellipse at center, transparent 46%, var(--bg-vignette) 100%);
+  opacity: 0.7;
+}
+
+.static-background > div {
+  position: absolute;
+  inset: 0;
+}
+
+.static-background__base {
+  background:
+    radial-gradient(circle at 12% 14%, rgba(255, 255, 255, 0.68), transparent 28%),
+    radial-gradient(circle at 85% 16%, rgba(255, 255, 255, 0.4), transparent 26%),
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.08), transparent 30%),
+    linear-gradient(180deg, var(--app-bg-secondary) 0%, var(--app-bg) 100%);
+}
+
+.static-background__grid {
+  opacity: 0.6;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent 22%, transparent 78%, rgba(255, 255, 255, 0.08)),
+    linear-gradient(
+      var(--bg-grid-major) 1px,
+      rgba(255, 255, 255, 0.18) 1px,
+      transparent 2px
+    ),
+    linear-gradient(
+      90deg,
+      var(--bg-grid-major) 1px,
+      rgba(255, 255, 255, 0.18) 1px,
+      transparent 2px
+    ),
+    linear-gradient(
+      var(--bg-grid-minor) 1px,
+      rgba(255, 255, 255, 0.12) 1px,
+      transparent 2px
+    ),
+    linear-gradient(
+      90deg,
+      var(--bg-grid-minor) 1px,
+      rgba(255, 255, 255, 0.12) 1px,
+      transparent 2px
+    );
+  background-size:
+    100% 100%,
+    80px 80px,
+    80px 80px,
+    20px 20px,
+    20px 20px;
+  background-position:
+    center,
+    center,
+    center,
+    center,
+    center;
+  mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.8));
+  -webkit-mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.8));
+}
+
+.static-background__topology {
+  opacity: 0.22;
+  background:
+    linear-gradient(117deg, transparent 0 22%, color-mix(in srgb, var(--bg-topology) 92%, transparent) 22.2%, transparent 23%, transparent 76%, color-mix(in srgb, var(--bg-topology) 68%, transparent) 76.2%, transparent 77%),
+    linear-gradient(90deg, transparent 14%, color-mix(in srgb, var(--bg-grid-major) 84%, transparent) 14.1%, transparent 14.4%, transparent 84%, color-mix(in srgb, var(--bg-grid-major) 58%, transparent) 84.1%, transparent 84.4%),
+    linear-gradient(0deg, transparent 18%, color-mix(in srgb, var(--bg-topology) 68%, transparent) 18.1%, transparent 18.35%, transparent 82%, color-mix(in srgb, var(--bg-topology) 58%, transparent) 82.1%, transparent 82.35%),
+    radial-gradient(circle at 14% 26%, var(--bg-topology) 0 2px, transparent 3px),
+    radial-gradient(circle at 81% 24%, color-mix(in srgb, var(--bg-topology) 84%, transparent) 0 2px, transparent 3px),
+    radial-gradient(circle at 76% 82%, color-mix(in srgb, var(--bg-topology) 68%, transparent) 0 2px, transparent 3px),
+    radial-gradient(circle at 18% 78%, color-mix(in srgb, var(--bg-topology) 68%, transparent) 0 2px, transparent 3px);
+  filter: blur(0.1px);
+  animation: static-background-topology-drift 34s ease-in-out infinite alternate;
+  transform: translate3d(0, 0, 0);
+}
+
+.static-background__signals {
+  opacity: 0.56;
+  background:
+    radial-gradient(circle at 14% 24%, var(--bg-signal), transparent 10%),
+    radial-gradient(circle at 86% 18%, color-mix(in srgb, var(--bg-signal) 78%, transparent), transparent 12%),
+    radial-gradient(circle at 78% 84%, color-mix(in srgb, var(--bg-signal) 72%, transparent), transparent 11%),
+    radial-gradient(circle at 18% 80%, color-mix(in srgb, var(--bg-signal) 64%, transparent), transparent 12%),
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.08), transparent 24%);
+  animation: static-background-drift 16s ease-in-out infinite alternate;
+  transform: translate3d(0, 0, 0);
+}
+
+@keyframes static-background-topology-drift {
+  0% {
+    transform: translate3d(-0.4%, 0, 0) scale(1);
+  }
+
+  100% {
+    transform: translate3d(0.6%, 0.35%, 0) scale(1.006);
+  }
+}
+
+@keyframes static-background-drift {
+  0% {
+    transform: translate3d(-1.9%, -1.6%, 0) scale(1);
+  }
+
+  100% {
+    transform: translate3d(2.4%, 2%, 0) scale(1.04);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .static-background__topology,
+  .static-background__signals {
+    animation: none;
+    transform: none;
+  }
+}

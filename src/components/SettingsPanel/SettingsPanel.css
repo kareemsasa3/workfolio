@@ -5,7 +5,7 @@
     right: 0;
     width: 400px;
     height: 100svh;
-    background: transparent;
+    background: var(--app-overlay);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     z-index: 10000;
@@ -23,8 +23,8 @@
     justify-content: space-between;
     align-items: center;
     padding: 1rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--app-border);
+    background: color-mix(in srgb, var(--app-surface) 85%, transparent);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     flex-shrink: 0;
@@ -46,8 +46,8 @@
 }
 
 .settings-close {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: color-mix(in srgb, var(--app-surface) 75%, transparent);
+    border: 1px solid var(--app-border);
     color: var(--text-color, #ffffff);
     font-size: 1.1rem;
     cursor: pointer;
@@ -61,8 +61,8 @@
 }
 
 .settings-close:hover {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.3);
+    background: color-mix(in srgb, var(--app-surface) 92%, transparent);
+    border-color: var(--brand-primary);
     transform: scale(1.05);
 }
 
@@ -80,33 +80,20 @@
 .setting-group {
     margin-bottom: 1rem;
     padding: 1rem;
-    background: rgba(255, 255, 255, 0.05);
+    background: color-mix(in srgb, var(--app-surface) 75%, transparent);
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--app-border);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     transition: all 0.3s ease;
     position: relative;
 }
 
-/* Light theme overrides for better visibility */
-[data-theme="light"] .setting-group {
-    background: rgba(0, 0, 0, 0.05);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
 .setting-group:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.2);
+    background: color-mix(in srgb, var(--app-surface) 92%, transparent);
+    border-color: var(--brand-primary);
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-}
-
-/* Light theme hover state */
-[data-theme="light"] .setting-group:hover {
-    background: rgba(0, 0, 0, 0.08);
-    border-color: rgba(0, 0, 0, 0.2);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
 .setting-label {
@@ -131,9 +118,9 @@
     gap: 0.75rem;
     margin-bottom: 0.75rem;
     padding: 0.75rem;
-    background: rgba(0, 0, 0, 0.2);
+    background: color-mix(in srgb, var(--app-bg) 85%, transparent);
     border-radius: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--app-border);
 }
 
 .settings-row {
@@ -170,20 +157,20 @@
     width: 100%;
     height: 8px;
     border-radius: 4px;
-    background: rgba(255, 255, 255, 0.1);
+    background: color-mix(in srgb, var(--app-surface-elevated) 78%, transparent);
     outline: none;
     -webkit-appearance: none;
     appearance: none;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid color-mix(in srgb, var(--app-border) 82%, transparent);
     transition: all 0.3s ease;
 }
 
 .dock-size-slider:focus,
 .dock-stiffness-slider:focus,
 .magnification-slider:focus {
-    background: rgba(255, 255, 255, 0.15);
+    background: color-mix(in srgb, var(--app-surface-elevated) 92%, transparent);
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(175, 42, 42, 0.1);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-primary) 18%, transparent);
 }
 
 .dock-size-slider::-webkit-slider-thumb,
@@ -196,7 +183,7 @@
     border-radius: 50%;
     background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-dark) 100%);
     cursor: pointer;
-    border: 2px solid rgba(255, 255, 255, 0.8);
+    border: 2px solid rgba(255, 255, 255, 0.95);
     box-shadow:
         0 4px 12px rgba(0, 0, 0, 0.3),
         0 0 0 1px rgba(255, 255, 255, 0.2) inset;
@@ -226,7 +213,7 @@
     border-radius: 50%;
     background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-dark) 100%);
     cursor: pointer;
-    border: 2px solid rgba(255, 255, 255, 0.8);
+    border: 2px solid rgba(255, 255, 255, 0.95);
     box-shadow:
         0 4px 12px rgba(0, 0, 0, 0.3),
         0 0 0 1px rgba(255, 255, 255, 0.2) inset;
@@ -254,8 +241,40 @@
 .magnification-slider::-moz-range-track {
     height: 8px;
     border-radius: 4px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: color-mix(in srgb, var(--app-surface-elevated) 78%, transparent);
+    border: 1px solid color-mix(in srgb, var(--app-border) 82%, transparent);
+}
+
+[data-theme="light"] .dock-size-slider,
+[data-theme="light"] .dock-stiffness-slider,
+[data-theme="light"] .magnification-slider {
+    background: color-mix(in srgb, var(--app-border) 34%, var(--app-surface) 66%);
+    border-color: color-mix(in srgb, var(--app-border) 82%, transparent);
+}
+
+[data-theme="light"] .dock-size-slider:focus,
+[data-theme="light"] .dock-stiffness-slider:focus,
+[data-theme="light"] .magnification-slider:focus {
+    background: color-mix(in srgb, var(--app-border) 42%, var(--app-surface) 58%);
+}
+
+[data-theme="light"] .dock-size-slider::-moz-range-track,
+[data-theme="light"] .dock-stiffness-slider::-moz-range-track,
+[data-theme="light"] .magnification-slider::-moz-range-track {
+    background: color-mix(in srgb, var(--app-border) 34%, var(--app-surface) 66%);
+    border-color: color-mix(in srgb, var(--app-border) 82%, transparent);
+}
+
+[data-theme="light"] .dock-size-slider::-webkit-slider-thumb,
+[data-theme="light"] .dock-stiffness-slider::-webkit-slider-thumb,
+[data-theme="light"] .magnification-slider::-webkit-slider-thumb,
+[data-theme="light"] .dock-size-slider::-moz-range-thumb,
+[data-theme="light"] .dock-stiffness-slider::-moz-range-thumb,
+[data-theme="light"] .magnification-slider::-moz-range-thumb {
+    border-color: rgba(255, 255, 255, 1);
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.16),
+        0 0 0 1px rgba(255, 255, 255, 0.45) inset;
 }
 
 .setting-description {

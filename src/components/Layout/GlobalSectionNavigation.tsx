@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { CSSProperties, useEffect, useMemo, useRef } from "react";
 import { motion } from "framer-motion";
 import { useLayoutContext, PageSection } from "../../contexts/LayoutContext";
 import { useWindowSize } from "../../hooks/useWindowSize";
@@ -12,7 +12,6 @@ const GlobalSectionNavigation = ({
   isSettingsOpen,
 }: GlobalSectionNavigationProps) => {
   const { sections, activeSection, setActiveSection } = useLayoutContext();
-  const [shiftAmount, setShiftAmount] = useState(0);
   const { width: windowWidth } = useWindowSize();
 
   // Use a ref to track the active section without causing re-renders
@@ -116,21 +115,14 @@ const GlobalSectionNavigation = ({
     }
   };
 
-  // Handle responsive shift amount for settings panel using the superior useWindowSize hook
-  useEffect(() => {
-    const calculateShift = () => {
-      if (!isSettingsOpen) return 0;
-      // Settings panel is 400px wide on desktop. Add extra gutter so dots fully clear it.
-      const PANEL_WIDTH = 400;
-      const GUTTER = 42; // px
-      if (windowWidth > 1200) return -(PANEL_WIDTH + GUTTER + 16); // ~ -448px
-      if (windowWidth > 768) return -(Math.round(PANEL_WIDTH * 0.85) + GUTTER); // ~ -372px
-      return 0;
-    };
-
-    const newShiftAmount = calculateShift();
-    setShiftAmount(newShiftAmount);
-  }, [isSettingsOpen, windowWidth]); // More declarative and uses the superior hook
+  const settingsOffset = useMemo(() => {
+    if (!isSettingsOpen) return 0;
+    // Settings panel is 400px wide on desktop. Add extra gutter so dots fully clear it.
+    const PANEL_WIDTH = 400;
+    if (windowWidth > 1200) return PANEL_WIDTH;
+    if (windowWidth > 768) return Math.round(PANEL_WIDTH * 0.85);
+    return 0;
+  }, [isSettingsOpen, windowWidth]);
 
   // No longer need to check isHomePage here, it's implicit
   if (sections.length === 0) {
@@ -142,10 +134,15 @@ const GlobalSectionNavigation = ({
       className={`global-section-navigation ${
         isSettingsOpen ? "settings-open" : ""
       }`}
+      style={
+        {
+          "--global-section-nav-settings-offset": `${settingsOffset}px`,
+        } as CSSProperties
+      }
       initial={{ opacity: 0, x: 50 }}
       animate={{
         opacity: 1,
-        x: shiftAmount,
+        x: 0,
       }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
     >

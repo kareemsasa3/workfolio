@@ -1,11 +1,14 @@
 /* Global Section Navigation - positioned like the Dock */
 .global-section-navigation {
+    --global-section-nav-base-right: 2rem;
+    --global-section-nav-settings-offset: 0px;
     position: fixed;
     top: 45vh;
-    right: 2rem;
+    right: calc(var(--global-section-nav-base-right) + var(--global-section-nav-settings-offset));
     transform: translateY(-50%);
     z-index: 10000;
     pointer-events: auto;
+    transition: right 0.3s ease-in-out;
 }
 
 .nav-dots {
@@ -85,7 +88,7 @@
 /* Responsive adjustments */
 @media (max-width: 1024px) {
     .global-section-navigation {
-        right: 1.5rem;
+        --global-section-nav-base-right: 1.5rem;
     }
 }
 

@@ -118,7 +118,7 @@
   padding: 1rem 1.25rem;
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  background: rgba(0, 0, 0, 0.2);
+  background: color-mix(in srgb, var(--app-surface) 86%, transparent);
   color: var(--text-color);
   text-decoration: none;
   transition: border-color 0.3s ease, background 0.3s ease, transform 0.3s ease;

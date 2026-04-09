@@ -20,10 +20,10 @@ import {
   resetAllSettings,
   getAllSettings,
   setDockSettings,
-  setTheme,
   setAnimationPaused,
   DEFAULT_SETTINGS,
 } from "../../utils/settings";
+import { useTheme } from "../../contexts/ThemeContext";
 import { Modal, useToast } from "../common";
 import "./SettingsPanel.css";
 
@@ -57,6 +57,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
   onMatrixSpeedChange,
 }) => {
   const { showSuccess, showError } = useToast();
+  const { theme, setTheme } = useTheme();
   const [showResetModal, setShowResetModal] = useState(false);
 
   const handleDockSizeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -94,13 +95,11 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
       onMagnificationChange(DEFAULT_SETTINGS.magnification);
       onAnimationToggle(DEFAULT_SETTINGS.isAnimationPaused);
       onMatrixSpeedChange?.(DEFAULT_SETTINGS.matrixSpeed ?? 1);
-
-      // Note: Theme will be reset on next page reload since it's managed by ThemeContext
-      // For now, we'll show a message about the theme reset
+      setTheme("dark");
 
       showSuccess(
         "Settings Reset",
-        "All settings have been reset to defaults. The theme will update on the next page refresh."
+        "All settings have been reset to defaults."
       );
     } catch {
       showError("Reset Failed", "Failed to reset settings. Please try again.");
@@ -109,7 +108,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
 
   const handleExportSettings = () => {
     try {
-      const settings = getAllSettings();
+      const settings = getAllSettings(theme);
       const settingsBlob = new Blob([JSON.stringify(settings, null, 2)], {
         type: "application/json",
       });
@@ -165,7 +164,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
               onMagnificationChange(settings.magnification);
             }
 
-            if (settings.theme) {
+            if (settings.theme === "light" || settings.theme === "dark") {
               setTheme(settings.theme);
             }
 
@@ -180,7 +179,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
 
             showSuccess(
               "Settings Imported",
-              "Settings have been imported successfully. The theme will update on the next page refresh."
+              "Settings have been imported successfully."
             );
           } catch (error) {
             console.error("Failed to import settings:", error);
@@ -276,7 +275,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
 
                 <div className="setting-group">
                   <label htmlFor="matrix-speed" className="setting-label">
-                    Matrix Speed
+                    Background Motion
                   </label>
                   <div className="setting-control">
                     <input
@@ -299,7 +298,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
                     </div>
                   </div>
                   <div className="setting-description">
-                    Adjust the falling speed of the Matrix background.
+                    Adjust the motion speed of the active background.
                   </div>
                 </div>
 

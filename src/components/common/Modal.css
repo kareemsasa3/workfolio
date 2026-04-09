@@ -4,7 +4,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.8);
+    background: var(--app-overlay);
     backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
@@ -14,12 +14,12 @@
 }
 
 .modal-content {
-    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
-    border: 1px solid #00ff41;
+    background: linear-gradient(135deg, var(--app-surface) 0%, var(--app-bg-secondary) 100%);
+    border: 1px solid var(--brand-primary);
     border-radius: 12px;
     box-shadow:
-        0 20px 40px rgba(0, 255, 65, 0.1),
-        0 0 0 1px rgba(0, 255, 65, 0.1),
+        0 20px 40px rgba(0, 0, 0, 0.18),
+        0 0 0 1px color-mix(in srgb, var(--brand-primary) 20%, transparent),
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
     max-width: 500px;
     width: 100%;
@@ -35,7 +35,7 @@
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, #00ff41, transparent);
+    background: linear-gradient(90deg, transparent, var(--brand-primary), transparent);
     opacity: 0.6;
 }
 
@@ -44,16 +44,16 @@
     align-items: center;
     justify-content: space-between;
     padding: 20px 24px 16px;
-    border-bottom: 1px solid rgba(0, 255, 65, 0.2);
-    background: rgba(0, 255, 65, 0.02);
+    border-bottom: 1px solid color-mix(in srgb, var(--brand-primary) 20%, transparent);
+    background: color-mix(in srgb, var(--app-surface) 92%, transparent);
 }
 
 .modal-title {
     margin: 0;
     font-size: 1.25rem;
     font-weight: 600;
-    color: #00ff41;
-    text-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+    color: var(--brand-primary);
+    text-shadow: 0 0 10px color-mix(in srgb, var(--brand-primary) 30%, transparent);
 }
 
 .modal-close {
@@ -71,13 +71,13 @@
 }
 
 .modal-close:hover {
-    color: #00ff41;
-    background: rgba(0, 255, 65, 0.1);
+    color: var(--brand-primary);
+    background: color-mix(in srgb, var(--brand-primary) 10%, transparent);
 }
 
 .modal-body {
     padding: 20px 24px;
-    color: #e0e0e0;
+    color: var(--app-text);
     line-height: 1.6;
     max-height: 60vh;
     overflow-y: auto;
@@ -106,8 +106,8 @@
     gap: 12px;
     justify-content: flex-end;
     padding: 16px 24px 20px;
-    border-top: 1px solid rgba(0, 255, 65, 0.2);
-    background: rgba(0, 0, 0, 0.2);
+    border-top: 1px solid color-mix(in srgb, var(--brand-primary) 20%, transparent);
+    background: color-mix(in srgb, var(--app-bg) 80%, transparent);
 }
 
 .modal-button {
@@ -139,9 +139,9 @@
 }
 
 .modal-button-secondary {
-    background: rgba(255, 255, 255, 0.1);
-    color: #e0e0e0;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: color-mix(in srgb, var(--app-surface) 80%, transparent);
+    color: var(--app-text);
+    border: 1px solid var(--app-border);
 }
 
 .modal-button-secondary:hover {

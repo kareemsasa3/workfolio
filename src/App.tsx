@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import { AppProviders } from "./providers";
 import Layout from "./components/Layout/Layout";
@@ -10,14 +9,6 @@ import {
 } from "./routes";
 
 function App() {
-  useEffect(() => {
-    document.documentElement.classList.add("app-mounted");
-
-    return () => {
-      document.documentElement.classList.remove("app-mounted");
-    };
-  }, []);
-
   return (
     <AppProviders>
       <Routes>

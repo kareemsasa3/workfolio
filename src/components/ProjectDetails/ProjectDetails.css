@@ -114,7 +114,7 @@
 .project-details {
     padding: 0 1.5rem 1.5rem 1.5rem;
     border-top: 1px solid rgba(0, 255, 0, 0.3);
-    background: rgba(0, 0, 0, 0.1);
+    background: color-mix(in srgb, var(--app-bg) 88%, transparent);
     animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
 }
@@ -137,7 +137,7 @@
     color: var(--terminal-text-light, #ffffff);
     margin: 1rem 0;
     padding: 1rem;
-    background: var(--terminal-background, #1a1a1a);
+    background: var(--app-surface);
     border-radius: 8px;
     border-left: 4px solid var(--terminal-primary, #4CAF50);
     font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
@@ -265,7 +265,7 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.75rem 1.5rem;
-    background: var(--terminal-background, #1a1a1a);
+    background: var(--app-surface);
     color: var(--terminal-primary, #4CAF50);
     text-decoration: none;
     border-radius: 4px;

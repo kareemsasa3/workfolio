@@ -25,188 +25,278 @@
     <meta name="twitter:description" content="Systems engineer and consultant building production software across backend, infrastructure, and product experience." />
     <meta name="twitter:image" content="https://kareemsasa.dev/src/assets/logo.svg" />
     <meta name="twitter:image:alt" content="Kareem Sasa logo" />
+    <script>
+      (function () {
+        var STORAGE_KEY = "theme";
+        var root = document.documentElement;
+
+        function resolveTheme() {
+          try {
+            var saved = localStorage.getItem(STORAGE_KEY);
+            if (saved === "light" || saved === "dark") {
+              return saved;
+            }
+          } catch (_) {}
+
+          try {
+            if (
+              window.matchMedia &&
+              window.matchMedia("(prefers-color-scheme: light)").matches
+            ) {
+              return "light";
+            }
+          } catch (_) {}
+
+          return "dark";
+        }
+
+        function applyTheme(theme) {
+          var isLight = theme === "light";
+
+          root.dataset.theme = theme;
+          root.style.colorScheme = theme;
+          root.style.setProperty("--app-bg", isLight ? "#f5f5f5" : "#1a1a1a");
+          root.style.setProperty(
+            "--app-bg-secondary",
+            isLight ? "#fafafa" : "#2d2d2d"
+          );
+          root.style.setProperty(
+            "--app-surface",
+            isLight ? "#ffffff" : "#2d2d2d"
+          );
+          root.style.setProperty(
+            "--app-overlay",
+            isLight ? "rgba(245, 245, 245, 0.88)" : "rgba(26, 26, 26, 0.88)"
+          );
+          root.style.setProperty("--app-text", isLight ? "#2c2c2c" : "#f8f9fa");
+          root.style.setProperty(
+            "--app-text-muted",
+            isLight ? "#6a6a6a" : "#6c757d"
+          );
+          root.style.setProperty(
+            "--app-border",
+            isLight ? "#d0d0d0" : "#495057"
+          );
+          root.style.setProperty(
+            "--brand-primary",
+            isLight ? "#007a00" : "#4CAF50"
+          );
+          root.style.setProperty(
+            "--brand-primary-soft",
+            isLight ? "#e6f3e6" : "#81C784"
+          );
+          root.style.setProperty(
+            "--bg-canvas-fill",
+            isLight ? "#f5f5f5" : "#0f0f0f"
+          );
+          root.style.setProperty(
+            "--bg-canvas-glyph",
+            isLight ? "44, 44, 44" : "0, 255, 0"
+          );
+          root.style.setProperty(
+            "--bg-glow-color",
+            isLight ? "rgba(106, 106, 106, 0.10)" : "rgba(108, 117, 125, 0.10)"
+          );
+
+          root.style.setProperty("--background-color", "var(--app-bg)");
+          root.style.setProperty(
+            "--background-color-secondary",
+            "var(--app-bg-secondary)"
+          );
+          root.style.setProperty("--card-background", "var(--app-surface)");
+          root.style.setProperty("--panel-bg-color", "var(--app-surface)");
+          root.style.setProperty("--text-color", "var(--app-text)");
+          root.style.setProperty("--text-color-muted", "var(--app-text-muted)");
+          root.style.setProperty("--text-muted-color", "var(--app-text-muted)");
+          root.style.setProperty("--border-color", "var(--app-border)");
+          root.style.setProperty("--primary-color", "var(--brand-primary)");
+          root.style.setProperty(
+            "--primary-color-light",
+            "var(--brand-primary-soft)"
+          );
+        }
+
+        applyTheme(resolveTheme());
+      })();
+    </script>
     <style>
       .route-fallback,
+      .homepage-fallback,
+      .homepage-fallback__splash {
+        box-sizing: border-box;
+      }
+
+      .route-fallback,
       .homepage-fallback {
-        max-width: 72rem;
-        margin: 0 auto;
-        padding: 4rem 1.5rem 2rem;
-        color: #f8f9fa;
-        background: #111111;
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        padding: 2rem;
+        overflow: hidden;
+        isolation: isolate;
+        color: var(--app-text, #f8f9fa);
+        background:
+          radial-gradient(circle at top, color-mix(in srgb, var(--brand-primary-soft, #81c784) 14%, transparent), transparent 42%),
+          linear-gradient(180deg, var(--app-bg-secondary, #2d2d2d) 0%, var(--app-bg, #111111) 100%);
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       }
 
-      .route-fallback a,
-      .homepage-fallback a {
-        color: #81c784;
+      .homepage-fallback::before,
+      .homepage-fallback::after {
+        content: "";
+        position: absolute;
+        inset: -12%;
+        pointer-events: none;
       }
 
-      .route-fallback__eyebrow,
+      .homepage-fallback::before {
+        z-index: 0;
+        background:
+          radial-gradient(circle at 18% 20%, color-mix(in srgb, var(--brand-primary-soft, #81c784) 18%, transparent), transparent 30%),
+          radial-gradient(circle at 82% 28%, color-mix(in srgb, var(--brand-primary, #4caf50) 12%, transparent), transparent 26%),
+          radial-gradient(circle at 50% 82%, color-mix(in srgb, var(--brand-primary-soft, #81c784) 10%, transparent), transparent 24%);
+        opacity: 0.75;
+        animation: fallback-glow-drift 16s ease-in-out infinite alternate;
+        transform: translate3d(0, 0, 0);
+      }
+
+      .homepage-fallback::after {
+        z-index: 1;
+        inset: 0;
+        background:
+          repeating-linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.02) 0,
+            rgba(255, 255, 255, 0.02) 1px,
+            transparent 1px,
+            transparent 8px
+          ),
+          linear-gradient(
+            90deg,
+            transparent 0%,
+            color-mix(in srgb, var(--brand-primary-soft, #81c784) 5%, transparent) 50%,
+            transparent 100%
+          );
+        opacity: 0.22;
+        animation: fallback-scan-shift 18s linear infinite;
+      }
+
+      .homepage-fallback__splash {
+        position: relative;
+        z-index: 2;
+        width: min(100%, 28rem);
+        min-height: 12rem;
+        padding: 2rem 1.75rem;
+        border: 1px solid color-mix(in srgb, var(--app-border, #495057) 70%, transparent);
+        border-radius: 20px;
+        background: color-mix(in srgb, var(--app-surface, #2d2d2d) 84%, transparent);
+        box-shadow: 0 18px 60px rgba(0, 0, 0, 0.18);
+        text-align: center;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+
       .homepage-fallback__eyebrow {
-        margin: 0 0 0.75rem;
-        font-size: 0.9rem;
-        letter-spacing: 0.08em;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        margin: 0 0 0.85rem;
+        font-size: 0.75rem;
+        letter-spacing: 0.12em;
         text-transform: uppercase;
-        color: #81c784;
+        font-weight: 600;
+        color: var(--brand-primary, #4caf50);
+        opacity: 0.9;
       }
 
-      .route-fallback__title,
+      .homepage-fallback__eyebrow::before {
+        content: ">";
+        color: var(--brand-primary, #4caf50);
+        opacity: 0.85;
+      }
+
       .homepage-fallback__title {
         margin: 0;
-        font-size: clamp(2.5rem, 7vw, 4.5rem);
-        line-height: 1.05;
+        font-size: clamp(2.25rem, 6vw, 3.75rem);
+        line-height: 1.02;
+        letter-spacing: -0.02em;
+        font-weight: 700;
       }
 
-      .route-fallback__summary,
-      .homepage-fallback__summary {
-        max-width: 56rem;
-        margin: 1.25rem 0 0;
-        font-size: 1.125rem;
-        line-height: 1.7;
-        color: #d7dde4;
+      .homepage-fallback__divider {
+        width: 72px;
+        height: 2px;
+        margin: 0.9rem auto 0;
+        background: linear-gradient(
+          to right,
+          var(--brand-primary, #4caf50),
+          transparent
+        );
       }
 
-      .route-fallback__section {
-        margin: 2rem 0 0;
+      [data-theme="light"] .homepage-fallback::before {
+        opacity: 0.28;
+        animation: none;
       }
 
-      .route-fallback__section h2 {
-        margin: 0 0 0.75rem;
-        font-size: 1.35rem;
+      [data-theme="light"] .homepage-fallback::after {
+        opacity: 0.08;
+        animation: none;
+        background:
+          repeating-linear-gradient(
+            180deg,
+            rgba(0, 0, 0, 0.015) 0,
+            rgba(0, 0, 0, 0.015) 1px,
+            transparent 1px,
+            transparent 10px
+          );
       }
 
-      .route-fallback__section p,
-      .route-fallback__section li {
-        line-height: 1.75;
-        color: #d7dde4;
+      @keyframes fallback-glow-drift {
+        0% {
+          transform: translate3d(-1%, -1%, 0) scale(1);
+        }
+
+        50% {
+          transform: translate3d(1.5%, 1%, 0) scale(1.04);
+        }
+
+        100% {
+          transform: translate3d(-0.5%, 2%, 0) scale(1.02);
+        }
       }
 
-      .route-fallback__section ul {
-        margin: 0.75rem 0 0;
-        padding-left: 1.25rem;
+      @keyframes fallback-scan-shift {
+        0% {
+          background-position: 0 0, 0 0;
+        }
+
+        100% {
+          background-position: 0 24px, 24px 0;
+        }
       }
 
-      .route-fallback__section li + li {
-        margin-top: 0.6rem;
+      @media (prefers-reduced-motion: reduce) {
+        .homepage-fallback::before,
+        .homepage-fallback::after {
+          animation: none;
+        }
       }
 
-      .route-fallback__grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 1rem;
-        margin: 1rem 0 0;
-      }
-
-      .route-fallback__card {
-        padding: 1rem 1.1rem;
-        border: 1px solid rgba(129, 199, 132, 0.35);
-        border-radius: 12px;
-        background: rgba(255, 255, 255, 0.03);
-      }
-
-      .route-fallback__card h3 {
-        margin: 0 0 0.6rem;
-        font-size: 1rem;
-      }
-
-      .route-fallback__meta {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.75rem;
-        margin: 1.25rem 0 0;
-      }
-
-      .route-fallback__pill {
-        display: inline-flex;
-        padding: 0.35rem 0.7rem;
-        border: 1px solid rgba(129, 199, 132, 0.35);
-        border-radius: 999px;
-        color: #d7dde4;
-        font-size: 0.9rem;
-      }
-
-      .route-fallback__link-list,
-      .homepage-fallback__links,
-      .homepage-fallback__projects {
-        margin: 2rem 0 0;
-      }
-
-      .route-fallback__link-list ul,
-      .homepage-fallback__links ul,
-      .homepage-fallback__projects ul {
-        margin: 0.75rem 0 0;
-        padding-left: 1.25rem;
-      }
-
-      .route-fallback__link-list li + li,
-      .homepage-fallback__projects li + li,
-      .homepage-fallback__links li + li {
-        margin-top: 0.75rem;
-      }
-
-      .route-fallback__label,
-      .homepage-fallback__project-title {
-        font-weight: 600;
-      }
-
-      .route-fallback__breadcrumbs {
-        margin: 0 0 1rem;
-        color: #d7dde4;
-      }
-
-      .route-fallback__breadcrumbs a {
-        color: #81c784;
-      }
-
-      .route-fallback__card-link {
-        display: inline-block;
-        margin-top: 0.75rem;
-        font-weight: 600;
-      }
-
-      .app-mounted .route-fallback,
-      .app-mounted .homepage-fallback {
+      .app-ready .route-fallback,
+      .app-ready .homepage-fallback {
         display: none;
       }
     </style>
   </head>
   <body>
-    <main class="route-fallback homepage-fallback" aria-label="Homepage overview">
-      <p class="homepage-fallback__eyebrow">Systems Engineer</p>
-      <h1 class="homepage-fallback__title">Kareem Sasa</h1>
-      <p class="homepage-fallback__summary">
-        Systems engineer building production software across backend, infrastructure, and product experience.
-        I design and ship systems that make behavior visible, decisions traceable, and complex software easier to operate.
-        Recent work includes consulting on business-critical platforms and building systems-focused products like Erebus, an event-driven coordination layer for Linux.
-      </p>
-
-      <section class="homepage-fallback__links" aria-labelledby="homepage-fallback-links">
-        <h2 id="homepage-fallback-links">Explore</h2>
-        <ul>
-          <li><a href="/projects">Projects</a></li>
-          <li><a href="/work">Work Experience</a></li>
-          <li><a href="/terminal">Terminal Interface</a></li>
-        </ul>
-      </section>
-
-      <section class="homepage-fallback__projects" aria-labelledby="homepage-fallback-projects">
-        <h2 id="homepage-fallback-projects">Featured Work</h2>
-        <ul>
-          <li>
-            <span class="homepage-fallback__project-title">Erebus OS</span>:
-            Event-driven Linux coordination layer for auditable system state and operational context.
-            <a href="/projects">Read more</a>
-          </li>
-          <li>
-            <a class="homepage-fallback__project-title" href="https://github.com/kareemsasa3/arachne">Arachne</a>:
-            Autonomous web research platform built with Go, Next.js, SQLite FTS5, Redis, and Docker.
-          </li>
-          <li>
-            <a class="homepage-fallback__project-title" href="https://github.com/kareemsasa3/aether">Aether</a>:
-            Real-time Linux audio infrastructure using shared memory for low-latency cross-process consumers.
-          </li>
-        </ul>
-      </section>
+    <main class="route-fallback homepage-fallback" aria-label="Loading site">
+      <div class="homepage-fallback__splash">
+        <p class="homepage-fallback__eyebrow">Systems Engineer</p>
+        <h1 class="homepage-fallback__title">Kareem Sasa</h1>
+        <div class="homepage-fallback__divider" aria-hidden="true"></div>
+      </div>
     </main>
     <div id="root"></div>
     <div id="portal-root"></div>

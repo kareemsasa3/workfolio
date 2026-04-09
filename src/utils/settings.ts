@@ -6,15 +6,16 @@ export interface UserSettings {
   dockStiffness: number;
   magnification: number;
 
-  // Theme settings
-  theme: "light" | "dark";
-
   // Animation settings
   isAnimationPaused: boolean;
   matrixSpeed?: number;
 
   // UI settings
   isSettingsOpen: boolean;
+
+  // Theme can be included in exported settings, but runtime ownership
+  // lives in ThemeContext rather than this persistence utility.
+  theme?: "light" | "dark";
 }
 
 // Default settings
@@ -22,7 +23,6 @@ export const DEFAULT_SETTINGS: UserSettings = {
   dockSize: 40,
   dockStiffness: 400,
   magnification: 40,
-  theme: "dark",
   isAnimationPaused: false,
   isSettingsOpen: false,
   matrixSpeed: 1,
@@ -31,7 +31,6 @@ export const DEFAULT_SETTINGS: UserSettings = {
 // Local storage keys
 const STORAGE_KEYS = {
   DOCK_SETTINGS: "dockSettings",
-  THEME: "theme",
   ANIMATION_PAUSED: "workfolio-animation-paused",
   SETTINGS_OPEN: "workfolio-settings-open",
   MATRIX_SPEED: "workfolio-matrix-speed",
@@ -57,10 +56,6 @@ const validateDockSettings = (settings: unknown) => {
   );
 };
 
-const validateTheme = (theme: unknown): theme is "light" | "dark" => {
-  return theme === "light" || theme === "dark";
-};
-
 const validateBoolean = (value: unknown): boolean => {
   return typeof value === "boolean";
 };
@@ -83,26 +78,6 @@ export const getDockSettings = (): Partial<UserSettings> => {
     console.warn("Failed to load dock settings:", error);
   }
   return {};
-};
-
-export const getTheme = (): "light" | "dark" => {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEYS.THEME);
-    if (saved && validateTheme(saved)) {
-      return saved;
-    }
-  } catch (error) {
-    console.warn("Failed to load theme setting:", error);
-  }
-
-  // Fallback to system preference
-  if (typeof window !== "undefined" && window.matchMedia) {
-    if (window.matchMedia("(prefers-color-scheme: light)").matches) {
-      return "light";
-    }
-  }
-
-  return "dark";
 };
 
 export const getAnimationPaused = (): boolean => {
@@ -147,16 +122,6 @@ export const setDockSettings = (
   }
 };
 
-export const setTheme = (theme: "light" | "dark") => {
-  try {
-    if (validateTheme(theme)) {
-      localStorage.setItem(STORAGE_KEYS.THEME, theme);
-    }
-  } catch (error) {
-    console.warn("Failed to save theme setting:", error);
-  }
-};
-
 export const setAnimationPaused = (paused: boolean) => {
   try {
     if (validateBoolean(paused)) {
@@ -180,14 +145,16 @@ export const setSettingsOpen = (open: boolean) => {
   }
 };
 
-// Get all settings
-export const getAllSettings = (): UserSettings => {
+// Get all non-theme settings. Theme can be passed in by the caller when exporting.
+export const getAllSettings = (
+  theme?: "light" | "dark"
+): UserSettings => {
   return {
     ...DEFAULT_SETTINGS,
     ...getDockSettings(),
-    theme: getTheme(),
     isAnimationPaused: getAnimationPaused(),
     isSettingsOpen: getSettingsOpen(),
+    ...(theme ? { theme } : {}),
     matrixSpeed: (() => {
       try {
         const saved = localStorage.getItem(STORAGE_KEYS.MATRIX_SPEED);

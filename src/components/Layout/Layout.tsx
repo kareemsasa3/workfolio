@@ -1,7 +1,8 @@
 import { Outlet, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Suspense, useMemo, useState, useEffect } from "react";
+import { Suspense, useMemo, useState, useEffect, useRef } from "react";
 import MatrixBackground from "../MatrixBackground/MatrixBackground";
+import StaticBackground from "../StaticBackground/StaticBackground";
 import Dock from "../Dock/Dock";
 import GlobalSectionNavigation from "./GlobalSectionNavigation";
 import GlobalScrollProgress from "./GlobalScrollProgress";
@@ -9,6 +10,7 @@ import { PageLoader } from "../common";
 import ErrorBoundary from "../common/ErrorBoundary";
 import { useLayoutContext } from "../../contexts/LayoutContext";
 import { useSettings } from "../../contexts/SettingsContext";
+import { useTheme } from "../../contexts/ThemeContext";
 import { caseStudiesData } from "../../data/caseStudies";
 import "./Layout.css";
 
@@ -47,7 +49,10 @@ const Layout = () => {
   const location = useLocation();
   const { mainContentAreaRef } = useLayoutContext();
   const { isSettingsOpen } = useSettings();
-  const [isLoading, setIsLoading] = useState(false);
+  const { theme } = useTheme();
+  const [isLoading, setIsLoading] = useState(true);
+  const hasMarkedAppReady = useRef(false);
+  const isInitialLoad = useRef(true);
 
   // Memoize the key to prevent unnecessary re-renders
   const pageKey = useMemo(() => location.pathname, [location.pathname]);
@@ -55,12 +60,23 @@ const Layout = () => {
   // Show loading state on route change
   useEffect(() => {
     setIsLoading(true);
-    // Hide loading after at least 500ms to ensure consistent loading experience
+    const minimumLoadDuration = isInitialLoad.current ? 300 : 500;
+
+    // Use a shorter minimum on first load while preserving the existing route transition timing.
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 500);
+      isInitialLoad.current = false;
+    }, minimumLoadDuration);
+
     return () => clearTimeout(timer);
   }, [location.pathname]);
+
+  useEffect(() => {
+    if (!isLoading && !hasMarkedAppReady.current) {
+      document.documentElement.classList.add("app-ready");
+      hasMarkedAppReady.current = true;
+    }
+  }, [isLoading]);
 
   // Route-aware metadata
   useEffect(() => {
@@ -170,7 +186,7 @@ const Layout = () => {
   return (
     // Use a simple fragment, or a div with NO positioning/transform styles
     <>
-      <MatrixBackground />
+      {theme === "dark" ? <MatrixBackground /> : <StaticBackground />}
 
       {/* This is now the top-level container for all INTERACTIVE content */}
       <div className="layout-foreground">
