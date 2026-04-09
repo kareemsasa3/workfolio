@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 import { useLayoutContext } from "../../contexts/LayoutContext";
+import { useTheme } from "../../contexts/ThemeContext";
 import "./MatrixBackground.css";
 
 // Configuration object to manage the "magic numbers"
@@ -25,6 +26,7 @@ interface MatrixColumn {
 
 const MatrixBackground = () => {
   const { isAnimationPaused, matrixSpeed } = useLayoutContext();
+  const { theme } = useTheme();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const requestRef = useRef<number | null>(null);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
@@ -58,17 +60,6 @@ const MatrixBackground = () => {
     document.addEventListener("visibilitychange", handleVisibilityChange);
     return () =>
       document.removeEventListener("visibilitychange", handleVisibilityChange);
-  }, []);
-
-  useEffect(() => {
-    const rootStyles = getComputedStyle(document.documentElement);
-    const fill = rootStyles.getPropertyValue("--bg-canvas-fill").trim();
-    const glyph = rootStyles.getPropertyValue("--bg-canvas-glyph").trim();
-
-    colorsRef.current = {
-      fill: fill || "#0f0f0f",
-      glyph: glyph || "0, 255, 0",
-    };
   }, []);
 
   // Initialize matrix columns
@@ -199,6 +190,21 @@ const MatrixBackground = () => {
       });
     });
   }, []);
+
+  useEffect(() => {
+    colorsRef.current =
+      theme === "light"
+        ? {
+            fill: "#f5f5f5",
+            glyph: "44, 44, 44",
+          }
+        : {
+            fill: "#0f0f0f",
+            glyph: "0, 255, 0",
+          };
+
+    redrawStaticFrame();
+  }, [theme, redrawStaticFrame]);
 
   // Main setup effect
   useEffect(() => {
